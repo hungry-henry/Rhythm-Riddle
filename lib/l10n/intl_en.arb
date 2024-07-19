@@ -1,4 +1,7 @@
 {
     "name": "Rhythm Riddle",
-    "pushes": "You have pushed the button {count} times:"
+    "pushes": "You have pushed the button {count} times:",
+    "login": "Login",
+    "password": "Password",
+    "email": "E-mail"
 }

@@ -1,4 +1,7 @@
 {
     "name": "旋律疑谜",
-    "pushes": "已经按下这个按钮 {count} 次了"
+    "pushes": "已经按下这个按钮 {count} 次了",
+    "login": "登录",
+    "password": "密码",
+    "email": "邮箱"
 }
