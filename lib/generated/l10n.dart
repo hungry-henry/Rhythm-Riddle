@@ -60,21 +60,21 @@ class S {
     );
   }
 
-  /// `You have pushed the button {count} times:`
-  String pushes(Object count) {
-    return Intl.message(
-      'You have pushed the button $count times:',
-      name: 'pushes',
-      desc: '',
-      args: [count],
-    );
-  }
-
   /// `Login`
   String get login {
     return Intl.message(
       'Login',
       name: 'login',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `play without an account`
+  String get guest {
+    return Intl.message(
+      'play without an account',
+      name: 'guest',
       desc: '',
       args: [],
     );
@@ -95,6 +95,26 @@ class S {
     return Intl.message(
       'E-mail',
       name: 'email',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your email`
+  String get emptyemail {
+    return Intl.message(
+      'Please enter your email',
+      name: 'emptyemail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your password`
+  String get emptypassword {
+    return Intl.message(
+      'Please enter your password',
+      name: 'emptypassword',
       desc: '',
       args: [],
     );

@@ -1,7 +1,9 @@
 {
     "name": "Rhythm Riddle",
-    "pushes": "You have pushed the button {count} times:",
     "login": "Login",
+    "guest": "play without an account",
     "password": "Password",
-    "email": "E-mail"
+    "email": "E-mail",
+    "emptyemail": "Please enter your email",
+    "emptypassword": "Please enter your password"
 }

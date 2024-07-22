@@ -1,7 +1,9 @@
 {
     "name": "旋律疑谜",
-    "pushes": "已经按下这个按钮 {count} 次了",
     "login": "登录",
+    "guest": "免登录进入",
     "password": "密码",
-    "email": "邮箱"
+    "email": "邮箱",
+    "emptyemail": "请输入邮箱",
+    "emptypassword": "请输入密码"
 }
