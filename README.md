@@ -1,4 +1,4 @@
-# rhythm_riddle
+# Rhythm Riddle
 
 A new Flutter project.
 

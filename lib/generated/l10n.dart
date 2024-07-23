@@ -70,6 +70,26 @@ class S {
     );
   }
 
+  /// `or`
+  String get or {
+    return Intl.message(
+      'or',
+      name: 'or',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No account? Click here to sign up!`
+  String get register {
+    return Intl.message(
+      'No account? Click here to sign up!',
+      name: 'register',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `play without an account`
   String get guest {
     return Intl.message(
@@ -90,11 +110,11 @@ class S {
     );
   }
 
-  /// `E-mail`
-  String get email {
+  /// `E-mail or Username`
+  String get emailOrName {
     return Intl.message(
-      'E-mail',
-      name: 'email',
+      'E-mail or Username',
+      name: 'emailOrName',
       desc: '',
       args: [],
     );

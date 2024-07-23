@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart';
+
 
 Future<void> login(String username, String password) async {
   final response = await http.post(
@@ -24,12 +26,23 @@ Future<void> login(String username, String password) async {
   }
 }
 
+Future<void> _launchInBrowser(Uri url) async {
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception('Could not launch $url');
+    }
+}
+
+// ignore: use_key_in_widget_constructors
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  Future<void>? _launched;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -52,6 +65,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final Uri toLaunch =
+        Uri(scheme: 'http', host: 'hungryhenry.xyz', path: 'blog/admin');
   return Scaffold(
     backgroundColor: Colors.white,
     body: Center(
@@ -77,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
-                        labelText: S.current.email,
+                        labelText: S.current.emailOrName,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                       keyboardType: TextInputType.emailAddress,
@@ -105,28 +120,51 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height:10),
+
+                    //register
+                    TextButton(
+                      onPressed: () => setState(() {
+                        _launched = _launchInBrowser(toLaunch);
+                      }),
+                      style:ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(0, 0, 0, 0)),
+                      ),
+                      child: Text(
+                        S.current.register,
+                        style: const TextStyle(fontSize: 14),
+                      )
+                    ),
 
                     // 登录按钮
                     SizedBox(
-                      width:200,
+                      width:150,
                       child: ElevatedButton(
                         onPressed: _login,
                         child: Text(S.current.login),
                       )
                     ),
 
-                    const Text(
-                      "或",
-                      style: TextStyle(fontSize: 14),
+                    Text(
+                      S.current.or,
+                      style: const TextStyle(fontSize: 12),
                     ),
+
                     // 免登录进入
                     SizedBox(
-                      width:200,
                       child: ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(166, 151, 151, 151)),
+                        ),
                         onPressed: _guest,
-                        child: Text(S.current.guest),
-                    ),
+                        child: Text(
+                          S.current.guest,
+                          style:const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12
+                            ),
+                          ),
+                      ),
                     )
                   ],
                 ),

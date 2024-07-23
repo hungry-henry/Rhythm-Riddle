@@ -1,9 +1,11 @@
 {
     "name": "Rhythm Riddle",
     "login": "Login",
+    "or": "or",
+    "register": "No account? Click here to sign up!",
     "guest": "play without an account",
     "password": "Password",
-    "email": "E-mail",
+    "emailOrName": "E-mail or Username",
     "emptyemail": "Please enter your email",
     "emptypassword": "Please enter your password"
 }

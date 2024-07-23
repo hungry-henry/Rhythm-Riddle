@@ -1,9 +1,11 @@
 {
     "name": "旋律疑谜",
     "login": "登录",
+    "or": "或",
+    "register": "没有账号? 点此注册!",
     "guest": "免登录进入",
     "password": "密码",
-    "email": "邮箱",
+    "emailOrName": "邮箱或用户名",
     "emptyemail": "请输入邮箱",
     "emptypassword": "请输入密码"
 }

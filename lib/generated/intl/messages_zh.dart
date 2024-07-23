@@ -22,12 +22,14 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "email": MessageLookupByLibrary.simpleMessage("邮箱"),
+        "emailOrName": MessageLookupByLibrary.simpleMessage("邮箱或用户名"),
         "emptyemail": MessageLookupByLibrary.simpleMessage("请输入邮箱"),
         "emptypassword": MessageLookupByLibrary.simpleMessage("请输入密码"),
         "guest": MessageLookupByLibrary.simpleMessage("免登录进入"),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
         "name": MessageLookupByLibrary.simpleMessage("旋律疑谜"),
-        "password": MessageLookupByLibrary.simpleMessage("密码")
+        "or": MessageLookupByLibrary.simpleMessage("或"),
+        "password": MessageLookupByLibrary.simpleMessage("密码"),
+        "register": MessageLookupByLibrary.simpleMessage("没有账号? 点此注册!")
       };
 }
