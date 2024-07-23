@@ -21,8 +21,8 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate
       ],
       supportedLocales: [
-        Locale('en'),
-        Locale('zh'),
+        const Locale('en'),
+        const Locale('zh'),
       ],
       debugShowCheckedModeBanner: false,
       home: LoginPage(),

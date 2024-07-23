@@ -1,5 +1,28 @@
 import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+Future<void> login(String username, String password) async {
+  final response = await http.post(
+    Uri.parse('http://hungryhenry.xyz/api/login.php'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'username': username,
+      'password': password,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    // Handle successful login
+    print('Login successful: ${response.body}');
+  } else {
+    // Handle error
+    print('Login failed: ${response.body}');
+  }
+}
 
 class LoginPage extends StatefulWidget {
   @override
@@ -10,15 +33,16 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
+  
   // Function to handle login logic
   void _login() {
     if (_formKey.currentState?.validate() ?? false) {
-      // Perform login action
-      // For demonstration, we will just print the credentials
-      print('${S.current.email}: ${_emailController.text}');
-      print('${S.current.password}: ${_passwordController.text}');
-      // You can add your login logic here, such as making an API call
+      final String username = _emailController.text;
+      final String password = _passwordController.text;
+
+      if (username.isNotEmpty && password.isNotEmpty) {
+        login(username, password);
+      }
     }
   }
 
@@ -37,14 +61,14 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           children: [
             Padding(
-              padding: EdgeInsets.only(left: 25, bottom:20),
+              padding: const EdgeInsets.only(left: 25, bottom:20),
               child: Text(
                 S.current.login,
-                style: TextStyle(fontSize: 42),
+                style: const TextStyle(fontSize: 42),
               ),
             ),
             SingleChildScrollView(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -64,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
                     // Password TextField
                     TextFormField(
@@ -81,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
                     // 登录按钮
                     SizedBox(
@@ -92,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                       )
                     ),
 
-                    Text(
+                    const Text(
                       "或",
                       style: TextStyle(fontSize: 14),
                     ),
