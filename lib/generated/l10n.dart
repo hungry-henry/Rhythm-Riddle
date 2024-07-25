@@ -70,6 +70,16 @@ class S {
     );
   }
 
+  /// `Loggin In...`
+  String get loggingIn {
+    return Intl.message(
+      'Loggin In...',
+      name: 'loggingIn',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `or`
   String get or {
     return Intl.message(
@@ -90,10 +100,10 @@ class S {
     );
   }
 
-  /// `play without an account`
+  /// `try without an account`
   String get guest {
     return Intl.message(
-      'play without an account',
+      'try without an account',
       name: 'guest',
       desc: '',
       args: [],
@@ -110,11 +120,21 @@ class S {
     );
   }
 
-  /// `E-mail or Username`
+  /// `E-mail/Username`
   String get emailOrName {
     return Intl.message(
-      'E-mail or Username',
+      'E-mail/Username',
       name: 'emailOrName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `incorrect`
+  String get incorrect {
+    return Intl.message(
+      'incorrect',
+      name: 'incorrect',
       desc: '',
       args: [],
     );
@@ -135,6 +155,26 @@ class S {
     return Intl.message(
       'Please enter your password',
       name: 'emptypassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cannot connect to server. Please try without an account or contact hamrui@outlook.com`
+  String get unknownError {
+    return Intl.message(
+      'Cannot connect to server. Please try without an account or contact hamrui@outlook.com',
+      name: 'unknownError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Home`
+  String get home {
+    return Intl.message(
+      'Home',
+      name: 'home',
       desc: '',
       args: [],
     );

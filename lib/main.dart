@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
 import 'pages/login.dart';
+import 'pages/home.dart';
 
-void main() {
+void main(){  
   runApp(const MyApp());
 }
 
@@ -26,6 +27,10 @@ class MyApp extends StatelessWidget {
       ],
       debugShowCheckedModeBanner: false,
       home: LoginPage(),
+      routes: {
+        'login': (context) => LoginPage(),
+        'home': (context) => const Home(),
+      },
     );
   }
 }

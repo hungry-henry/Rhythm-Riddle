@@ -22,19 +22,22 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "emailOrName":
-            MessageLookupByLibrary.simpleMessage("E-mail or Username"),
+        "emailOrName": MessageLookupByLibrary.simpleMessage("E-mail/Username"),
         "emptyemail":
             MessageLookupByLibrary.simpleMessage("Please enter your email"),
         "emptypassword":
             MessageLookupByLibrary.simpleMessage("Please enter your password"),
-        "guest":
-            MessageLookupByLibrary.simpleMessage("play without an account"),
+        "guest": MessageLookupByLibrary.simpleMessage("try without an account"),
+        "home": MessageLookupByLibrary.simpleMessage("Home"),
+        "incorrect": MessageLookupByLibrary.simpleMessage("incorrect"),
+        "loggingIn": MessageLookupByLibrary.simpleMessage("Loggin In..."),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "name": MessageLookupByLibrary.simpleMessage("Rhythm Riddle"),
         "or": MessageLookupByLibrary.simpleMessage("or"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "register": MessageLookupByLibrary.simpleMessage(
-            "No account? Click here to sign up!")
+            "No account? Click here to sign up!"),
+        "unknownError": MessageLookupByLibrary.simpleMessage(
+            "Cannot connect to server. Please try without an account or contact hamrui@outlook.com")
       };
 }

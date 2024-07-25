@@ -1,11 +1,15 @@
 {
     "name": "Rhythm Riddle",
     "login": "Login",
+    "loggingIn": "Loggin In...",
     "or": "or",
     "register": "No account? Click here to sign up!",
-    "guest": "play without an account",
+    "guest": "try without an account",
     "password": "Password",
-    "emailOrName": "E-mail or Username",
+    "emailOrName": "E-mail/Username",
+    "incorrect": "incorrect",
     "emptyemail": "Please enter your email",
-    "emptypassword": "Please enter your password"
+    "emptypassword": "Please enter your password",
+    "unknownError": "Cannot connect to server. Please try without an account or contact hamrui@outlook.com",
+    "home": "Home"
 }
