@@ -97,8 +97,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final Uri toLaunch =
-        Uri(scheme: 'http', host: 'hungryhenry.xyz', path: 'blog/admin');
+    final Uri toLaunch = Uri(scheme: 'http', host: 'hungryhenry.xyz', path: 'blog/admin');
   return Scaffold(
     backgroundColor: Colors.white,
     body: Center(
@@ -179,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
                       width:150,
                       child: ElevatedButton(
                         onPressed: _login,
-                        child: Text(S.current.login),
+                        child: Text(loginText),
                       )
                     ),
 

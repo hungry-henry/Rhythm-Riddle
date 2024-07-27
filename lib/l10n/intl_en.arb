@@ -11,5 +11,8 @@
     "emptyemail": "Please enter your email",
     "emptypassword": "Please enter your password",
     "unknownError": "Cannot connect to server. Please try without an account or contact hamrui@outlook.com",
-    "home": "Home"
+
+    "home": "Home",
+    "account": "Account",
+    "rank": "Rank"
 }

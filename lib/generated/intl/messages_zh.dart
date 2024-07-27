@@ -22,6 +22,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "account": MessageLookupByLibrary.simpleMessage("账户"),
         "emailOrName": MessageLookupByLibrary.simpleMessage("邮箱/用户名"),
         "emptyemail": MessageLookupByLibrary.simpleMessage("请输入邮箱"),
         "emptypassword": MessageLookupByLibrary.simpleMessage("请输入密码"),
@@ -33,6 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "name": MessageLookupByLibrary.simpleMessage("旋律疑谜"),
         "or": MessageLookupByLibrary.simpleMessage("或"),
         "password": MessageLookupByLibrary.simpleMessage("密码"),
+        "rank": MessageLookupByLibrary.simpleMessage("排行榜"),
         "register": MessageLookupByLibrary.simpleMessage("没有账号? 点此注册!"),
         "unknownError": MessageLookupByLibrary.simpleMessage(
             "无法连接至服务器，请免登录进入或联系hamrui@outlook.com")
