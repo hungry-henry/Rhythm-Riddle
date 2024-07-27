@@ -199,6 +199,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Recommend`
+  String get recm {
+    return Intl.message(
+      'Recommend',
+      name: 'recm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `热门`
+  String get hot {
+    return Intl.message(
+      '热门',
+      name: 'hot',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

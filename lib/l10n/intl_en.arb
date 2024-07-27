@@ -14,5 +14,7 @@
 
     "home": "Home",
     "account": "Account",
-    "rank": "Rank"
+    "rank": "Rank",
+    "recm": "Recommend",
+    "hot": "热门"
 }

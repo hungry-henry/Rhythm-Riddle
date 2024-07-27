@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-final storage = const FlutterSecureStorage();
+const storage = FlutterSecureStorage();
 
 class Home extends StatefulWidget{
   const Home({super.key});
@@ -21,6 +21,7 @@ class _HomeState extends State<Home> {
   Future<void> logout(BuildContext context) async {
     await storage.delete(key: 'username');
     await storage.delete(key: 'password');
+    if(!context.mounted) return;
     Navigator.pushNamed(context, 'login');
   }
 
@@ -47,37 +48,139 @@ class _HomeState extends State<Home> {
         selectedIndex: currentPageIndex,
         destinations: <Widget>[
           NavigationDestination(
-            selectedIcon: Icon(Icons.sports_esports),
-            icon: Icon(Icons.sports_esports_outlined),
+            selectedIcon: const Icon(Icons.sports_esports),
+            icon: const Icon(Icons.sports_esports_outlined),
             label: S.current.home,
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.workspace_premium),
-            icon: Icon(Icons.workspace_premium_outlined),
+            selectedIcon: const Icon(Icons.workspace_premium),
+            icon: const Icon(Icons.workspace_premium_outlined),
             label: S.current.rank,
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.account_box),
-            icon: Icon(Icons.account_box_outlined),
+            selectedIcon: const Icon(Icons.account_box),
+            icon: const Icon(Icons.account_box_outlined),
             label: S.current.account,
           ),
         ]
       ),
 
       body: <Widget>[
-        /// Home page
-        const Card(
-          shadowColor: Colors.transparent,
-          margin: EdgeInsets.all(8.0),
-          child: SizedBox.expand(
-            child: Center(
-              child: Text(
-                'Home page',
+
+        //主页
+        Padding(padding: const EdgeInsets.only(bottom:10, left:30, right:30, top:20),
+          child:
+          Column(
+            children: [
+
+            // 推荐
+            Expanded(child:
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(S.current.recm, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        const Text('更多 =>', style: TextStyle(color: Colors.blue)),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(4, (index) {
+                        return Column(
+                          children: [
+                            Container(
+                              width: 70,
+                              height: 70,
+                              color: Colors.grey[300],
+                              child: const Icon(Icons.image),
+                            ),
+                            const SizedBox(height: 5),
+                            const Text('blah'),
+                          ],
+                        );
+                      }),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ),
 
+            //热门
+            Expanded(child:
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(S.current.hot, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        const Text('更多 =>', style: TextStyle(color: Colors.blue)),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(4, (index) {
+                        return Column(
+                          children: [
+                            Container(
+                              width: 70,
+                              height: 70,
+                              color: Colors.grey[300],
+                              child: const Icon(Icons.image),
+                            ),
+                            const SizedBox(height: 5),
+                            const Text('blah'),
+                          ],
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            Expanded(child:
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(S.current.hot, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        const Text('更多 =>', style: TextStyle(color: Colors.blue)),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(4, (index) {
+                        return Column(
+                          children: [
+                            Container(
+                              width: 70,
+                              height: 70,
+                              color: Colors.grey[300],
+                              child: const Icon(Icons.image),
+                            ),
+                            const SizedBox(height: 5),
+                            const Text('blah'),
+                          ],
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],),
+        ),
         /// Notifications page
         const Padding(
           padding: EdgeInsets.all(8.0),

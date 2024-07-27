@@ -30,6 +30,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Please enter your password"),
         "guest": MessageLookupByLibrary.simpleMessage("try without an account"),
         "home": MessageLookupByLibrary.simpleMessage("Home"),
+        "hot": MessageLookupByLibrary.simpleMessage("热门"),
         "incorrect": MessageLookupByLibrary.simpleMessage("incorrect"),
         "loggingIn": MessageLookupByLibrary.simpleMessage("Loggin In..."),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
@@ -37,6 +38,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "or": MessageLookupByLibrary.simpleMessage("or"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "rank": MessageLookupByLibrary.simpleMessage("Rank"),
+        "recm": MessageLookupByLibrary.simpleMessage("Recommend"),
         "register": MessageLookupByLibrary.simpleMessage(
             "No account? Click here to sign up!"),
         "unknownError": MessageLookupByLibrary.simpleMessage(
