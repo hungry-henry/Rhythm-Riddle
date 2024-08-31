@@ -101,115 +101,120 @@ class _LoginPageState extends State<LoginPage> {
   return Scaffold(
     backgroundColor: Colors.white,
     body: Center(
-      child: Form(
-        child: ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 25, bottom:20),
-              child: Text(
-                loginText,
-                style: const TextStyle(fontSize: 42),
-              ),
-            ),
-            SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    // Email TextField
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: S.current.emailOrName,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value?.isEmpty ?? true) {
-                          return S.current.emptyemail;
-                        }
-                        if(_errorMessage != ''){
-                          return '';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Password TextField
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        labelText: S.current.password,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      obscureText: true,
-                      validator: (value) {
-                        if (value?.isEmpty ?? true) {
-                          return S.current.emptypassword;
-                        }
-                        if(_errorMessage != ''){
-                          return _errorMessage;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height:10),
-
-                    //register
-                    TextButton(
-                      onPressed: () => setState(() {
-                        _launched = _launchInBrowser(toLaunch);
-                      }),
-                      style:ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(0, 0, 0, 0)),
-                      ),
-                      child: Text(
-                        S.current.register,
-                        style: const TextStyle(fontSize: 14),
-                      )
-                    ),
-
-                    // 登录按钮
-                    SizedBox(
-                      width:150,
-                      child: ElevatedButton(
-                        onPressed: _login,
-                        child: Text(loginText),
-                      )
-                    ),
-
-                    Text(
-                      S.current.or,
-                      style: const TextStyle(fontSize: 12),
-                    ),
-
-                    // 免登录进入
-                    SizedBox(
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(166, 151, 151, 151)),
-                        ),
-                        onPressed: _guest,
-                        child: Text(
-                          S.current.guest,
-                          style:const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12
-                            ),
-                          ),
-                      ),
-                    )
-                  ],
+      child: Container(
+        constraints: const BoxConstraints(
+          maxWidth: 500
+        ),
+        child:Form(
+          child: ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 25, bottom:20),
+                child: Text(
+                  loginText,
+                  style: const TextStyle(fontSize: 42, fontFamily: "MPlusRounded1c"),
                 ),
               ),
-            ),
-          ],
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      // Email TextField
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          labelText: S.current.emailOrName,
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value?.isEmpty ?? true) {
+                            return S.current.emptyemail;
+                          }
+                          if(_errorMessage != ''){
+                            return '';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Password TextField
+                      TextFormField(
+                        controller: _passwordController,
+                        decoration: InputDecoration(
+                          labelText: S.current.password,
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                        obscureText: true,
+                        validator: (value) {
+                          if (value?.isEmpty ?? true) {
+                            return S.current.emptypassword;
+                          }
+                          if(_errorMessage != ''){
+                            return _errorMessage;
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height:10),
+
+                      //register
+                      TextButton(
+                        onPressed: () => setState(() {
+                          _launched = _launchInBrowser(toLaunch);
+                        }),
+                        style:ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(0, 0, 0, 0)),
+                        ),
+                        child: Text(
+                          S.current.register,
+                          style: const TextStyle(fontSize: 14),
+                        )
+                      ),
+
+                      // 登录按钮
+                      SizedBox(
+                        width:150,
+                        child: ElevatedButton(
+                          onPressed: _login,
+                          child: Text(loginText),
+                        )
+                      ),
+
+                      Text(
+                        S.current.or,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+
+                      // 免登录进入
+                      SizedBox(
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(166, 151, 151, 151)),
+                          ),
+                          onPressed: _guest,
+                          child: Text(
+                            S.current.guest,
+                            style:const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12
+                              ),
+                            ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
+      )
     ),
   );
 }

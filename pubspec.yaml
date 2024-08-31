@@ -94,5 +94,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+fonts:
+  - family: MPlusRounded1c
+    fonts:
+      - asset: fonts/MPLUSRounded1c-Regular.ttf
 flutter_intl:
   enabled: true

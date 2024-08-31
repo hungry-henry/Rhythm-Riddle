@@ -210,11 +210,21 @@ class S {
     );
   }
 
-  /// `热门`
+  /// `Hot🔥`
   String get hot {
     return Intl.message(
-      '热门',
+      'Hot🔥',
       name: 'hot',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sort`
+  String get sort {
+    return Intl.message(
+      'Sort',
+      name: 'sort',
       desc: '',
       args: [],
     );

@@ -28,7 +28,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "emptypassword": MessageLookupByLibrary.simpleMessage("请输入密码"),
         "guest": MessageLookupByLibrary.simpleMessage("免登录进入"),
         "home": MessageLookupByLibrary.simpleMessage("主页"),
-        "hot": MessageLookupByLibrary.simpleMessage("热门"),
+        "hot": MessageLookupByLibrary.simpleMessage("热门🔥"),
         "incorrect": MessageLookupByLibrary.simpleMessage("错误"),
         "loggingIn": MessageLookupByLibrary.simpleMessage("登录中..."),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
@@ -38,6 +38,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "rank": MessageLookupByLibrary.simpleMessage("排行榜"),
         "recm": MessageLookupByLibrary.simpleMessage("推荐"),
         "register": MessageLookupByLibrary.simpleMessage("没有账号? 点此注册!"),
+        "sort": MessageLookupByLibrary.simpleMessage("分类"),
         "unknownError": MessageLookupByLibrary.simpleMessage(
             "无法连接至服务器，请免登录进入或联系hamrui@outlook.com")
       };

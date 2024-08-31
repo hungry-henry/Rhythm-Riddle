@@ -30,7 +30,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Please enter your password"),
         "guest": MessageLookupByLibrary.simpleMessage("try without an account"),
         "home": MessageLookupByLibrary.simpleMessage("Home"),
-        "hot": MessageLookupByLibrary.simpleMessage("热门"),
+        "hot": MessageLookupByLibrary.simpleMessage("Hot🔥"),
         "incorrect": MessageLookupByLibrary.simpleMessage("incorrect"),
         "loggingIn": MessageLookupByLibrary.simpleMessage("Loggin In..."),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
@@ -41,6 +41,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "recm": MessageLookupByLibrary.simpleMessage("Recommend"),
         "register": MessageLookupByLibrary.simpleMessage(
             "No account? Click here to sign up!"),
+        "sort": MessageLookupByLibrary.simpleMessage("Sort"),
         "unknownError": MessageLookupByLibrary.simpleMessage(
             "Cannot connect to server. Please try without an account or contact hamrui@outlook.com")
       };

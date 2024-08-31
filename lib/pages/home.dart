@@ -35,7 +35,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).home),
+        title: Text(_getAppBarTitle()),
       ),
 
       //navbar
@@ -68,7 +68,7 @@ class _HomeState extends State<Home> {
       body: <Widget>[
 
         //主页
-        Padding(padding: const EdgeInsets.only(bottom:10, left:30, right:30, top:20),
+        Padding(padding: const EdgeInsets.only(left:30, right:30, top:30),
           child:
           Column(
             children: [
@@ -82,7 +82,7 @@ class _HomeState extends State<Home> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(S.current.recm, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        Text(S.current.recm, style: const TextStyle(fontSize: 20, fontFamily: "MPlusRounded1c")),
                         const Text('更多 =>', style: TextStyle(color: Colors.blue)),
                       ],
                     ),
@@ -153,7 +153,7 @@ class _HomeState extends State<Home> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(S.current.hot, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        Text(S.current.sort, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                         const Text('更多 =>', style: TextStyle(color: Colors.blue)),
                       ],
                     ),
@@ -241,5 +241,17 @@ class _HomeState extends State<Home> {
         ),
       ][currentPageIndex],
     );
+  }
+  String _getAppBarTitle(){
+    switch (currentPageIndex) {
+    case 0:
+      return S.current.home;
+    case 1:
+      return S.current.rank;
+    case 2:
+      return S.current.account;
+    default:
+      return S.current.home;
+    }
   }
 }
