@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 const storage = FlutterSecureStorage();
 
@@ -12,6 +14,7 @@ class Home extends StatefulWidget{
 
 class _HomeState extends State<Home> {
   int currentPageIndex = 0;
+  List playlists = [];
 
   Future<void> getData() async {
     print(await storage.read(key: 'username'));
@@ -23,6 +26,28 @@ class _HomeState extends State<Home> {
     await storage.delete(key: 'password');
     if(!context.mounted) return;
     Navigator.pushNamed(context, 'login');
+  }
+
+  Future<void> get_playlist() async {
+    final response = await http.post(
+      Uri.parse('http://hungryhenry.xyz/api/get_playlist.php'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8'
+      }
+    );
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      List<dynamic> data = jsonDecode(response.body)['data'];
+      for(var playlist in data){
+        print(playlist);
+      }
+    }else {
+      // 未知错误
+      setState((){
+        print(response.body);
+      });
+    }
   }
 
   @override
@@ -72,6 +97,10 @@ class _HomeState extends State<Home> {
           child:
           Column(
             children: [
+              ElevatedButton(
+                onPressed: get_playlist,
+                child: Text('Fetch Data'),
+              ),
 
             // 推荐
             Expanded(child:
@@ -82,7 +111,7 @@ class _HomeState extends State<Home> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(S.current.recm, style: const TextStyle(fontSize: 20, fontFamily: "MPlusRounded1c")),
+                        Text(S.current.recm, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                         const Text('更多 =>', style: TextStyle(color: Colors.blue)),
                       ],
                     ),

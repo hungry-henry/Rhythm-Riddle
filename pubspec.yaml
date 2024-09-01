@@ -99,5 +99,7 @@ fonts:
   - family: MPlusRounded1c
     fonts:
       - asset: fonts/MPLUSRounded1c-Regular.ttf
+
+
 flutter_intl:
   enabled: true

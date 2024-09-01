@@ -114,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.only(left: 25, bottom:20),
                 child: Text(
                   loginText,
-                  style: const TextStyle(fontSize: 42, fontFamily: "MPlusRounded1c"),
+                  style: const TextStyle(fontSize: 42),
                 ),
               ),
               SingleChildScrollView(
