@@ -14,21 +14,12 @@ class Home extends StatefulWidget{
 
 class _HomeState extends State<Home> {
   int currentPageIndex = 0;
-  List playlists = [];
+  List<dynamic> playlists = [];
 
   Future<void> getData() async {
     print(await storage.read(key: 'username'));
     print(await storage.read(key: 'password'));
-  }
-  
-  Future<void> logout(BuildContext context) async {
-    await storage.delete(key: 'username');
-    await storage.delete(key: 'password');
-    if(!context.mounted) return;
-    Navigator.pushNamed(context, 'login');
-  }
 
-  Future<void> get_playlist() async {
     final response = await http.post(
       Uri.parse('http://hungryhenry.xyz/api/get_playlist.php'),
       headers: <String, String>{
@@ -37,17 +28,29 @@ class _HomeState extends State<Home> {
     );
 
     if (response.statusCode == 200) {
-      print(response.body);
-      List<dynamic> data = jsonDecode(response.body)['data'];
-      for(var playlist in data){
-        print(playlist);
+      //playlists = jsonDecode(response.body)['data'];
+      playlists = [
+        {"id": 0, "title": "playlist 1"},
+        {"id": 1, "title": "playlist 2"},
+        {"id": 2, "title": "playlist 3"}
+      ];
+      
+      print(playlists.length);
+      for(int i = 0; i < playlists.length; i++){
+        print(playlists[i]['title']);
       }
     }else {
-      // 未知错误
-      setState((){
-        print(response.body);
-      });
+      // 错误
+      playlists = [{"id": 0, "title": "error"}];
+      print(response.body);
     }
+  }
+  
+  Future<void> logout(BuildContext context) async {
+    await storage.delete(key: 'username');
+    await storage.delete(key: 'password');
+    if(!context.mounted) return;
+    Navigator.pushNamed(context, 'login');
   }
 
   @override
@@ -97,11 +100,6 @@ class _HomeState extends State<Home> {
           child:
           Column(
             children: [
-              ElevatedButton(
-                onPressed: get_playlist,
-                child: Text('Fetch Data'),
-              ),
-
             // 推荐
             Expanded(child:
               Container(
@@ -118,7 +116,7 @@ class _HomeState extends State<Home> {
                     const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: List.generate(4, (index) {
+                      children:List.generate(playlists.length, (index){
                         return Column(
                           children: [
                             Container(
@@ -128,10 +126,11 @@ class _HomeState extends State<Home> {
                               child: const Icon(Icons.image),
                             ),
                             const SizedBox(height: 5),
-                            const Text('blah'),
+                            Text(playlists[index]['title']),
                           ],
                         );
-                      }),
+                      }
+                      )
                     ),
                   ],
                 ),
