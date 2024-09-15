@@ -28,12 +28,9 @@ class _HomeState extends State<Home> {
     );
 
     if (response.statusCode == 200) {
-      //playlists = jsonDecode(response.body)['data'];
-      playlists = [
-        {"id": 0, "title": "playlist 1"},
-        {"id": 1, "title": "playlist 2"},
-        {"id": 2, "title": "playlist 3"}
-      ];
+      setState((){
+        playlists = jsonDecode(response.body)['data'];
+      });
       
       print(playlists.length);
       for(int i = 0; i < playlists.length; i++){
@@ -41,7 +38,9 @@ class _HomeState extends State<Home> {
       }
     }else {
       // 错误
-      playlists = [{"id": 0, "title": "error"}];
+      setState((){
+        playlists = [{"id": 0, "title": "error"}];
+      });
       print(response.body);
     }
   }
@@ -122,8 +121,27 @@ class _HomeState extends State<Home> {
                             Container(
                               width: 70,
                               height: 70,
-                              color: Colors.grey[300],
-                              child: const Icon(Icons.image),
+                              child:Image.network(
+                                "http://hungryhenry.xyz/musiclab/playlist/${playlists[index]['id']}.jpg",
+                                // 占位图片
+                                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  } else {
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress.expectedTotalBytes != null
+                                            ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                                            : null,
+                                      ),
+                                    );
+                                  }
+                                },
+                                // 加载错误时的图片
+                                errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                                    return const Icon(Icons.image, color:Colors.grey);
+                                },
+                              ),
                             ),
                             const SizedBox(height: 5),
                             Text(playlists[index]['title']),
