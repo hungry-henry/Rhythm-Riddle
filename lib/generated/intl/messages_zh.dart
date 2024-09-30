@@ -32,6 +32,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "incorrect": MessageLookupByLibrary.simpleMessage("错误"),
         "loggingIn": MessageLookupByLibrary.simpleMessage("登录中..."),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
+        "loginExpired": MessageLookupByLibrary.simpleMessage("登录已过期，请重新登录"),
         "name": MessageLookupByLibrary.simpleMessage("旋律疑谜"),
         "or": MessageLookupByLibrary.simpleMessage("或"),
         "password": MessageLookupByLibrary.simpleMessage("密码"),

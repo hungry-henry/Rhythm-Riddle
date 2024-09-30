@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../generated/l10n.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -40,8 +41,15 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response.statusCode == 200) {
       // LET'S GOOOOOO
-      await storage.write(key: 'username', value: username);
-      await storage.write(key: 'password', value: password);
+      print(response.body);
+      await storage.write(key: 'uid', value: jsonDecode(response.body)['data']['uid'].toString());
+      await storage.write(key: 'password', value: jsonDecode(response.body)['data']['password']);
+      await storage.write(key: 'username', value: jsonDecode(response.body)['data']['username']);
+      await storage.write(key: 'mail', value: jsonDecode(response.body)['data']['mail']);
+
+      DateTime now = DateTime.now();
+      String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+      await storage.write(key: 'date', value: formattedDate);
       Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
     } else if (response.statusCode == 401) {
       // 验证错误
@@ -82,13 +90,32 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
   }
 
+  void showDialogFunction() async {
+    await showDialog(context: context, builder: (context){
+      return AlertDialog(
+          content: Text(S.current.loginExpired),
+          actions: [
+              TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: const Text("确定")),
+          ],
+      );
+    });
+  }
+
   Future<void> loginUsingStorage() async {
     String? username = await storage.read(key: 'username');
     String? password = await storage.read(key: 'password');
-    if (username != null && password != null) {
-      login(username, password, context);
+    String? date = await storage.read(key: 'date');
+    DateTime now = DateTime.now();
+    //如果storage中的日期在现在的7天前
+    if (date != null && now.difference(DateTime.parse(date)).inDays < 7) {
+      if (username != null && password != null) {
+        login(username, password, context);
+      }
+    } else {
+      showDialogFunction();
     }
   }
+
   @override
   void initState(){
     super.initState();

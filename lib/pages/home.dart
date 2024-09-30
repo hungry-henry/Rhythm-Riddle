@@ -15,10 +15,22 @@ class Home extends StatefulWidget{
 class _HomeState extends State<Home> {
   int currentPageIndex = 0;
   List<dynamic> playlists = [];
+  String? uid = '';
+  String? username = '';
+  String? password = '';
+  String? mail = '';
+  bool isLogin = false;
 
   Future<void> getData() async {
-    print(await storage.read(key: 'username'));
-    print(await storage.read(key: 'password'));
+    uid = await storage.read(key:'uid');
+    username = await storage.read(key:'username');
+    password = await storage.read(key:'password');
+    mail = await storage.read(key:'mail');
+    if(uid != null && username != null && password != null && mail != null){
+      setState(() {
+        isLogin = true;
+      });
+    }
 
     final response = await http.post(
       Uri.parse('http://hungryhenry.xyz/api/get_playlist.php'),
@@ -31,8 +43,6 @@ class _HomeState extends State<Home> {
       setState((){
         playlists = jsonDecode(response.body)['data'];
       });
-      
-      print(playlists.length);
       for(int i = 0; i < playlists.length; i++){
         print(playlists[i]['title']);
       }
@@ -48,6 +58,8 @@ class _HomeState extends State<Home> {
   Future<void> logout(BuildContext context) async {
     await storage.delete(key: 'username');
     await storage.delete(key: 'password');
+    await storage.delete(key: 'mail');
+    await storage.delete(key: 'uid');
     if(!context.mounted) return;
     Navigator.pushNamed(context, 'login');
   }
@@ -250,41 +262,82 @@ class _HomeState extends State<Home> {
           ),
         ),
 
-        /// Messages page
-        ListView.builder(
-          reverse: true,
-          itemCount: 2,
-          itemBuilder: (BuildContext context, int index) {
-            if (index == 0) {
-              return Align(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  margin: const EdgeInsets.all(8.0),
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: const Text(
-                    'Hello',
-                  ),
-                ),
-              );
-            }
-            return Align(
-              alignment: Alignment.centerLeft,
-              child: Container(
-                margin: const EdgeInsets.all(8.0),
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: const Text(
-                  'Hi!',
-                ),
+        //Account
+        Padding(padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start, // 文字靠左对齐
+          children: [
+            Center(
+              child: CircleAvatar(
+                radius: 70,
+                backgroundImage: NetworkImage("http://hungryhenry.xyz/blog/usr/uploads/avatar/$uid.png"), // 使用网络图片作为头像
               ),
-            );
-          },
+            ),
+            SizedBox(height: 20),
+            Center(
+              child:Text(
+                "uid:${uid!}"
+              ),
+            ),
+            ListTile(
+              title: Text(
+                '用户名',
+                style: TextStyle(fontSize: 16),
+              ),
+              subtitle: Text(
+                username!,
+                style: TextStyle(fontSize: 19),
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16),
+            ),
+            Divider(),
+            ListTile(
+              title: Text(
+                '邮箱',
+                style: TextStyle(fontSize: 16),
+              ),
+              subtitle: Text(
+                mail!,
+                style: TextStyle(fontSize: 19),
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16),
+            ),
+            Divider(),
+            ListTile(
+              title: Text(
+                '性别',
+                style: TextStyle(fontSize: 16),
+              ),
+              subtitle: Text(
+                '男',
+                style: TextStyle(fontSize: 19),
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16),
+            ),
+            Divider(),
+            ListTile(
+              title: Text(
+                '喜好',
+                style: TextStyle(fontSize: 16),
+              ),
+              subtitle: Text(
+                '音乐, 旅行, 阅读',
+                style: TextStyle(fontSize: 18),
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16),
+            ),
+            SizedBox(height: 20),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  logout(context);
+                },
+                child: Text('退出登录'),
+              ),
+            ),
+          ],
         ),
+      ),
       ][currentPageIndex],
     );
   }

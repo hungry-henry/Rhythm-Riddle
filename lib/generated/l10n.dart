@@ -170,6 +170,16 @@ class S {
     );
   }
 
+  /// `login info expired, please login again`
+  String get loginExpired {
+    return Intl.message(
+      'login info expired, please login again',
+      name: 'loginExpired',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Home`
   String get home {
     return Intl.message(

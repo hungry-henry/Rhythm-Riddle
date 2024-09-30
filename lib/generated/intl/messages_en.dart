@@ -34,6 +34,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "incorrect": MessageLookupByLibrary.simpleMessage("incorrect"),
         "loggingIn": MessageLookupByLibrary.simpleMessage("Loggin In..."),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
+        "loginExpired": MessageLookupByLibrary.simpleMessage(
+            "login info expired, please login again"),
         "name": MessageLookupByLibrary.simpleMessage("Rhythm Riddle"),
         "or": MessageLookupByLibrary.simpleMessage("or"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
