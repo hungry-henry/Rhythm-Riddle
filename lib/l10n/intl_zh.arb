@@ -10,8 +10,9 @@
     "incorrect": "错误",
     "emptyemail": "请输入邮箱",
     "emptypassword": "请输入密码",
-    "unknownError": "无法连接至服务器，请免登录进入或联系hamrui@outlook.com",
+    "unknownError": "软件/服务器问题，请重试或免登录进入或联系hamrui@outlook.com",
     "loginExpired": "登录已过期，请重新登录",
+    "connectError": "无法连接至服务器，请稍后再试或免登录进入",
 
     "home": "主页",
     "account": "账户",

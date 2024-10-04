@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../generated/l10n.dart';
@@ -20,49 +22,67 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   String _errorMessage = '';
   String loginText = S.current.login;
-  
-  
+
+
+  Future<void> testConnection() async {
+    try {
+      final response = await http.get(Uri.parse('http://hungryhenry.xyz')).timeout(Duration(seconds:7));
+      if (response.statusCode != 200) {
+        showDialogFunction(S.current.connectError, true);
+      }
+    } catch (e) {
+      showDialogFunction(S.current.connectError, true);
+    }
+  }
+
   Future<void> login(String username, String password, BuildContext context) async {
     setState(() {
       loginText = S.current.loggingIn;
     });
-    final response = await http.post(
-      Uri.parse('http://hungryhenry.xyz/api/login.php'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'username': username,
-        'password': password,
-      }),
-    );
+    try{
+      final response = await http.post(
+        Uri.parse('http://hungryhenry.xyz/api/login.php'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'username': username,
+          'password': password,
+        })
+      ).timeout(Duration(seconds:7));
 
-    if(!context.mounted) return;
+      if(!context.mounted) return;
 
-    if (response.statusCode == 200) {
-      // LET'S GOOOOOO
-      print(response.body);
-      await storage.write(key: 'uid', value: jsonDecode(response.body)['data']['uid'].toString());
-      await storage.write(key: 'password', value: jsonDecode(response.body)['data']['password']);
-      await storage.write(key: 'username', value: jsonDecode(response.body)['data']['username']);
-      await storage.write(key: 'mail', value: jsonDecode(response.body)['data']['mail']);
+      if (response.statusCode == 200) {
+        // LET'S GOOOOOO
+        print(response.body);
+        await storage.write(key: 'uid', value: jsonDecode(response.body)['data']['uid'].toString());
+        await storage.write(key: 'password', value: jsonDecode(response.body)['data']['password']);
+        await storage.write(key: 'username', value: jsonDecode(response.body)['data']['username']);
+        await storage.write(key: 'mail', value: jsonDecode(response.body)['data']['mail']);
 
-      DateTime now = DateTime.now();
-      String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-      await storage.write(key: 'date', value: formattedDate);
-      Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
-    } else if (response.statusCode == 401) {
-      // 验证错误
+        DateTime now = DateTime.now();
+        String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+        await storage.write(key: 'date', value: formattedDate);
+        Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
+      } else if (response.statusCode == 401) {
+        // 验证错误
+        setState(() {
+          _errorMessage = S.current.emailOrName + S.current.or + S.current.password + S.current.incorrect;
+          loginText = S.current.login;
+        });
+      } else {
+        // 未知错误
+        setState((){
+          _errorMessage = S.current.unknownError;
+          loginText = S.current.login;
+        });
+      }
+    }catch (e){
       setState(() {
-        _errorMessage = S.current.emailOrName + S.current.or + S.current.password + S.current.incorrect;
         loginText = S.current.login;
       });
-    } else {
-      // 未知错误
-      setState((){
-        _errorMessage = S.current.unknownError;
-        loginText = S.current.login;
-      });
+      showDialogFunction(S.current.connectError, false); return;
     }
   }
 
@@ -74,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
         throw Exception('Could not launch $url');
       }
   }
-  // Function to handle login logic
+
   void _login() {
     if (_formKey.currentState?.validate() ?? false) {
       final String username = _emailController.text;
@@ -90,11 +110,12 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
   }
 
-  void showDialogFunction() async {
+  void showDialogFunction(String title, bool retry) async {
     await showDialog(context: context, builder: (context){
       return AlertDialog(
-          content: Text(S.current.loginExpired),
+          content: Text(title),
           actions: [
+              if(retry)...[TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: const Text("重试"))],
               TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: const Text("确定")),
           ],
       );
@@ -106,13 +127,17 @@ class _LoginPageState extends State<LoginPage> {
     String? password = await storage.read(key: 'password');
     String? date = await storage.read(key: 'date');
     DateTime now = DateTime.now();
-    //如果storage中的日期在现在的7天前
-    if (date != null && now.difference(DateTime.parse(date)).inDays < 7) {
-      if (username != null && password != null) {
-        login(username, password, context);
+    if(date != null){
+      //如果storage中的日期在现在的7天前
+      if(now.difference(DateTime.parse(date)).inDays < 7){
+        if (username != null && password != null) {
+          login(username, password, context);
+        }
+      }else{
+        showDialogFunction(S.current.loginExpired, true);
       }
-    } else {
-      showDialogFunction();
+    }else{
+      testConnection();
     }
   }
 

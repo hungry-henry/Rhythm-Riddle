@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rhythm_riddle/pages/game.dart';
 import '../generated/l10n.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -20,6 +21,11 @@ class _HomeState extends State<Home> {
   String? password = '';
   String? mail = '';
   bool isLogin = false;
+
+  //need to get from ??
+  List<String> _searchHistory = ['Flutter', 'Dart', 'SearchBar', 'Rounded corners'];
+  List<String> _recommended = ['Recommended 1', 'Recommended 2', 'Recommended 3'];
+  bool _isSearchActive = false;
 
   Future<void> getData() async {
     uid = await storage.read(key:'uid');
@@ -63,6 +69,97 @@ class _HomeState extends State<Home> {
     if(!context.mounted) return;
     Navigator.pushNamed(context, 'login');
   }
+  
+  //search bar
+  Widget _buildSearchBar() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _isSearchActive = true;
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.search, color: Colors.grey),
+            SizedBox(width: 10),
+            Text(
+              'Search...',
+              style: TextStyle(color: Colors.grey),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHistoryAndRecommendedSection() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (_searchHistory.isNotEmpty) _buildHistorySection(),
+            SizedBox(height: 20),
+            _buildRecommendedSection(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHistorySection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Search History',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          children: _searchHistory
+              .map((history) => Chip(
+                    label: Text(history),
+                    onDeleted: () {
+                      setState(() {
+                        _searchHistory.remove(history);
+                      });
+                    },
+                  ))
+              .toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRecommendedSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Recommended',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          children: _recommended
+              .map((recommend) => Chip(
+                    label: Text(recommend),
+                  ))
+              .toList(),
+        ),
+      ],
+    );
+  }
 
   @override
   void initState(){
@@ -105,139 +202,170 @@ class _HomeState extends State<Home> {
       ),
 
       body: <Widget>[
-
         //主页
-        Padding(padding: const EdgeInsets.only(left:30, right:30, top:30),
-          child:
-          Column(
-            children: [
-            // 推荐
-            Expanded(child:
-              Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(S.current.recm, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                        const Text('更多 =>', style: TextStyle(color: Colors.blue)),
+        Center(child:ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child:Padding(padding: EdgeInsets.all(16),
+            child:Column(
+              children: [
+                // 推荐
+                SafeArea(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSearchBar(),
+                      // 根据是否激活搜索栏展示搜索历史和推荐
+                      if (_isSearchActive) ...[
+                        Text("hello!!!")
                       ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children:List.generate(playlists.length, (index){
-                        return Column(
-                          children: [
-                            Container(
-                              width: 70,
-                              height: 70,
-                              child:Image.network(
-                                "http://hungryhenry.xyz/musiclab/playlist/${playlists[index]['id']}.jpg",
-                                // 占位图片
-                                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                  if (loadingProgress == null) {
-                                    return child;
-                                  } else {
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        value: loadingProgress.expectedTotalBytes != null
-                                            ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
-                                            : null,
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Expanded(
+                  child:Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(S.current.recm, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                          const Text('更多 =>', style: TextStyle(color: Colors.blue)),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children:List.generate(playlists.length, (index){
+                          return SizedBox(width:80,
+                            child:Column(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: (){
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => Game(data: playlists[index]['id'].toString()),
                                       ),
                                     );
-                                  }
-                                },
-                                // 加载错误时的图片
-                                errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                    return const Icon(Icons.image, color:Colors.grey);
-                                },
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(playlists[index]['title']),
-                          ],
-                        );
-                      }
-                      )
-                    ),
-                  ],
+                                  },
+                                  style:ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(0),
+                                    ),
+                                    fixedSize: Size(70, 70),
+                                    padding: const EdgeInsets.all(0),
+                                  ),
+                                  child:Container(
+                                    width: 70,
+                                    height: 70,
+                                    child:Image.network(
+                                      "http://hungryhenry.xyz/musiclab/playlist/${playlists[index]['id']}.jpg",
+                                      // 占位图片
+                                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        } else {
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value: loadingProgress.expectedTotalBytes != null
+                                                  ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                                                  : null,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      // 加载错误时的图片
+                                      errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                                          return const Icon(Icons.image, color:Colors.grey);
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(playlists[index]['title'], textAlign: TextAlign.center),
+                              ],
+                            )
+                          );
+                        })
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
 
-            //热门
-            Expanded(child:
-              Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //热门
+                Expanded(child:
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(S.current.hot, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                        const Text('更多 =>', style: TextStyle(color: Colors.blue)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(S.current.hot, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                            const Text('更多 =>', style: TextStyle(color: Colors.blue)),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: List.generate(4, (index) {
+                            return Column(
+                              children: [
+                                Container(
+                                  width: 70,
+                                  height: 70,
+                                  color: Colors.grey[300],
+                                  child: const Icon(Icons.image),
+                                ),
+                                const SizedBox(height: 5),
+                                const Text('blah'),
+                              ],
+                            );
+                          }),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: List.generate(4, (index) {
-                        return Column(
-                          children: [
-                            Container(
-                              width: 70,
-                              height: 70,
-                              color: Colors.grey[300],
-                              child: const Icon(Icons.image),
-                            ),
-                            const SizedBox(height: 5),
-                            const Text('blah'),
-                          ],
-                        );
-                      }),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
 
-            Expanded(child:
-              Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Expanded(child:
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(S.current.sort, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                        const Text('更多 =>', style: TextStyle(color: Colors.blue)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(S.current.sort, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                            const Text('更多 =>', style: TextStyle(color: Colors.blue)),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: List.generate(4, (index) {
+                            return Column(
+                              children: [
+                                Container(
+                                  width: 70,
+                                  height: 70,
+                                  color: Colors.grey[300],
+                                  child: const Icon(Icons.image),
+                                ),
+                                const SizedBox(height: 5),
+                                const Text('blah'),
+                              ],
+                            );
+                          }),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: List.generate(4, (index) {
-                        return Column(
-                          children: [
-                            Container(
-                              width: 70,
-                              height: 70,
-                              color: Colors.grey[300],
-                              child: const Icon(Icons.image),
-                            ),
-                            const SizedBox(height: 5),
-                            const Text('blah'),
-                          ],
-                        );
-                      }),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          ],),
+                  ),
+                )
+              ],),
+            ),
+          ),
         ),
         /// Notifications page
         const Padding(
@@ -264,8 +392,7 @@ class _HomeState extends State<Home> {
 
         //Account
         Padding(padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // 文字靠左对齐
+        child: ListView(
           children: [
             Center(
               child: CircleAvatar(

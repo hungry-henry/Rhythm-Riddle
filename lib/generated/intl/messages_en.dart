@@ -23,6 +23,8 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("Account"),
+        "connectError": MessageLookupByLibrary.simpleMessage(
+            "Cannot connect to server. Pls try again later or try without an account"),
         "emailOrName": MessageLookupByLibrary.simpleMessage("E-mail/Username"),
         "emptyemail":
             MessageLookupByLibrary.simpleMessage("Please enter your email"),

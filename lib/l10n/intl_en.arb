@@ -12,6 +12,7 @@
     "emptypassword": "Please enter your password",
     "unknownError": "Cannot connect to server. Please try without an account or contact hamrui@outlook.com",
     "loginExpired": "login info expired, please login again",
+    "connectError": "Cannot connect to server. Pls try again later or try without an account",
 
     "home": "Home",
     "account": "Account",

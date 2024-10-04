@@ -180,6 +180,16 @@ class S {
     );
   }
 
+  /// `Cannot connect to server. Pls try again later or try without an account`
+  String get connectError {
+    return Intl.message(
+      'Cannot connect to server. Pls try again later or try without an account',
+      name: 'connectError',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Home`
   String get home {
     return Intl.message(
