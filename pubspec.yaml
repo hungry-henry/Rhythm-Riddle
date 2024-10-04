@@ -46,6 +46,11 @@ dependencies:
   flutter_secure_storage_macos: ^3.1.2
   flutter_secure_storage_windows: ^3.1.2
   flutter_secure_storage_linux: ^1.2.1
+  window_size:
+      git:
+        url: https://github.com/google/flutter-desktop-embedding.git
+        path: plugins/window_size
+        ref: f2d8aa3820fb87316516670bf4d51a74de8ac0dd
 
 dev_dependencies:
   flutter_test:
