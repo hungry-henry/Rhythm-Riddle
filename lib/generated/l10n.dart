@@ -100,10 +100,10 @@ class S {
     );
   }
 
-  /// `try without an account`
+  /// `offline mode`
   String get guest {
     return Intl.message(
-      'try without an account',
+      'offline mode',
       name: 'guest',
       desc: '',
       args: [],
@@ -160,10 +160,10 @@ class S {
     );
   }
 
-  /// `Cannot connect to server. Please try without an account or contact hamrui@outlook.com`
+  /// `Cannot connect to server. Please use offline mode or contact hamrui@outlook.com`
   String get unknownError {
     return Intl.message(
-      'Cannot connect to server. Please try without an account or contact hamrui@outlook.com',
+      'Cannot connect to server. Please use offline mode or contact hamrui@outlook.com',
       name: 'unknownError',
       desc: '',
       args: [],
@@ -180,20 +180,40 @@ class S {
     );
   }
 
-  /// `Cannot connect to server. Pls try again later or try without an account`
+  /// `Cannot connect to server. Pls try again later or use offline mode`
   String get connectError {
     return Intl.message(
-      'Cannot connect to server. Pls try again later or try without an account',
+      'Cannot connect to server. Pls try again later or use offline mode',
       name: 'connectError',
       desc: '',
       args: [],
     );
   }
 
-  /// `Home`
+  /// `OK👌`
+  String get ok {
+    return Intl.message(
+      'OK👌',
+      name: 'ok',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retry🔄`
+  String get retry {
+    return Intl.message(
+      'Retry🔄',
+      name: 'retry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Home🏠`
   String get home {
     return Intl.message(
-      'Home',
+      'Home🏠',
       name: 'home',
       desc: '',
       args: [],

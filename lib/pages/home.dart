@@ -27,6 +27,17 @@ class _HomeState extends State<Home> {
   List<String> _recommended = ['Recommended 1', 'Recommended 2', 'Recommended 3'];
   bool _isSearchActive = false;
 
+  void showDialogFunction(String title) async {
+    await showDialog(context: context, builder: (context){
+      return AlertDialog(
+          content: Text(title),
+          actions: [
+              TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+          ],
+      );
+    });
+  }
+
   Future<void> getData() async {
     uid = await storage.read(key:'uid');
     username = await storage.read(key:'username');
@@ -38,26 +49,32 @@ class _HomeState extends State<Home> {
       });
     }
 
-    final response = await http.post(
-      Uri.parse('http://hungryhenry.xyz/api/get_playlist.php'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8'
-      }
-    );
+    try{
+      final response = await http.post(
+        Uri.parse('http://hungryhenry.xyz/api/get_playlist.php'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        }
+      ).timeout(Duration(seconds: 7));
 
-    if (response.statusCode == 200) {
-      setState((){
-        playlists = jsonDecode(response.body)['data'];
-      });
-      for(int i = 0; i < playlists.length; i++){
-        print(playlists[i]['title']);
+      if (response.statusCode == 200 && mounted) {
+        setState((){
+          playlists = jsonDecode(response.body)['data'];
+        });
+        for(int i = 0; i < playlists.length; i++){
+          print(playlists[i]['title']);
+        }
+      }else {
+        // 错误
+        if(mounted){
+          setState((){
+            playlists = [{"id": 0, "title": "error"}];
+          });
+          print(response.body);
+        }
       }
-    }else {
-      // 错误
-      setState((){
-        playlists = [{"id": 0, "title": "error"}];
-      });
-      print(response.body);
+    }catch (e){
+      showDialogFunction(S.current.connectError);
     }
   }
   
@@ -79,12 +96,12 @@ class _HomeState extends State<Home> {
         });
       },
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(30),
         ),
-        child: Row(
+        child: const Row(
           children: [
             Icon(Icons.search, color: Colors.grey),
             SizedBox(width: 10),
@@ -106,7 +123,7 @@ class _HomeState extends State<Home> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_searchHistory.isNotEmpty) _buildHistorySection(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildRecommendedSection(),
           ],
         ),
@@ -118,11 +135,11 @@ class _HomeState extends State<Home> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Search History',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Wrap(
           spacing: 8,
           children: _searchHistory
@@ -144,11 +161,11 @@ class _HomeState extends State<Home> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Recommended',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Wrap(
           spacing: 8,
           children: _recommended
@@ -175,7 +192,7 @@ class _HomeState extends State<Home> {
       ),
 
       //navbar
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar:NavigationBar(
         onDestinationSelected: (int index) {
           setState(() {
             currentPageIndex = index;
@@ -202,171 +219,199 @@ class _HomeState extends State<Home> {
       ),
 
       body: <Widget>[
-        //主页
-        Center(child:ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child:Padding(padding: EdgeInsets.all(16),
-            child:Column(
-              children: [
-                // 推荐
-                SafeArea(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSearchBar(),
-                      // 根据是否激活搜索栏展示搜索历史和推荐
-                      if (_isSearchActive) ...[
-                        Text("hello!!!")
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 30),
-                Expanded(
-                  child:Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        ListView(children:[
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    SafeArea(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(S.current.recm, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                          const Text('更多 =>', style: TextStyle(color: Colors.blue)),
+                          _buildSearchBar(),
+                              // 根据是否激活搜索栏展示搜索历史和推荐
+                              if (_isSearchActive) ...[
+                                const Text("hello!!!")
+                              ],
                         ],
                       ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children:List.generate(playlists.length, (index){
-                          return SizedBox(width:80,
-                            child:Column(
-                              children: [
-                                ElevatedButton(
-                                  onPressed: (){
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Game(data: playlists[index]['id'].toString()),
+                    ),
+                    const SizedBox(height: 30),
+
+                    // 推荐
+                    SizedBox(
+                      height: 170, // 固定推荐部分的高度
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(S.current.recm,
+                                  style: const TextStyle(
+                                      fontSize: 20, fontWeight: FontWeight.bold)),
+                              const Text('更多 =>', style: TextStyle(color: Colors.blue)),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: List.generate(playlists.length, (index) {
+                              return SizedBox(
+                                width: 80,
+                                height: 115,
+                                child: Column(
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                Game(data: playlists[index]['id'].toString()),
+                                          ),
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(0),
+                                        ),
+                                        fixedSize: const Size(70, 70),
+                                        padding: const EdgeInsets.all(0),
                                       ),
-                                    );
-                                  },
-                                  style:ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(0),
+                                      child: SizedBox(
+                                        width: 70,
+                                        height: 70,
+                                        child: Image.network(
+                                          "http://hungryhenry.xyz/musiclab/playlist/${playlists[index]['id']}.jpg",
+                                          loadingBuilder: (BuildContext context,
+                                              Widget child,
+                                              ImageChunkEvent? loadingProgress) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            } else {
+                                              return Center(
+                                                child: CircularProgressIndicator(
+                                                  value: loadingProgress
+                                                              .expectedTotalBytes !=
+                                                          null
+                                                      ? loadingProgress
+                                                              .cumulativeBytesLoaded /
+                                                          (loadingProgress
+                                                                  .expectedTotalBytes ??
+                                                              1)
+                                                      : null,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          errorBuilder: (BuildContext context,
+                                              Object exception, StackTrace? stackTrace) {
+                                            return const Icon(Icons.image,
+                                                color: Colors.grey);
+                                          },
+                                        ),
+                                      ),
                                     ),
-                                    fixedSize: Size(70, 70),
-                                    padding: const EdgeInsets.all(0),
-                                  ),
-                                  child:Container(
+                                    const SizedBox(height: 5),
+                                    Text(playlists[index]['title'],
+                                        textAlign: TextAlign.center),
+                                  ],
+                                ),
+                              );
+                            }),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // 热门
+                    SizedBox(
+                      height: 150, // 固定热门部分的高度
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(S.current.hot,
+                                  style: const TextStyle(
+                                      fontSize: 20, fontWeight: FontWeight.bold)),
+                              const Text('更多 =>', style: TextStyle(color: Colors.blue)),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: List.generate(4, (index) {
+                              return Column(
+                                children: [
+                                  Container(
                                     width: 70,
                                     height: 70,
-                                    child:Image.network(
-                                      "http://hungryhenry.xyz/musiclab/playlist/${playlists[index]['id']}.jpg",
-                                      // 占位图片
-                                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                        if (loadingProgress == null) {
-                                          return child;
-                                        } else {
-                                          return Center(
-                                            child: CircularProgressIndicator(
-                                              value: loadingProgress.expectedTotalBytes != null
-                                                  ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
-                                                  : null,
-                                            ),
-                                          );
-                                        }
-                                      },
-                                      // 加载错误时的图片
-                                      errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                          return const Icon(Icons.image, color:Colors.grey);
-                                      },
-                                    ),
+                                    color: Colors.grey[300],
+                                    child: const Icon(Icons.image),
                                   ),
-                                ),
-                                const SizedBox(height: 5),
-                                Text(playlists[index]['title'], textAlign: TextAlign.center),
-                              ],
-                            )
-                          );
-                        })
+                                  const SizedBox(height: 5),
+                                  const Text('blah'),
+                                ],
+                              );
+                            }),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-
-                //热门
-                Expanded(child:
-                  Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(S.current.hot, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                            const Text('更多 =>', style: TextStyle(color: Colors.blue)),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: List.generate(4, (index) {
-                            return Column(
-                              children: [
-                                Container(
-                                  width: 70,
-                                  height: 70,
-                                  color: Colors.grey[300],
-                                  child: const Icon(Icons.image),
-                                ),
-                                const SizedBox(height: 5),
-                                const Text('blah'),
-                              ],
-                            );
-                          }),
-                        ),
-                      ],
                     ),
-                  ),
-                ),
 
-                Expanded(child:
-                  Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(S.current.sort, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                            const Text('更多 =>', style: TextStyle(color: Colors.blue)),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: List.generate(4, (index) {
-                            return Column(
-                              children: [
-                                Container(
-                                  width: 70,
-                                  height: 70,
-                                  color: Colors.grey[300],
-                                  child: const Icon(Icons.image),
-                                ),
-                                const SizedBox(height: 5),
-                                const Text('blah'),
-                              ],
-                            );
-                          }),
-                        ),
-                      ],
+                    const SizedBox(height: 20),
+
+                    // 分类
+                    SizedBox(
+                      height: 150, // 固定分类部分的高度
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(S.current.sort,
+                                  style: const TextStyle(
+                                      fontSize: 20, fontWeight: FontWeight.bold)),
+                              const Text('更多 =>', style: TextStyle(color: Colors.blue)),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: List.generate(4, (index) {
+                              return Column(
+                                children: [
+                                  Container(
+                                    width: 70,
+                                    height: 70,
+                                    color: Colors.grey[300],
+                                    child: const Icon(Icons.image),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  const Text('blah'),
+                                ],
+                              );
+                            }),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                )
-              ],),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+        ]),
+
         /// Notifications page
         const Padding(
           padding: EdgeInsets.all(8.0),
@@ -391,81 +436,96 @@ class _HomeState extends State<Home> {
         ),
 
         //Account
-        Padding(padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            Center(
-              child: CircleAvatar(
-                radius: 70,
-                backgroundImage: NetworkImage("http://hungryhenry.xyz/blog/usr/uploads/avatar/$uid.png"), // 使用网络图片作为头像
-              ),
-            ),
-            SizedBox(height: 20),
-            Center(
-              child:Text(
-                "uid:${uid!}"
-              ),
-            ),
-            ListTile(
-              title: Text(
-                '用户名',
-                style: TextStyle(fontSize: 16),
-              ),
-              subtitle: Text(
-                username!,
-                style: TextStyle(fontSize: 19),
-              ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 16),
-            ),
-            Divider(),
-            ListTile(
-              title: Text(
-                '邮箱',
-                style: TextStyle(fontSize: 16),
-              ),
-              subtitle: Text(
-                mail!,
-                style: TextStyle(fontSize: 19),
-              ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 16),
-            ),
-            Divider(),
-            ListTile(
-              title: Text(
-                '性别',
-                style: TextStyle(fontSize: 16),
-              ),
-              subtitle: Text(
-                '男',
-                style: TextStyle(fontSize: 19),
-              ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 16),
-            ),
-            Divider(),
-            ListTile(
-              title: Text(
-                '喜好',
-                style: TextStyle(fontSize: 16),
-              ),
-              subtitle: Text(
-                '音乐, 旅行, 阅读',
-                style: TextStyle(fontSize: 18),
-              ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 16),
-            ),
-            SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  logout(context);
-                },
-                child: Text('退出登录'),
-              ),
-            ),
-          ],
-        ),
-      ),
-      ][currentPageIndex],
+        if(isLogin)...[
+          SingleChildScrollView(
+            child: Center(
+              child:Container(
+                padding: const EdgeInsets.all(16.0),
+                width:700,
+                child:Column(
+                  children: [
+                    Center(
+                      child: CircleAvatar(
+                        radius: 70,
+                        backgroundImage: NetworkImage("http://hungryhenry.xyz/blog/usr/uploads/avatar/$uid.png"), // 使用网络图片作为头像
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child:Text(
+                        "uid:${uid!}"
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text(
+                        '用户名',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      subtitle: Text(
+                        username!,
+                        style: const TextStyle(fontSize: 19),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    ),
+                    const Divider(),
+                    ListTile(
+                      title: const Text(
+                        '邮箱',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      subtitle: Text(
+                        mail!,
+                        style: const TextStyle(fontSize: 19),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    ),
+                    const Divider(),
+                    const ListTile(
+                      title: Text(
+                        '性别',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      subtitle: Text(
+                        '男',
+                        style: TextStyle(fontSize: 19),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                    ),
+                    const Divider(),
+                    const ListTile(
+                      title: Text(
+                        '喜好',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      subtitle: Text(
+                        '音乐, 旅行, 阅读',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          logout(context);
+                        },
+                        child: const Text('退出登录'),
+                      ),
+                    ),
+                  ],
+                )
+              )
+            ) 
+          )
+        ]else ...[
+          Center(
+            child: ElevatedButton(
+              child: Text('登录'),
+              onPressed: () => Navigator.of(context).pushNamed('login')
+            )
+          )
+        ]
+      ][currentPageIndex]
     );
   }
   String _getAppBarTitle(){

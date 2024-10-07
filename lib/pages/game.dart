@@ -8,13 +8,14 @@ final storage = FlutterSecureStorage();
 class Game extends StatefulWidget {
   //接收数据
   final String data;
-  Game({required this.data});
+  const Game({super.key, required this.data});
 
   @override
   _GameState createState() => _GameState();
 }
 
 class _GameState extends State<Game> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -24,14 +24,14 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("Account"),
         "connectError": MessageLookupByLibrary.simpleMessage(
-            "Cannot connect to server. Pls try again later or try without an account"),
+            "Cannot connect to server. Pls try again later or use offline mode"),
         "emailOrName": MessageLookupByLibrary.simpleMessage("E-mail/Username"),
         "emptyemail":
             MessageLookupByLibrary.simpleMessage("Please enter your email"),
         "emptypassword":
             MessageLookupByLibrary.simpleMessage("Please enter your password"),
-        "guest": MessageLookupByLibrary.simpleMessage("try without an account"),
-        "home": MessageLookupByLibrary.simpleMessage("Home"),
+        "guest": MessageLookupByLibrary.simpleMessage("offline mode"),
+        "home": MessageLookupByLibrary.simpleMessage("Home🏠"),
         "hot": MessageLookupByLibrary.simpleMessage("Hot🔥"),
         "incorrect": MessageLookupByLibrary.simpleMessage("incorrect"),
         "loggingIn": MessageLookupByLibrary.simpleMessage("Loggin In..."),
@@ -39,14 +39,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginExpired": MessageLookupByLibrary.simpleMessage(
             "login info expired, please login again"),
         "name": MessageLookupByLibrary.simpleMessage("Rhythm Riddle"),
+        "ok": MessageLookupByLibrary.simpleMessage("OK👌"),
         "or": MessageLookupByLibrary.simpleMessage("or"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "rank": MessageLookupByLibrary.simpleMessage("Rank"),
         "recm": MessageLookupByLibrary.simpleMessage("Recommend"),
         "register": MessageLookupByLibrary.simpleMessage(
             "No account? Click here to sign up!"),
+        "retry": MessageLookupByLibrary.simpleMessage("Retry🔄"),
         "sort": MessageLookupByLibrary.simpleMessage("Sort"),
         "unknownError": MessageLookupByLibrary.simpleMessage(
-            "Cannot connect to server. Please try without an account or contact hamrui@outlook.com")
+            "Cannot connect to server. Please use offline mode or contact hamrui@outlook.com")
       };
 }

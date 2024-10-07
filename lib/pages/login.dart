@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../generated/l10n.dart';
@@ -55,7 +53,6 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response.statusCode == 200) {
         // LET'S GOOOOOO
-        print(response.body);
         await storage.write(key: 'uid', value: jsonDecode(response.body)['data']['uid'].toString());
         await storage.write(key: 'password', value: jsonDecode(response.body)['data']['password']);
         await storage.write(key: 'username', value: jsonDecode(response.body)['data']['username']);
@@ -67,22 +64,29 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
       } else if (response.statusCode == 401) {
         // 验证错误
-        setState(() {
-          _errorMessage = S.current.emailOrName + S.current.or + S.current.password + S.current.incorrect;
-          loginText = S.current.login;
-        });
+        if(mounted){
+          setState(() {
+            _errorMessage = S.current.emailOrName + S.current.or + S.current.password + S.current.incorrect;
+            loginText = S.current.login;
+          });
+        }
       } else {
         // 未知错误
-        setState((){
-          _errorMessage = S.current.unknownError;
-          loginText = S.current.login;
-        });
+        if(mounted){
+          setState((){
+            _errorMessage = S.current.unknownError;
+            loginText = S.current.login;
+            print(response.body);
+          });
+        }
       }
     }catch (e){
-      setState(() {
-        loginText = S.current.login;
-      });
-      showDialogFunction(S.current.connectError, false); return;
+      if(mounted){
+        setState(() {
+          loginText = S.current.login;
+          showDialogFunction(S.current.connectError, true); return;
+        });
+      }
     }
   }
 
@@ -116,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
           content: Text(title),
           actions: [
               if(retry)...[TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: const Text("重试"))],
-              TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: const Text("确定")),
+              TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
           ],
       );
     });
