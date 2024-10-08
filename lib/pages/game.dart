@@ -3,25 +3,184 @@ import '../generated/l10n.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-final storage = FlutterSecureStorage();
+const storage = FlutterSecureStorage();
 
 class Game extends StatefulWidget {
   //接收数据
   final String data;
   const Game({super.key, required this.data});
-
   @override
   _GameState createState() => _GameState();
 }
 
 class _GameState extends State<Game> {
+  String? uid = '';
+  String? username = '';
+  String? mail = '';
+  bool isLogin = false;
+
+  void _checkLogin() async {
+    uid = await storage.read(key: 'uid');
+    username = await storage.read(key: 'username');
+    mail = await storage.read(key: 'mail');
+    if (uid != null && username != null && mail != null && mounted) {
+      setState(() {
+        isLogin = true;
+      });
+    }
+  }
+
+  void _getFromApi() async {
+    //blahblah
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title:Text("game")),
-      body: Center(child: Text(widget.data))
+      body: LayoutBuilder(
+        builder: (context, constraints){
+          bool isSmallScreen = constraints.maxWidth < 600;
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: isSmallScreen ? _buildSmallScreenLayout() : _buildLargeScreenLayout()
+          );
+        }
+      )
     );
   }
-  
+
+  Widget _buildSmallScreenLayout() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Center(
+            child: Column(
+              children: [
+                Image.network(
+                  "http://hungryhenry.xyz/musiclab/playlist/4.jpg",
+                  width: 150,
+                  height: 150,
+                  fit: BoxFit.cover,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "TEST",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ]
+            ),
+          ),
+          _buildInfoRow(),
+          Row(
+            mainAxisAlignment:MainAxisAlignment.center,
+            children: [ElevatedButton(onPressed: (){}, child: Text("单人模式")),
+            SizedBox(width:50),
+            ElevatedButton(onPressed: (){}, child: Text("多人模式"))]
+          )
+        ],
+      )
+    );
+  }
+
+  // 大屏设备布局
+  Widget _buildLargeScreenLayout() {
+    return Center(  // 将整个布局居中
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,  // 水平方向居中对齐
+        crossAxisAlignment: CrossAxisAlignment.center, // 垂直方向居中对齐
+        children: [
+          // 封面图片
+          Padding(
+            padding: EdgeInsets.only(left:MediaQuery.of(context).size.width * 0.1 - 50),
+            child: Image.network(
+              "http://hungryhenry.xyz/musiclab/playlist/4.jpg",
+              width: 300,
+              height: 300,
+              fit: BoxFit.cover,
+            ),
+          ),
+          SizedBox(width: 30),
+          // 标题和信息
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center, // 让标题和信息在列中垂直居中
+              children: [
+                Center( // 让标题居中
+                  child: Text(
+                    "TEST",
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+                _buildInfoRow(),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.13),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(onPressed: (){}, child: Text("单人模式")),
+                    SizedBox(width:MediaQuery.of(context).size.width * 0.045),
+                    ElevatedButton(onPressed: (){}, child: Text("多人模式")),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _buildInfoRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        // 歌曲数量
+        Column(
+          children: [
+            Icon(Icons.music_note, color: Colors.blue),
+            SizedBox(height: 8),
+            Text(
+              '5',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(S.current.songs),
+          ],
+        ),
+        // 查看数量
+        Column(
+          children: [
+            Icon(Icons.sports_esports, color: Colors.green),
+            SizedBox(height: 8),
+            Text(
+              '100',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(S.current.played),
+          ],
+        ),
+        // 点赞数量
+        Column(
+          children: [
+            Icon(Icons.thumb_up, color: Colors.red),
+            SizedBox(height: 8),
+            Text(
+              '32',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(S.current.likes),
+          ],
+        ),
+      ],
+    );
+  }
 }

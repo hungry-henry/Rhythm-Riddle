@@ -21,5 +21,9 @@
     "rank": "Rank",
     "recm": "Recommend",
     "hot": "Hot🔥",
-    "sort": "Sort"
+    "sort": "Sort",
+
+    "songs": "Songs",
+    "played": "Played",
+    "likes": "Likes"
 }

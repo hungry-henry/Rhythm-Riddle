@@ -34,6 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "home": MessageLookupByLibrary.simpleMessage("Home🏠"),
         "hot": MessageLookupByLibrary.simpleMessage("Hot🔥"),
         "incorrect": MessageLookupByLibrary.simpleMessage("incorrect"),
+        "likes": MessageLookupByLibrary.simpleMessage("Likes"),
         "loggingIn": MessageLookupByLibrary.simpleMessage("Loggin In..."),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "loginExpired": MessageLookupByLibrary.simpleMessage(
@@ -42,11 +43,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "ok": MessageLookupByLibrary.simpleMessage("OK👌"),
         "or": MessageLookupByLibrary.simpleMessage("or"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
+        "played": MessageLookupByLibrary.simpleMessage("Played"),
         "rank": MessageLookupByLibrary.simpleMessage("Rank"),
         "recm": MessageLookupByLibrary.simpleMessage("Recommend"),
         "register": MessageLookupByLibrary.simpleMessage(
             "No account? Click here to sign up!"),
         "retry": MessageLookupByLibrary.simpleMessage("Retry🔄"),
+        "songs": MessageLookupByLibrary.simpleMessage("Songs"),
         "sort": MessageLookupByLibrary.simpleMessage("Sort"),
         "unknownError": MessageLookupByLibrary.simpleMessage(
             "Cannot connect to server. Please use offline mode or contact hamrui@outlook.com")
