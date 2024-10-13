@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
+import 'package:window_size/window_size.dart' as window_size;
+
 import 'pages/login.dart';
 import 'pages/home.dart';
-import 'package:window_size/window_size.dart' as window_size;
+import 'pages/game.dart';
 
 void main(){  
   if(Platform.isWindows || Platform.isMacOS || Platform.isLinux){
@@ -36,6 +38,7 @@ class MyApp extends StatelessWidget {
       routes: {
         'login': (context) => LoginPage(),
         'home': (context) => const Home(),
+        'game': (context) => Game()
       },
     );
   }

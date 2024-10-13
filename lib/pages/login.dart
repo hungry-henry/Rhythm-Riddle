@@ -24,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> testConnection() async {
     try {
-      final response = await http.get(Uri.parse('http://hungryhenry.xyz')).timeout(Duration(seconds:7));
+      final response = await http.get(Uri.parse('http://hungryhenry.xyz')).timeout(const Duration(seconds:7));
       if (response.statusCode != 200) {
         showDialogFunction(S.current.connectError, true);
       }

@@ -23,6 +23,8 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("Account"),
+        "bug": MessageLookupByLibrary.simpleMessage(
+            "A bug appeared, pls report to hamrui@outlook.com"),
         "connectError": MessageLookupByLibrary.simpleMessage(
             "Cannot connect to server. Pls try again later or use offline mode"),
         "emailOrName": MessageLookupByLibrary.simpleMessage("E-mail/Username"),
@@ -38,7 +40,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "loggingIn": MessageLookupByLibrary.simpleMessage("Loggin In..."),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "loginExpired": MessageLookupByLibrary.simpleMessage(
-            "login info expired, please login again"),
+            "login info expired, pls login again"),
         "name": MessageLookupByLibrary.simpleMessage("Rhythm Riddle"),
         "ok": MessageLookupByLibrary.simpleMessage("OK👌"),
         "or": MessageLookupByLibrary.simpleMessage("or"),
@@ -52,6 +54,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "songs": MessageLookupByLibrary.simpleMessage("Songs"),
         "sort": MessageLookupByLibrary.simpleMessage("Sort"),
         "unknownError": MessageLookupByLibrary.simpleMessage(
-            "Cannot connect to server. Please use offline mode or contact hamrui@outlook.com")
+            "Cannot connect to server. Pls use offline mode or contact hamrui@outlook.com")
       };
 }

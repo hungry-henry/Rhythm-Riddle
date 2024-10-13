@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rhythm_riddle/pages/game.dart';
 import '../generated/l10n.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -228,12 +227,9 @@ class _HomeState extends State<Home> {
                               children: [
                                 ElevatedButton(
                                   onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            Game(data: playlists[index]['id'].toString()),
-                                      ),
+                                    Navigator.of(context).pushNamed(
+                                      'game',
+                                      arguments: playlists[index]['id']
                                     );
                                   },
                                   style: ElevatedButton.styleFrom(

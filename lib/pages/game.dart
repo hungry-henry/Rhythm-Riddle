@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 import 'package:http/http.dart' as http;
@@ -6,18 +8,25 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 const storage = FlutterSecureStorage();
 
 class Game extends StatefulWidget {
-  //接收数据
-  final String data;
-  const Game({super.key, required this.data});
   @override
   _GameState createState() => _GameState();
 }
 
 class _GameState extends State<Game> {
+  //上个页面传递的数据
+  int playlistId = 0;
+
+  //用户登录信息
   String? uid = '';
   String? username = '';
   String? mail = '';
   bool isLogin = false;
+
+  String title = '';
+  String createTime = '';
+  String createdBy = '';
+  String musicTitle = '';
+  String artist = '';
 
   void _checkLogin() async {
     uid = await storage.read(key: 'uid');
@@ -29,9 +38,61 @@ class _GameState extends State<Game> {
       });
     }
   }
+  
+  void showDialogFunction(String title) async {
+    await showDialog(context: context, builder: (context){
+      return AlertDialog(
+          content: Text(title),
+          actions: [
+              TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+          ],
+      );
+    });
+  }
 
-  void _getFromApi() async {
-    //blahblah
+  Future<void> _getFromApi() async {
+    try{
+      final response = await http.post(
+        Uri.parse('http://hungryhenry.xyz/api/getPlaylistInfo.php'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, int>{
+          'id': playlistId
+        })
+      ).timeout(const Duration(seconds:7));
+
+      print(response.body);
+      if(response.statusCode == 200 && mounted){
+        setState(() {
+          title = jsonDecode(response.body)['data']['playlist_title'];
+          createTime = jsonDecode(response.body)['data']['create_time'];
+          createdBy = jsonDecode(response.body)['data']['created_by'];
+          musicTitle = jsonDecode(response.body)['data']['music_title'];
+          artist = jsonDecode(response.body)['data']['artist'];
+        });
+      }else if(response.statusCode == 404){
+        showDialogFunction(S.current.bug);
+      }else{
+        showDialogFunction(S.current.unknownError);
+      }
+    }catch(e){
+      showDialogFunction(S.current.connectError);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLogin();
+    Future.microtask(() {
+      final int args = ModalRoute.of(context)?.settings.arguments as int;
+      print(args);
+      setState(() {
+        playlistId = args;
+      });
+      _getFromApi();
+    });
   }
 
   @override

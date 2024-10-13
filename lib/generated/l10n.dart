@@ -160,20 +160,20 @@ class S {
     );
   }
 
-  /// `Cannot connect to server. Please use offline mode or contact hamrui@outlook.com`
+  /// `Cannot connect to server. Pls use offline mode or contact hamrui@outlook.com`
   String get unknownError {
     return Intl.message(
-      'Cannot connect to server. Please use offline mode or contact hamrui@outlook.com',
+      'Cannot connect to server. Pls use offline mode or contact hamrui@outlook.com',
       name: 'unknownError',
       desc: '',
       args: [],
     );
   }
 
-  /// `login info expired, please login again`
+  /// `login info expired, pls login again`
   String get loginExpired {
     return Intl.message(
-      'login info expired, please login again',
+      'login info expired, pls login again',
       name: 'loginExpired',
       desc: '',
       args: [],
@@ -295,6 +295,16 @@ class S {
     return Intl.message(
       'Likes',
       name: 'likes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A bug appeared, pls report to hamrui@outlook.com`
+  String get bug {
+    return Intl.message(
+      'A bug appeared, pls report to hamrui@outlook.com',
+      name: 'bug',
       desc: '',
       args: [],
     );

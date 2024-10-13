@@ -10,8 +10,8 @@
     "incorrect": "incorrect",
     "emptyemail": "Please enter your email",
     "emptypassword": "Please enter your password",
-    "unknownError": "Cannot connect to server. Please use offline mode or contact hamrui@outlook.com",
-    "loginExpired": "login info expired, please login again",
+    "unknownError": "Cannot connect to server. Pls use offline mode or contact hamrui@outlook.com",
+    "loginExpired": "login info expired, pls login again",
     "connectError": "Cannot connect to server. Pls try again later or use offline mode",
     "ok": "OK👌",
     "retry": "Retry🔄",
@@ -25,5 +25,6 @@
 
     "songs": "Songs",
     "played": "Played",
-    "likes": "Likes"
+    "likes": "Likes",
+    "bug": "A bug appeared, pls report to hamrui@outlook.com"
 }

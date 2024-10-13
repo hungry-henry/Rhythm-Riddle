@@ -23,6 +23,8 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("账户"),
+        "bug": MessageLookupByLibrary.simpleMessage(
+            "游戏出现BUG了，请反馈给hamrui@outlook.com"),
         "connectError":
             MessageLookupByLibrary.simpleMessage("无法连接至服务器，请稍后再试或离线游玩"),
         "emailOrName": MessageLookupByLibrary.simpleMessage("邮箱/用户名"),
