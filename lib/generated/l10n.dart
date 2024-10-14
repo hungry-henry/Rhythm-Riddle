@@ -309,6 +309,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Single Player`
+  String get singlePlayer {
+    return Intl.message(
+      'Single Player',
+      name: 'singlePlayer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Multi Player`
+  String get multiPlayer {
+    return Intl.message(
+      'Multi Player',
+      name: 'multiPlayer',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

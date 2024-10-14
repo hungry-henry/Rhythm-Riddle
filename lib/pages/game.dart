@@ -13,8 +13,8 @@ class Game extends StatefulWidget {
 }
 
 class _GameState extends State<Game> {
-  //上个页面传递的数据
   int playlistId = 0;
+  bool isLoading = true;
 
   //用户登录信息
   String? uid = '';
@@ -70,14 +70,28 @@ class _GameState extends State<Game> {
           createdBy = jsonDecode(response.body)['data']['created_by'];
           musicTitle = jsonDecode(response.body)['data']['music_title'];
           artist = jsonDecode(response.body)['data']['artist'];
+          isLoading = false;
         });
-      }else if(response.statusCode == 404){
+      }else if(response.statusCode == 404 && mounted){
         showDialogFunction(S.current.bug);
+        setState(() {
+          isLoading = false;
+        });
       }else{
         showDialogFunction(S.current.unknownError);
+        if(mounted){
+          setState(() {
+            isLoading = false;
+          });
+        }
       }
     }catch(e){
       showDialogFunction(S.current.connectError);
+      if(mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -87,7 +101,6 @@ class _GameState extends State<Game> {
     _checkLogin();
     Future.microtask(() {
       final int args = ModalRoute.of(context)?.settings.arguments as int;
-      print(args);
       setState(() {
         playlistId = args;
       });
@@ -98,8 +111,8 @@ class _GameState extends State<Game> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title:Text("game")),
-      body: LayoutBuilder(
+      appBar: AppBar(title:Text(title)),
+      body: isLoading ? const Center(child: CircularProgressIndicator()) : LayoutBuilder(
         builder: (context, constraints){
           bool isSmallScreen = constraints.maxWidth < 600;
           return Padding(
@@ -120,14 +133,14 @@ class _GameState extends State<Game> {
             child: Column(
               children: [
                 Image.network(
-                  "http://hungryhenry.xyz/musiclab/playlist/4.jpg",
+                  "http://hungryhenry.xyz/musiclab/playlist/$playlistId.jpg",
                   width: 150,
                   height: 150,
                   fit: BoxFit.cover,
                 ),
                 SizedBox(height: 10),
                 Text(
-                  "TEST",
+                  title,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -139,9 +152,9 @@ class _GameState extends State<Game> {
           _buildInfoRow(),
           Row(
             mainAxisAlignment:MainAxisAlignment.center,
-            children: [ElevatedButton(onPressed: (){}, child: Text("单人模式")),
-            SizedBox(width:50),
-            ElevatedButton(onPressed: (){}, child: Text("多人模式"))]
+            children: [ElevatedButton(onPressed: (){}, child: Text(S.current.singlePlayer)),
+            const SizedBox(width:50),
+            ElevatedButton(onPressed: (){}, child: Text(S.current.multiPlayer))]
           )
         ],
       )
@@ -159,7 +172,7 @@ class _GameState extends State<Game> {
           Padding(
             padding: EdgeInsets.only(left:MediaQuery.of(context).size.width * 0.1 - 50),
             child: Image.network(
-              "http://hungryhenry.xyz/musiclab/playlist/4.jpg",
+              "http://hungryhenry.xyz/musiclab/playlist/$playlistId.jpg",
               width: 300,
               height: 300,
               fit: BoxFit.cover,
@@ -174,8 +187,8 @@ class _GameState extends State<Game> {
               children: [
                 Center( // 让标题居中
                   child: Text(
-                    "TEST",
-                    style: TextStyle(
+                    title,
+                    style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                     ),
@@ -187,9 +200,9 @@ class _GameState extends State<Game> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(onPressed: (){}, child: Text("单人模式")),
+                    ElevatedButton(onPressed: (){}, child: Text(S.current.singlePlayer)),
                     SizedBox(width:MediaQuery.of(context).size.width * 0.045),
-                    ElevatedButton(onPressed: (){}, child: Text("多人模式")),
+                    ElevatedButton(onPressed: (){}, child: Text(S.current.multiPlayer)),
                   ],
                 ),
               ],
@@ -217,7 +230,7 @@ class _GameState extends State<Game> {
             Text(S.current.songs),
           ],
         ),
-        // 查看数量
+        // 游玩数量
         Column(
           children: [
             Icon(Icons.sports_esports, color: Colors.green),

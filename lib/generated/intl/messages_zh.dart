@@ -38,6 +38,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "loggingIn": MessageLookupByLibrary.simpleMessage("登录中..."),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
         "loginExpired": MessageLookupByLibrary.simpleMessage("登录已过期，请重新登录"),
+        "multiPlayer": MessageLookupByLibrary.simpleMessage("多人模式"),
         "name": MessageLookupByLibrary.simpleMessage("旋律疑谜"),
         "ok": MessageLookupByLibrary.simpleMessage("确定👌"),
         "or": MessageLookupByLibrary.simpleMessage("或"),
@@ -47,6 +48,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "recm": MessageLookupByLibrary.simpleMessage("推荐"),
         "register": MessageLookupByLibrary.simpleMessage("没有账号? 点此注册!"),
         "retry": MessageLookupByLibrary.simpleMessage("重试🔄"),
+        "singlePlayer": MessageLookupByLibrary.simpleMessage("单人模式"),
         "songs": MessageLookupByLibrary.simpleMessage("歌曲"),
         "sort": MessageLookupByLibrary.simpleMessage("分类"),
         "unknownError": MessageLookupByLibrary.simpleMessage(

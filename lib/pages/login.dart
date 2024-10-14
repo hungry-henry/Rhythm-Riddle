@@ -76,16 +76,16 @@ class _LoginPageState extends State<LoginPage> {
           setState((){
             _errorMessage = S.current.unknownError;
             loginText = S.current.login;
-            print(response.body);
           });
+          print(response.body);
         }
       }
     }catch (e){
       if(mounted){
         setState(() {
           loginText = S.current.login;
-          showDialogFunction(S.current.connectError, true); return;
         });
+        showDialogFunction(S.current.connectError, true); return;
       }
     }
   }
@@ -115,15 +115,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void showDialogFunction(String title, bool retry) async {
-    await showDialog(context: context, builder: (context){
-      return AlertDialog(
-          content: Text(title),
-          actions: [
-              if(retry)...[TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: const Text("重试"))],
-              TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
-          ],
-      );
-    });
+    
   }
 
   Future<void> loginUsingStorage() async {
@@ -131,14 +123,22 @@ class _LoginPageState extends State<LoginPage> {
     String? password = await storage.read(key: 'password');
     String? date = await storage.read(key: 'date');
     DateTime now = DateTime.now();
-    if(date != null){
+    if(date != null && mounted){
       //如果storage中的日期在现在的7天前
       if(now.difference(DateTime.parse(date)).inDays < 7){
         if (username != null && password != null) {
           login(username, password, context);
         }
       }else{
-        showDialogFunction(S.current.loginExpired, true);
+        await showDialog(context: context, builder: (context){
+          return AlertDialog(
+              content: Text(S.current.loginExpired),
+              actions: [
+                  TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: const Text("重试")),
+                  TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+              ],
+          );
+        });
       }
     }else{
       testConnection();

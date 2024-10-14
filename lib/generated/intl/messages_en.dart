@@ -41,6 +41,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "loginExpired": MessageLookupByLibrary.simpleMessage(
             "login info expired, pls login again"),
+        "multiPlayer": MessageLookupByLibrary.simpleMessage("Multi Player"),
         "name": MessageLookupByLibrary.simpleMessage("Rhythm Riddle"),
         "ok": MessageLookupByLibrary.simpleMessage("OK👌"),
         "or": MessageLookupByLibrary.simpleMessage("or"),
@@ -51,6 +52,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "register": MessageLookupByLibrary.simpleMessage(
             "No account? Click here to sign up!"),
         "retry": MessageLookupByLibrary.simpleMessage("Retry🔄"),
+        "singlePlayer": MessageLookupByLibrary.simpleMessage("Single Player"),
         "songs": MessageLookupByLibrary.simpleMessage("Songs"),
         "sort": MessageLookupByLibrary.simpleMessage("Sort"),
         "unknownError": MessageLookupByLibrary.simpleMessage(

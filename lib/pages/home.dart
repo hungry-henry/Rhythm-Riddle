@@ -387,7 +387,7 @@ class _HomeState extends State<Home> {
                 Center(
                   child: CircleAvatar(
                     radius: 70,
-                    backgroundImage: NetworkImage("http://hungryhenry.xyz/blog/usr/uploads/avatar/$uid.png"), // 使用网络图片作为头像
+                    backgroundImage: NetworkImage("http://hungryhenry.xyz/blog/usr/uploads/avatar/$uid.png")             
                   ),
                 ),
                 const SizedBox(height: 20),
