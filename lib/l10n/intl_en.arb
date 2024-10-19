@@ -16,16 +16,12 @@
     "ok": "OK👌",
     "retry": "Retry🔄",
 
-    "home": "Home🏠",
-    "account": "Account",
-    "rank": "Rank",
-    "recm": "Recommend",
-    "hot": "Hot🔥",
-    "sort": "Sort",
+    "home": "Home🏠", "account": "Account", "rank": "Rank",
+    "recm": "Recommend", "hot": "Hot🔥", "sort": "Sort",
+    "search": "Search playlist, song and artist",
 
-    "songs": "Songs",
-    "played": "Played",
-    "likes": "Likes",
+    "songs": "Songs", "played": "Played", "likes": "Likes",
     "bug": "A bug appeared, pls report to hamrui@outlook.com",
-    "singlePlayer": "Single Player", "multiPlayer": "Multi Player"
+    "singlePlayer": "Single Player", "multiPlayer": "Multi Player",
+    "contains": "Contains {title} - {artist} and more"
 }

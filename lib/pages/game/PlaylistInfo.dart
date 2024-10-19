@@ -1,18 +1,19 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import '../generated/l10n.dart';
+import '../../generated/l10n.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 const storage = FlutterSecureStorage();
 
-class Game extends StatefulWidget {
+class PlaylistInfo extends StatefulWidget {
   @override
-  _GameState createState() => _GameState();
+  _PlaylistInfoState createState() => _PlaylistInfoState();
 }
 
-class _GameState extends State<Game> {
+class _PlaylistInfoState extends State<PlaylistInfo> {
   int playlistId = 0;
   bool isLoading = true;
 
@@ -20,6 +21,8 @@ class _GameState extends State<Game> {
   String? uid = '';
   String? username = '';
   String? mail = '';
+  String? date = '';
+  DateTime now = DateTime.now();
   bool isLogin = false;
 
   String title = '';
@@ -27,27 +30,21 @@ class _GameState extends State<Game> {
   String createdBy = '';
   String musicTitle = '';
   String artist = '';
+  String? description = '';
+  int likes = 0;
+  int played = 0;
+  int musicCount = 0;
 
   void _checkLogin() async {
     uid = await storage.read(key: 'uid');
     username = await storage.read(key: 'username');
     mail = await storage.read(key: 'mail');
-    if (uid != null && username != null && mail != null && mounted) {
+    date = await storage.read(key: 'date');
+    if (uid != null && username != null && mail != null && now.difference(DateTime.parse(date!)).inDays < 7 && mounted) {
       setState(() {
         isLogin = true;
       });
     }
-  }
-  
-  void showDialogFunction(String title) async {
-    await showDialog(context: context, builder: (context){
-      return AlertDialog(
-          content: Text(title),
-          actions: [
-              TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
-          ],
-      );
-    });
   }
 
   Future<void> _getFromApi() async {
@@ -70,24 +67,64 @@ class _GameState extends State<Game> {
           createdBy = jsonDecode(response.body)['data']['created_by'];
           musicTitle = jsonDecode(response.body)['data']['music_title'];
           artist = jsonDecode(response.body)['data']['artist'];
+          description = jsonDecode(response.body)['data']['description'];
+          likes = jsonDecode(response.body)['data']['likes'];
+          played = jsonDecode(response.body)['data']['played'];
+          musicCount = jsonDecode(response.body)['data']['music_count'];
           isLoading = false;
         });
       }else if(response.statusCode == 404 && mounted){
-        showDialogFunction(S.current.bug);
+        await showDialog(context: context, builder: (context){
+          return AlertDialog(
+              content: Text(S.current.bug),
+              actions: [
+                  TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
+}, child: Text(S.current.ok)),
+              ],
+          );
+        });
         setState(() {
           isLoading = false;
         });
       }else{
-        showDialogFunction(S.current.unknownError);
         if(mounted){
+          await showDialog(context: context, builder: (context){
+            return AlertDialog(
+                content: Text(S.current.unknownError),
+                actions: [
+                    TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
+}, child: Text(S.current.ok)),
+                ],
+            );
+          });
           setState(() {
             isLoading = false;
           });
         }
       }
     }catch(e){
-      showDialogFunction(S.current.connectError);
-      if(mounted) {
+      if(mounted){
+        if(e is TimeoutException){
+          await showDialog(context: context, builder: (context){
+            return AlertDialog(
+                content: Text(S.current.connectError),
+                actions: [
+                    TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
+}, child: Text(S.current.ok)),
+                ],
+            );
+          });
+        }else{
+          await showDialog(context: context, builder: (context){
+            return AlertDialog(
+                content: Text(S.current.bug),
+                actions: [
+                    TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
+}, child: Text(S.current.ok)),
+                ],
+            );
+          });
+        }
         setState(() {
           isLoading = false;
         });
@@ -127,35 +164,60 @@ class _GameState extends State<Game> {
   Widget _buildSmallScreenLayout() {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Center(
             child: Column(
               children: [
                 Image.network(
                   "http://hungryhenry.xyz/musiclab/playlist/$playlistId.jpg",
-                  width: 150,
-                  height: 150,
+                  width: MediaQuery.of(context).size.width < MediaQuery.of(context).size.height * 0.3 ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height * 0.4,
                   fit: BoxFit.cover,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(createdBy),
+                    const SizedBox(width: 25),
+                    const Text("|"),
+                    const SizedBox(width: 25),
+                    Text(createTime)
+                  ]
+                )
               ]
             ),
           ),
           _buildInfoRow(),
+          Text(S.current.contains(musicTitle, artist)),
           Row(
             mainAxisAlignment:MainAxisAlignment.center,
             children: [ElevatedButton(onPressed: (){}, child: Text(S.current.singlePlayer)),
             const SizedBox(width:50),
-            ElevatedButton(onPressed: (){}, child: Text(S.current.multiPlayer))]
-          )
+            if(isLogin)...[
+              ElevatedButton(
+                onPressed: (){}, child: Text(S.current.multiPlayer)
+              )
+            ] else...[
+              TextButton(
+                onPressed:null,
+                style:ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(Colors.grey[350]),
+                  padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 25, vertical: 10)),
+                ), 
+                child:Text(S.current.multiPlayer)
+              )
+            ]]
+          ),
+          const SizedBox(height: 30)
         ],
       )
     );
@@ -171,38 +233,62 @@ class _GameState extends State<Game> {
           // 封面图片
           Padding(
             padding: EdgeInsets.only(left:MediaQuery.of(context).size.width * 0.1 - 50),
-            child: Image.network(
-              "http://hungryhenry.xyz/musiclab/playlist/$playlistId.jpg",
-              width: 300,
-              height: 300,
-              fit: BoxFit.cover,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.network(
+                    "http://hungryhenry.xyz/musiclab/playlist/$playlistId.jpg",
+                    width: 300,
+                    height: 300,
+                    fit: BoxFit.cover,
+                ),
+                const SizedBox(height: 10),
+                Text("创作者: $createdBy", style: const TextStyle(fontSize: 16)),
+                Text("创作时间: $createTime", style: const TextStyle(fontSize: 16)),
+              ],
             ),
           ),
-          SizedBox(width: 30),
+          const SizedBox(width: 30),
           // 标题和信息
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center, // 让标题和信息在列中垂直居中
               children: [
-                Center( // 让标题居中
+                Center(
                   child: Text(
                     title,
                     style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                 _buildInfoRow(),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.13),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                Text(S.current.contains(musicTitle, artist)),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.06),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(onPressed: (){}, child: Text(S.current.singlePlayer)),
                     SizedBox(width:MediaQuery.of(context).size.width * 0.045),
-                    ElevatedButton(onPressed: (){}, child: Text(S.current.multiPlayer)),
+                    if(isLogin)...[
+                      ElevatedButton(
+                        onPressed: (){}, child: Text(S.current.multiPlayer)
+                      )
+                    ] else...[
+                      TextButton(
+                        onPressed:null,
+                        style:ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(Colors.grey[350]),
+                          padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 25, vertical: 10)),
+                        ),
+                        child:Text(S.current.multiPlayer)
+                      )
+                    ]
                   ],
                 ),
               ],
@@ -224,7 +310,7 @@ class _GameState extends State<Game> {
             Icon(Icons.music_note, color: Colors.blue),
             SizedBox(height: 8),
             Text(
-              '5',
+              musicCount.toString(),
               style: TextStyle(fontSize: 16),
             ),
             Text(S.current.songs),
@@ -236,8 +322,8 @@ class _GameState extends State<Game> {
             Icon(Icons.sports_esports, color: Colors.green),
             SizedBox(height: 8),
             Text(
-              '100',
-              style: TextStyle(fontSize: 16),
+              played.toString(),
+              style: const TextStyle(fontSize: 16),
             ),
             Text(S.current.played),
           ],
@@ -245,11 +331,11 @@ class _GameState extends State<Game> {
         // 点赞数量
         Column(
           children: [
-            Icon(Icons.thumb_up, color: Colors.red),
-            SizedBox(height: 8),
+            const Icon(Icons.thumb_up, color: Colors.red),
+            const SizedBox(height: 8),
             Text(
-              '32',
-              style: TextStyle(fontSize: 16),
+              likes.toString(),
+              style: const TextStyle(fontSize: 16),
             ),
             Text(S.current.likes),
           ],

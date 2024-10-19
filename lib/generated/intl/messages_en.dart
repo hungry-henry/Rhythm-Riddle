@@ -20,6 +20,8 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
+  static String m0(title, artist) => "Contains ${title} - ${artist} and more";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("Account"),
@@ -27,6 +29,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "A bug appeared, pls report to hamrui@outlook.com"),
         "connectError": MessageLookupByLibrary.simpleMessage(
             "Cannot connect to server. Pls try again later or use offline mode"),
+        "contains": m0,
         "emailOrName": MessageLookupByLibrary.simpleMessage("E-mail/Username"),
         "emptyemail":
             MessageLookupByLibrary.simpleMessage("Please enter your email"),
@@ -52,6 +55,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "register": MessageLookupByLibrary.simpleMessage(
             "No account? Click here to sign up!"),
         "retry": MessageLookupByLibrary.simpleMessage("Retry🔄"),
+        "search": MessageLookupByLibrary.simpleMessage(
+            "Search playlist, song and artist"),
         "singlePlayer": MessageLookupByLibrary.simpleMessage("Single Player"),
         "songs": MessageLookupByLibrary.simpleMessage("Songs"),
         "sort": MessageLookupByLibrary.simpleMessage("Sort"),

@@ -21,11 +21,6 @@ class _HomeState extends State<Home> {
   String? mail = '';
   bool isLogin = false;
 
-  //need to get from ??
-  List<String> _searchHistory = ['Flutter', 'Dart', 'SearchBar', 'Rounded corners'];
-  List<String> _recommended = ['Recommended 1', 'Recommended 2', 'Recommended 3'];
-  bool _isSearchActive = false;
-
   void showDialogFunction(String title) async {
     await showDialog(context: context, builder: (context){
       return AlertDialog(
@@ -54,15 +49,12 @@ class _HomeState extends State<Home> {
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8'
         }
-      ).timeout(Duration(seconds: 7));
+      ).timeout(const Duration(seconds: 7));
 
       if (response.statusCode == 200 && mounted) {
         setState((){
           playlists = jsonDecode(response.body)['data'];
         });
-        for(int i = 0; i < playlists.length; i++){
-          print(playlists[i]['title']);
-        }
       }else {
         // 错误
         if(mounted){
@@ -86,97 +78,6 @@ class _HomeState extends State<Home> {
     Navigator.pushNamed(context, 'login');
   }
   
-  //search bar
-  Widget _buildSearchBar() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _isSearchActive = true;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: const Row(
-          children: [
-            Icon(Icons.search, color: Colors.grey),
-            SizedBox(width: 10),
-            Text(
-              'Search...',
-              style: TextStyle(color: Colors.grey),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHistoryAndRecommendedSection() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (_searchHistory.isNotEmpty) _buildHistorySection(),
-            const SizedBox(height: 20),
-            _buildRecommendedSection(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHistorySection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Search History',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          children: _searchHistory
-              .map((history) => Chip(
-                    label: Text(history),
-                    onDeleted: () {
-                      setState(() {
-                        _searchHistory.remove(history);
-                      });
-                    },
-                  ))
-              .toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRecommendedSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Recommended',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          children: _recommended
-              .map((recommend) => Chip(
-                    label: Text(recommend),
-                  ))
-              .toList(),
-        ),
-      ],
-    );
-  }
-
   Widget _buildHome(){
     return 
     ListView(children:[
@@ -188,16 +89,26 @@ class _HomeState extends State<Home> {
             child: Column(
               children: [
                 SafeArea(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSearchBar(),
-                          // 根据是否激活搜索栏展示搜索历史和推荐
-                          if (_isSearchActive) ...[
-                            const Text("hello!!!")
-                          ],
-                    ],
-                  ),
+                  child: GestureDetector(
+                    onTap: () {Navigator.of(context).pushNamed('search');},
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.search, color: Colors.grey),
+                          const SizedBox(width: 10),
+                          Text(
+                            S.current.search,
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
                 ),
                 const SizedBox(height: 30),
 
@@ -228,7 +139,7 @@ class _HomeState extends State<Home> {
                                 ElevatedButton(
                                   onPressed: () {
                                     Navigator.of(context).pushNamed(
-                                      'game',
+                                      'PlaylistInfo',
                                       arguments: playlists[index]['id']
                                     );
                                   },
@@ -460,7 +371,7 @@ class _HomeState extends State<Home> {
     }else{
       return Center(
         child: ElevatedButton(
-          child: Text('登录'),
+          child: const Text('登录'),
           onPressed: () => Navigator.of(context).pushNamed('login')
         )
       );

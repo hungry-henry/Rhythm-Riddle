@@ -17,10 +17,12 @@
 
     "home": "主页🏠", "account": "账户", "rank": "排行榜",
     "recm": "推荐", "hot": "热门🔥", "sort":"分类",
+    "search": "搜索歌单、歌曲或歌手",
 
     "songs": "歌曲",
     "played": "玩过",
     "likes": "赞",
     "bug": "游戏出现BUG了，请反馈给hamrui@outlook.com",
-    "singlePlayer": "单人模式", "multiPlayer": "多人模式"
+    "singlePlayer": "单人模式", "multiPlayer": "多人模式",
+    "contains": "包含 {title} - {artist} 等歌曲"
 }

@@ -270,6 +270,16 @@ class S {
     );
   }
 
+  /// `Search playlist, song and artist`
+  String get search {
+    return Intl.message(
+      'Search playlist, song and artist',
+      name: 'search',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Songs`
   String get songs {
     return Intl.message(
@@ -327,6 +337,16 @@ class S {
       name: 'multiPlayer',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Contains {title} - {artist} and more`
+  String contains(Object title, Object artist) {
+    return Intl.message(
+      'Contains $title - $artist and more',
+      name: 'contains',
+      desc: '',
+      args: [title, artist],
     );
   }
 }

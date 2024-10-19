@@ -47,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
           'username': username,
           'password': password,
         })
-      ).timeout(Duration(seconds:7));
+      ).timeout(const Duration(seconds:7));
 
       if(!context.mounted) return;
 

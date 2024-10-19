@@ -20,6 +20,8 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'zh';
 
+  static String m0(title, artist) => "包含 ${title} - ${artist} 等歌曲";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("账户"),
@@ -27,6 +29,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "游戏出现BUG了，请反馈给hamrui@outlook.com"),
         "connectError":
             MessageLookupByLibrary.simpleMessage("无法连接至服务器，请稍后再试或离线游玩"),
+        "contains": m0,
         "emailOrName": MessageLookupByLibrary.simpleMessage("邮箱/用户名"),
         "emptyemail": MessageLookupByLibrary.simpleMessage("请输入邮箱"),
         "emptypassword": MessageLookupByLibrary.simpleMessage("请输入密码"),
@@ -48,6 +51,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "recm": MessageLookupByLibrary.simpleMessage("推荐"),
         "register": MessageLookupByLibrary.simpleMessage("没有账号? 点此注册!"),
         "retry": MessageLookupByLibrary.simpleMessage("重试🔄"),
+        "search": MessageLookupByLibrary.simpleMessage("搜索歌单、歌曲或歌手"),
         "singlePlayer": MessageLookupByLibrary.simpleMessage("单人模式"),
         "songs": MessageLookupByLibrary.simpleMessage("歌曲"),
         "sort": MessageLookupByLibrary.simpleMessage("分类"),
