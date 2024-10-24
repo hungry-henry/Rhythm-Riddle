@@ -200,11 +200,41 @@ class S {
     );
   }
 
-  /// `Retry🔄`
+  /// `Re-Login`
+  String get relogin {
+    return Intl.message(
+      'Re-Login',
+      name: 'relogin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retry`
   String get retry {
     return Intl.message(
-      'Retry🔄',
+      'Retry',
       name: 'retry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Back to Home`
+  String get backToHome {
+    return Intl.message(
+      'Back to Home',
+      name: 'backToHome',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Loading...`
+  String get loading {
+    return Intl.message(
+      'Loading...',
+      name: 'loading',
       desc: '',
       args: [],
     );

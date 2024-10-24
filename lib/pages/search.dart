@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +12,13 @@ class Search extends StatefulWidget {
 class _SearchState extends State<Search> {
   final TextEditingController _controller = TextEditingController();
   List<dynamic> searchResults = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    search("");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,23 +53,54 @@ class _SearchState extends State<Search> {
         ),
       ),
       body: Center(
-        child: ListView.builder(
-          itemCount: searchResults.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(searchResults[index]),
-            );
-          },
-        ),
+        child: isLoading ? const CircularProgressIndicator() : Column(
+          children:[
+            Text("Load"),
+            Text("finished")
+          ]
+        )
       ),
     );
   }
 
   Future<void> search(String query) async {
-    if (query.isNotEmpty) {
-      setState(() {
-        searchResults.add(query); // 将搜索查询添加到数组中
-      });
+    try{
+      final response = await http.post(
+        Uri.parse('http://hungryhenry.xyz/api/search_playlist.php'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'query': query,
+        })
+      ).timeout(const Duration(seconds:7));
+      isLoading = false;
+    }catch(e){
+      if(e is TimeoutException){
+        await showDialog(context: context, builder: (context){
+          return AlertDialog(
+            content: Text(S.current.connectError),
+            actions: [
+              TextButton(onPressed: () {Navigator.pushNamed(context, 'search');}, child: Text(S.current.retry)),
+              TextButton(onPressed: () {Navigator.pushNamed(context, 'home');}, child: Text(S.current.backToHome)),
+            ],
+          );
+        });
+      }else{
+        await showDialog(context: context, builder: (context){
+          return AlertDialog(
+            content: Text(S.current.unknownError),
+            actions: [
+              TextButton(onPressed: () {Navigator.pushNamed(context, 'search');}, child: Text(S.current.retry)),
+              TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.backToHome)),
+            ],
+          );
+        });
+      }
     }
+    
+    setState(() {
+      searchResults.add(query); // 将搜索查询添加到数组中
+    });
   }
 }

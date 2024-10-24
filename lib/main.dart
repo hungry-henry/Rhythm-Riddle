@@ -9,6 +9,8 @@ import 'pages/login.dart';
 import 'pages/home.dart';
 import 'pages/search.dart';
 import 'pages/game/PlaylistInfo.dart';
+import 'pages/game/SinglePlayer.dart';
+import 'pages/game/MultiPlayer.dart';
 
 void main(){  
   if(Platform.isWindows || Platform.isMacOS || Platform.isLinux){
@@ -40,7 +42,9 @@ class MyApp extends StatelessWidget {
         'login': (context) => LoginPage(),
         'home': (context) => const Home(),
         'search': (context) => Search(),
-        'PlaylistInfo': (context) => PlaylistInfo()
+        'PlaylistInfo': (context) => PlaylistInfo(),
+        'SinglePlayer': (context) => SinglePlayer(),
+        'MultiPlayer': (context) => MultiPlayer(),
       },
     );
   }

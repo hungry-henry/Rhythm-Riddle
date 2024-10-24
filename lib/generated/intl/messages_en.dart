@@ -25,6 +25,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("Account"),
+        "backToHome": MessageLookupByLibrary.simpleMessage("Back to Home"),
         "bug": MessageLookupByLibrary.simpleMessage(
             "A bug appeared, pls report to hamrui@outlook.com"),
         "connectError": MessageLookupByLibrary.simpleMessage(
@@ -40,6 +41,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "hot": MessageLookupByLibrary.simpleMessage("Hot🔥"),
         "incorrect": MessageLookupByLibrary.simpleMessage("incorrect"),
         "likes": MessageLookupByLibrary.simpleMessage("Likes"),
+        "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
         "loggingIn": MessageLookupByLibrary.simpleMessage("Loggin In..."),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "loginExpired": MessageLookupByLibrary.simpleMessage(
@@ -54,7 +56,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "recm": MessageLookupByLibrary.simpleMessage("Recommend"),
         "register": MessageLookupByLibrary.simpleMessage(
             "No account? Click here to sign up!"),
-        "retry": MessageLookupByLibrary.simpleMessage("Retry🔄"),
+        "relogin": MessageLookupByLibrary.simpleMessage("Re-Login"),
+        "retry": MessageLookupByLibrary.simpleMessage("Retry"),
         "search": MessageLookupByLibrary.simpleMessage(
             "Search playlist, song and artist"),
         "singlePlayer": MessageLookupByLibrary.simpleMessage("Single Player"),

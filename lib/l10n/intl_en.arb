@@ -13,8 +13,8 @@
     "unknownError": "Cannot connect to server. Pls use offline mode or contact hamrui@outlook.com",
     "loginExpired": "login info expired, pls login again",
     "connectError": "Cannot connect to server. Pls try again later or use offline mode",
-    "ok": "OK👌",
-    "retry": "Retry🔄",
+    "ok": "OK👌", "relogin": "Re-Login", "retry": "Retry",  "backToHome": "Back to Home",
+    "loading": "Loading...",
 
     "home": "Home🏠", "account": "Account", "rank": "Rank",
     "recm": "Recommend", "hot": "Hot🔥", "sort": "Sort",

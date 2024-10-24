@@ -200,11 +200,39 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
           Text(S.current.contains(musicTitle, artist)),
           Row(
             mainAxisAlignment:MainAxisAlignment.center,
-            children: [ElevatedButton(onPressed: (){}, child: Text(S.current.singlePlayer)),
+            children: [ElevatedButton(onPressed: (){
+              Navigator.of(context).pushNamed(
+                "SinglePlayer", 
+                arguments: {
+                  "id": playlistId,
+                  "title": title, 
+                  "musicTitle": musicTitle, 
+                  "artist": artist, 
+                  "createdBy": createdBy, 
+                  "createTime": createTime,
+                  "description": description,
+                  "count": musicCount
+                }
+              );
+            }, child: Text(S.current.singlePlayer)),
             const SizedBox(width:50),
             if(isLogin)...[
               ElevatedButton(
-                onPressed: (){}, child: Text(S.current.multiPlayer)
+                onPressed: (){
+                  Navigator.of(context).pushNamed(
+                    "MultiPlayer", 
+                    arguments: {
+                      "id": playlistId,
+                      "title": title, 
+                      "musicTitle": musicTitle, 
+                      "artist": artist, 
+                      "createdBy": createdBy, 
+                      "createTime": createTime,
+                      "description": description,
+                      "count": musicCount
+                    }
+                  );
+                }, child: Text(S.current.multiPlayer)
               )
             ] else...[
               TextButton(
@@ -273,11 +301,39 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(onPressed: (){}, child: Text(S.current.singlePlayer)),
+                    ElevatedButton(onPressed: (){
+                      Navigator.of(context).pushNamed(
+                        "SinglePlayer", 
+                        arguments: {
+                          "id": playlistId,
+                          "title": title, 
+                          "musicTitle": musicTitle, 
+                          "artist": artist, 
+                          "createdBy": createdBy, 
+                          "createTime": createTime,
+                          "description": description,
+                          "count": musicCount
+                        }
+                      );
+                    }, child: Text(S.current.singlePlayer)),
                     SizedBox(width:MediaQuery.of(context).size.width * 0.045),
                     if(isLogin)...[
                       ElevatedButton(
-                        onPressed: (){}, child: Text(S.current.multiPlayer)
+                        onPressed: (){
+                          Navigator.of(context).pushNamed(
+                            "MultiPlayer", 
+                            arguments: {
+                              "id": playlistId,
+                              "title": title, 
+                              "musicTitle": musicTitle, 
+                              "artist": artist, 
+                              "createdBy": createdBy, 
+                              "createTime": createTime,
+                              "description": description,
+                              "count": musicCount
+                            }
+                          );
+                        }, child: Text(S.current.multiPlayer)
                       )
                     ] else...[
                       TextButton(

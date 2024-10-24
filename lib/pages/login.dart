@@ -26,10 +26,26 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final response = await http.get(Uri.parse('http://hungryhenry.xyz')).timeout(const Duration(seconds:7));
       if (response.statusCode != 200) {
-        showDialogFunction(S.current.connectError, true);
+        await showDialog(context: context, builder: (context){
+          return AlertDialog(
+            content: Text(S.current.bug),
+            actions: [
+              TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: Text(S.current.retry)),
+              TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+            ],
+          );
+        });
       }
     } catch (e) {
-      showDialogFunction(S.current.connectError, true);
+      await showDialog(context: context, builder: (context){
+        return AlertDialog(
+          content: Text(S.current.connectError),
+          actions: [
+            TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: Text(S.current.retry)),
+            TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+          ],
+        );
+      });
     }
   }
 
@@ -74,8 +90,16 @@ class _LoginPageState extends State<LoginPage> {
         // 未知错误
         if(mounted){
           setState((){
-            _errorMessage = S.current.unknownError;
             loginText = S.current.login;
+          });
+          await showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Text(S.current.unknownError),
+              actions: [
+                TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: Text(S.current.retry)),
+                TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+              ],
+            );
           });
           print(response.body);
         }
@@ -85,7 +109,15 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           loginText = S.current.login;
         });
-        showDialogFunction(S.current.connectError, true); return;
+        await showDialog(context: context, builder: (context){
+          return AlertDialog(
+            content: Text(S.current.connectError),
+            actions: [
+              TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: Text(S.current.retry)),
+              TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+            ],
+          );
+        });
       }
     }
   }
@@ -110,13 +142,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _guest(){
-    Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
-  }
-
-  void showDialogFunction(String title, bool retry) async {
-    
-  }
 
   Future<void> loginUsingStorage() async {
     String? username = await storage.read(key: 'username');
@@ -134,8 +159,8 @@ class _LoginPageState extends State<LoginPage> {
           return AlertDialog(
               content: Text(S.current.loginExpired),
               actions: [
-                  TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: const Text("重试")),
-                  TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+                TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: Text(S.current.relogin)),
+                TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
               ],
           );
         });
@@ -253,7 +278,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: ButtonStyle(
                             backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(166, 151, 151, 151)),
                           ),
-                          onPressed: _guest,
+                          onPressed: (){Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);},
                           child: Text(
                             S.current.guest,
                             style:const TextStyle(

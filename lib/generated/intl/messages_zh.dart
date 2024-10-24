@@ -25,6 +25,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("账户"),
+        "backToHome": MessageLookupByLibrary.simpleMessage("返回主页"),
         "bug": MessageLookupByLibrary.simpleMessage(
             "游戏出现BUG了，请反馈给hamrui@outlook.com"),
         "connectError":
@@ -38,6 +39,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "hot": MessageLookupByLibrary.simpleMessage("热门🔥"),
         "incorrect": MessageLookupByLibrary.simpleMessage("错误"),
         "likes": MessageLookupByLibrary.simpleMessage("赞"),
+        "loading": MessageLookupByLibrary.simpleMessage("加载中..."),
         "loggingIn": MessageLookupByLibrary.simpleMessage("登录中..."),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
         "loginExpired": MessageLookupByLibrary.simpleMessage("登录已过期，请重新登录"),
@@ -50,7 +52,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "rank": MessageLookupByLibrary.simpleMessage("排行榜"),
         "recm": MessageLookupByLibrary.simpleMessage("推荐"),
         "register": MessageLookupByLibrary.simpleMessage("没有账号? 点此注册!"),
-        "retry": MessageLookupByLibrary.simpleMessage("重试🔄"),
+        "relogin": MessageLookupByLibrary.simpleMessage("重新登录"),
+        "retry": MessageLookupByLibrary.simpleMessage("重试"),
         "search": MessageLookupByLibrary.simpleMessage("搜索歌单、歌曲或歌手"),
         "singlePlayer": MessageLookupByLibrary.simpleMessage("单人模式"),
         "songs": MessageLookupByLibrary.simpleMessage("歌曲"),
