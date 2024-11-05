@@ -200,6 +200,16 @@ class S {
     );
   }
 
+  /// `Cancel`
+  String get cancel {
+    return Intl.message(
+      'Cancel',
+      name: 'cancel',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Re-Login`
   String get relogin {
     return Intl.message(
@@ -370,13 +380,93 @@ class S {
     );
   }
 
-  /// `Contains {title} - {artist} and more`
-  String contains(Object title, Object artist) {
+  /// `Contains {count} songs including {title} - {artist} and more`
+  String contains(Object count, Object title, Object artist) {
     return Intl.message(
-      'Contains $title - $artist and more',
+      'Contains $count songs including $title - $artist and more',
       name: 'contains',
       desc: '',
-      args: [title, artist],
+      args: [count, title, artist],
+    );
+  }
+
+  /// `No Description`
+  String get noDes {
+    return Intl.message(
+      'No Description',
+      name: 'noDes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Easy`
+  String get easy {
+    return Intl.message(
+      'Easy',
+      name: 'easy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Normal`
+  String get normal {
+    return Intl.message(
+      'Normal',
+      name: 'normal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hard`
+  String get hard {
+    return Intl.message(
+      'Hard',
+      name: 'hard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Custom`
+  String get custom {
+    return Intl.message(
+      'Custom',
+      name: 'custom',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Easy mode: 5 times mistake chances, 4 options to choose for Artist or Music title`
+  String get easyInfo {
+    return Intl.message(
+      'Easy mode: 5 times mistake chances, 4 options to choose for Artist or Music title',
+      name: 'easyInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Normal mode: 3 times mistake chances, 4 options to choose or fill in the blanks with hints for Artist or Music title or Album`
+  String get normalInfo {
+    return Intl.message(
+      'Normal mode: 3 times mistake chances, 4 options to choose or fill in the blanks with hints for Artist or Music title or Album',
+      name: 'normalInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hard mode: 2 times mistake chances, fill in the blanks for Artist or Music title or Album`
+  String get hardInfo {
+    return Intl.message(
+      'Hard mode: 2 times mistake chances, fill in the blanks for Artist or Music title or Album',
+      name: 'hardInfo',
+      desc: '',
+      args: [],
     );
   }
 }

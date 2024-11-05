@@ -159,8 +159,12 @@ class _LoginPageState extends State<LoginPage> {
           return AlertDialog(
               content: Text(S.current.loginExpired),
               actions: [
-                TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: Text(S.current.relogin)),
-                TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+                TextButton(onPressed: () async {
+                  String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+                  await storage.write(key: 'date', value: formattedDate);
+                  Navigator.pushNamed(context, 'login');
+                }, child: Text(S.current.relogin)),
+                TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.cancel)),
               ],
           );
         });

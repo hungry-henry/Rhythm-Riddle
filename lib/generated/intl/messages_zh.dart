@@ -20,7 +20,8 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'zh';
 
-  static String m0(title, artist) => "包含 ${title} - ${artist} 等歌曲";
+  static String m0(count, title, artist) =>
+      "包含 ${title} - ${artist} 等 ${count} 首歌曲";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -28,13 +29,21 @@ class MessageLookup extends MessageLookupByLibrary {
         "backToHome": MessageLookupByLibrary.simpleMessage("返回主页"),
         "bug": MessageLookupByLibrary.simpleMessage(
             "游戏出现BUG了，请反馈给hamrui@outlook.com"),
+        "cancel": MessageLookupByLibrary.simpleMessage("取消"),
         "connectError":
             MessageLookupByLibrary.simpleMessage("无法连接至服务器，请稍后再试或离线游玩"),
         "contains": m0,
+        "custom": MessageLookupByLibrary.simpleMessage("自定义"),
+        "easy": MessageLookupByLibrary.simpleMessage("简单"),
+        "easyInfo":
+            MessageLookupByLibrary.simpleMessage("简单模式：5次失误机会，曲名或歌手4选1"),
         "emailOrName": MessageLookupByLibrary.simpleMessage("邮箱/用户名"),
         "emptyemail": MessageLookupByLibrary.simpleMessage("请输入邮箱"),
         "emptypassword": MessageLookupByLibrary.simpleMessage("请输入密码"),
         "guest": MessageLookupByLibrary.simpleMessage("离线模式"),
+        "hard": MessageLookupByLibrary.simpleMessage("困难"),
+        "hardInfo":
+            MessageLookupByLibrary.simpleMessage("困难模式：2次失误机会，曲名或歌手或专辑填空"),
         "home": MessageLookupByLibrary.simpleMessage("主页🏠"),
         "hot": MessageLookupByLibrary.simpleMessage("热门🔥"),
         "incorrect": MessageLookupByLibrary.simpleMessage("错误"),
@@ -45,6 +54,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginExpired": MessageLookupByLibrary.simpleMessage("登录已过期，请重新登录"),
         "multiPlayer": MessageLookupByLibrary.simpleMessage("多人模式"),
         "name": MessageLookupByLibrary.simpleMessage("旋律疑谜"),
+        "noDes": MessageLookupByLibrary.simpleMessage("暂无简介"),
+        "normal": MessageLookupByLibrary.simpleMessage("普通"),
+        "normalInfo": MessageLookupByLibrary.simpleMessage(
+            "普通模式：3次失误机会，曲名或歌手或专辑 4选1或有提示的填空"),
         "ok": MessageLookupByLibrary.simpleMessage("确定👌"),
         "or": MessageLookupByLibrary.simpleMessage("或"),
         "password": MessageLookupByLibrary.simpleMessage("密码"),

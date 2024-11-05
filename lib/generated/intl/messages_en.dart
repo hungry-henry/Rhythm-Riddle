@@ -20,7 +20,8 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static String m0(title, artist) => "Contains ${title} - ${artist} and more";
+  static String m0(count, title, artist) =>
+      "Contains ${count} songs including ${title} - ${artist} and more";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -28,15 +29,23 @@ class MessageLookup extends MessageLookupByLibrary {
         "backToHome": MessageLookupByLibrary.simpleMessage("Back to Home"),
         "bug": MessageLookupByLibrary.simpleMessage(
             "A bug appeared, pls report to hamrui@outlook.com"),
+        "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "connectError": MessageLookupByLibrary.simpleMessage(
             "Cannot connect to server. Pls try again later or use offline mode"),
         "contains": m0,
+        "custom": MessageLookupByLibrary.simpleMessage("Custom"),
+        "easy": MessageLookupByLibrary.simpleMessage("Easy"),
+        "easyInfo": MessageLookupByLibrary.simpleMessage(
+            "Easy mode: 5 times mistake chances, 4 options to choose for Artist or Music title"),
         "emailOrName": MessageLookupByLibrary.simpleMessage("E-mail/Username"),
         "emptyemail":
             MessageLookupByLibrary.simpleMessage("Please enter your email"),
         "emptypassword":
             MessageLookupByLibrary.simpleMessage("Please enter your password"),
         "guest": MessageLookupByLibrary.simpleMessage("offline mode"),
+        "hard": MessageLookupByLibrary.simpleMessage("Hard"),
+        "hardInfo": MessageLookupByLibrary.simpleMessage(
+            "Hard mode: 2 times mistake chances, fill in the blanks for Artist or Music title or Album"),
         "home": MessageLookupByLibrary.simpleMessage("Home🏠"),
         "hot": MessageLookupByLibrary.simpleMessage("Hot🔥"),
         "incorrect": MessageLookupByLibrary.simpleMessage("incorrect"),
@@ -48,6 +57,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "login info expired, pls login again"),
         "multiPlayer": MessageLookupByLibrary.simpleMessage("Multi Player"),
         "name": MessageLookupByLibrary.simpleMessage("Rhythm Riddle"),
+        "noDes": MessageLookupByLibrary.simpleMessage("No Description"),
+        "normal": MessageLookupByLibrary.simpleMessage("Normal"),
+        "normalInfo": MessageLookupByLibrary.simpleMessage(
+            "Normal mode: 3 times mistake chances, 4 options to choose or fill in the blanks with hints for Artist or Music title or Album"),
         "ok": MessageLookupByLibrary.simpleMessage("OK👌"),
         "or": MessageLookupByLibrary.simpleMessage("or"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
