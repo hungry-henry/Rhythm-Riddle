@@ -78,8 +78,9 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
           return AlertDialog(
               content: Text(S.current.bug),
               actions: [
-                  TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
-}, child: Text(S.current.ok)),
+                TextButton(onPressed: () { 
+                  Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => false);
+                }, child: Text(S.current.ok)),
               ],
           );
         });
@@ -92,8 +93,9 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
             return AlertDialog(
                 content: Text(S.current.unknownError),
                 actions: [
-                    TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
-}, child: Text(S.current.ok)),
+                  TextButton(onPressed: () { 
+                    Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => false);
+                  }, child: Text(S.current.ok)),
                 ],
             );
           });
@@ -109,7 +111,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
             return AlertDialog(
                 content: Text(S.current.connectError),
                 actions: [
-                    TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
+                    TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => false);
 }, child: Text(S.current.ok)),
                 ],
             );
@@ -119,7 +121,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
             return AlertDialog(
                 content: Text(S.current.bug),
                 actions: [
-                    TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
+                    TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => false);
 }, child: Text(S.current.ok)),
                 ],
             );

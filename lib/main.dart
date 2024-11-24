@@ -44,6 +44,7 @@ class MyApp extends StatelessWidget {
         'search': (context) => Search(),
         'PlaylistInfo': (context) => PlaylistInfo(),
         'SinglePlayer': (context) => SinglePlayer(),
+        'SinglePlayerGame': (context) => SinglePlayerGame(),
         'MultiPlayer': (context) => MultiPlayer(),
       },
     );

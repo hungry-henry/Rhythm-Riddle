@@ -77,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
         DateTime now = DateTime.now();
         String formattedDate = DateFormat('yyyy-MM-dd').format(now);
         await storage.write(key: 'date', value: formattedDate);
-        Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);
+        Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => false);
       } else if (response.statusCode == 401) {
         // 验证错误
         if(mounted){
@@ -282,7 +282,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: ButtonStyle(
                             backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(166, 151, 151, 151)),
                           ),
-                          onPressed: (){Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => route == null);},
+                          onPressed: (){Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => false);},
                           child: Text(
                             S.current.guest,
                             style:const TextStyle(

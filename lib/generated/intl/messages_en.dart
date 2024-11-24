@@ -25,7 +25,10 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "MultiPlayerGame":
+            MessageLookupByLibrary.simpleMessage("Multi Player Game"),
         "account": MessageLookupByLibrary.simpleMessage("Account"),
+        "back": MessageLookupByLibrary.simpleMessage("Back"),
         "backToHome": MessageLookupByLibrary.simpleMessage("Back to Home"),
         "bug": MessageLookupByLibrary.simpleMessage(
             "A bug appeared, pls report to hamrui@outlook.com"),
@@ -56,6 +59,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginExpired": MessageLookupByLibrary.simpleMessage(
             "login info expired, pls login again"),
         "multiPlayer": MessageLookupByLibrary.simpleMessage("Multi Player"),
+        "multiPlayerOptions":
+            MessageLookupByLibrary.simpleMessage("Multi Player Options"),
         "name": MessageLookupByLibrary.simpleMessage("Rhythm Riddle"),
         "noDes": MessageLookupByLibrary.simpleMessage("No Description"),
         "normal": MessageLookupByLibrary.simpleMessage("Normal"),
@@ -74,8 +79,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "search": MessageLookupByLibrary.simpleMessage(
             "Search playlist, song and artist"),
         "singlePlayer": MessageLookupByLibrary.simpleMessage("Single Player"),
+        "singlePlayerGame":
+            MessageLookupByLibrary.simpleMessage("Single Player Game"),
+        "singlePlayerOptions":
+            MessageLookupByLibrary.simpleMessage("Single Player Options"),
         "songs": MessageLookupByLibrary.simpleMessage("Songs"),
         "sort": MessageLookupByLibrary.simpleMessage("Sort"),
+        "start": MessageLookupByLibrary.simpleMessage("Start"),
         "unknownError": MessageLookupByLibrary.simpleMessage(
             "Cannot connect to server. Pls use offline mode or contact hamrui@outlook.com")
       };

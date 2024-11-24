@@ -26,6 +26,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("账户"),
+        "back": MessageLookupByLibrary.simpleMessage("返回"),
         "backToHome": MessageLookupByLibrary.simpleMessage("返回主页"),
         "bug": MessageLookupByLibrary.simpleMessage(
             "游戏出现BUG了，请反馈给hamrui@outlook.com"),
@@ -53,6 +54,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "login": MessageLookupByLibrary.simpleMessage("登录"),
         "loginExpired": MessageLookupByLibrary.simpleMessage("登录已过期，请重新登录"),
         "multiPlayer": MessageLookupByLibrary.simpleMessage("多人模式"),
+        "multiPlayerOptions": MessageLookupByLibrary.simpleMessage("多人模式选项"),
         "name": MessageLookupByLibrary.simpleMessage("旋律疑谜"),
         "noDes": MessageLookupByLibrary.simpleMessage("暂无简介"),
         "normal": MessageLookupByLibrary.simpleMessage("普通"),
@@ -69,8 +71,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "retry": MessageLookupByLibrary.simpleMessage("重试"),
         "search": MessageLookupByLibrary.simpleMessage("搜索歌单、歌曲或歌手"),
         "singlePlayer": MessageLookupByLibrary.simpleMessage("单人模式"),
+        "singlePlayerGame": MessageLookupByLibrary.simpleMessage("单人游戏"),
+        "singlePlayerOptions": MessageLookupByLibrary.simpleMessage("单人模式选项"),
         "songs": MessageLookupByLibrary.simpleMessage("歌曲"),
         "sort": MessageLookupByLibrary.simpleMessage("分类"),
+        "start": MessageLookupByLibrary.simpleMessage("开始游戏"),
         "unknownError": MessageLookupByLibrary.simpleMessage(
             "软件/服务器问题，请重试或免登录进入或联系hamrui@outlook.com")
       };

@@ -240,6 +240,16 @@ class S {
     );
   }
 
+  /// `Back`
+  String get back {
+    return Intl.message(
+      'Back',
+      name: 'back',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Loading...`
   String get loading {
     return Intl.message(
@@ -380,6 +390,26 @@ class S {
     );
   }
 
+  /// `Single Player Options`
+  String get singlePlayerOptions {
+    return Intl.message(
+      'Single Player Options',
+      name: 'singlePlayerOptions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Multi Player Options`
+  String get multiPlayerOptions {
+    return Intl.message(
+      'Multi Player Options',
+      name: 'multiPlayerOptions',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Contains {count} songs including {title} - {artist} and more`
   String contains(Object count, Object title, Object artist) {
     return Intl.message(
@@ -465,6 +495,36 @@ class S {
     return Intl.message(
       'Hard mode: 2 times mistake chances, fill in the blanks for Artist or Music title or Album',
       name: 'hardInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start`
+  String get start {
+    return Intl.message(
+      'Start',
+      name: 'start',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Single Player Game`
+  String get singlePlayerGame {
+    return Intl.message(
+      'Single Player Game',
+      name: 'singlePlayerGame',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Multi Player Game`
+  String get MultiPlayerGame {
+    return Intl.message(
+      'Multi Player Game',
+      name: 'MultiPlayerGame',
       desc: '',
       args: [],
     );
