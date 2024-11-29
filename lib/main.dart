@@ -8,9 +8,10 @@ import 'package:window_size/window_size.dart' as window_size;
 import 'pages/login.dart';
 import 'pages/home.dart';
 import 'pages/search.dart';
-import 'pages/game/PlaylistInfo.dart';
-import 'pages/game/SinglePlayer.dart';
-import 'pages/game/MultiPlayer.dart';
+import 'pages/game/playlist_info.dart';
+import 'pages/game/singe_player.dart';
+import 'pages/game/multi_player.dart';
+import 'pages/test.dart';
 
 void main(){  
   if(Platform.isWindows || Platform.isMacOS || Platform.isLinux){
