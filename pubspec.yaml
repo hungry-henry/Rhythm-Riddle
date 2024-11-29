@@ -53,6 +53,7 @@ dependencies:
         path: plugins/window_size
         ref: f2d8aa3820fb87316516670bf4d51a74de8ac0dd
   audioplayers: ^6.1.0
+  logger: ^2.5.0
 
 dev_dependencies:
   flutter_test:

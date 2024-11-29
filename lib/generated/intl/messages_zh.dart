@@ -31,8 +31,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "bug": MessageLookupByLibrary.simpleMessage(
             "游戏出现BUG了，请反馈给hamrui@outlook.com"),
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
+        "chooseDifficulty": MessageLookupByLibrary.simpleMessage("选择难度"),
         "connectError":
-            MessageLookupByLibrary.simpleMessage("无法连接至服务器，请稍后再试或离线游玩"),
+            MessageLookupByLibrary.simpleMessage("无法连接至服务器，请稍后再试或使用本地歌单游玩"),
         "contains": m0,
         "custom": MessageLookupByLibrary.simpleMessage("自定义"),
         "easy": MessageLookupByLibrary.simpleMessage("简单"),
@@ -76,6 +77,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "songs": MessageLookupByLibrary.simpleMessage("歌曲"),
         "sort": MessageLookupByLibrary.simpleMessage("分类"),
         "start": MessageLookupByLibrary.simpleMessage("开始游戏"),
+        "submit": MessageLookupByLibrary.simpleMessage("提交"),
         "unknownError": MessageLookupByLibrary.simpleMessage(
             "软件/服务器问题，请重试或免登录进入或联系hamrui@outlook.com")
       };

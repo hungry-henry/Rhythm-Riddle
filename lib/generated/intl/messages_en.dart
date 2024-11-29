@@ -33,6 +33,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "bug": MessageLookupByLibrary.simpleMessage(
             "A bug appeared, pls report to hamrui@outlook.com"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+        "chooseDifficulty":
+            MessageLookupByLibrary.simpleMessage("Choose Difficulty"),
         "connectError": MessageLookupByLibrary.simpleMessage(
             "Cannot connect to server. Pls try again later or use offline mode"),
         "contains": m0,
@@ -86,6 +88,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "songs": MessageLookupByLibrary.simpleMessage("Songs"),
         "sort": MessageLookupByLibrary.simpleMessage("Sort"),
         "start": MessageLookupByLibrary.simpleMessage("Start"),
+        "submit": MessageLookupByLibrary.simpleMessage("Submit"),
         "unknownError": MessageLookupByLibrary.simpleMessage(
             "Cannot connect to server. Pls use offline mode or contact hamrui@outlook.com")
       };

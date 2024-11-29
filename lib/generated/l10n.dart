@@ -430,6 +430,16 @@ class S {
     );
   }
 
+  /// `Choose Difficulty`
+  String get chooseDifficulty {
+    return Intl.message(
+      'Choose Difficulty',
+      name: 'chooseDifficulty',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Easy`
   String get easy {
     return Intl.message(
@@ -525,6 +535,16 @@ class S {
     return Intl.message(
       'Multi Player Game',
       name: 'MultiPlayerGame',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Submit`
+  String get submit {
+    return Intl.message(
+      'Submit',
+      name: 'submit',
       desc: '',
       args: [],
     );

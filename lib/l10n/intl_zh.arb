@@ -12,7 +12,7 @@
     "emptypassword": "请输入密码",
     "unknownError": "软件/服务器问题，请重试或免登录进入或联系hamrui@outlook.com",
     "loginExpired": "登录已过期，请重新登录",
-    "connectError": "无法连接至服务器，请稍后再试或离线游玩",
+    "connectError": "无法连接至服务器，请稍后再试或使用本地歌单游玩",
     "ok": "确定👌", "cancel": "取消", "relogin":"重新登录", "retry": "重试", 
     "backToHome": "返回主页", "back": "返回",
     "loading": "加载中...",
@@ -27,10 +27,13 @@
     "singlePlayerOptions": "单人模式选项", "multiPlayerOptions": "多人模式选项",
     "contains": "包含 {title} - {artist} 等 {count} 首歌曲",
     "noDes": "暂无简介",
+    "chooseDifficulty": "选择难度",
     "easy": "简单", "normal": "普通", "hard": "困难", "custom": "自定义",
     "easyInfo": "简单模式：5次失误机会，曲名或歌手4选1",
     "normalInfo": "普通模式：3次失误机会，曲名或歌手或专辑 4选1或有提示的填空",
     "hardInfo": "困难模式：2次失误机会，曲名或歌手或专辑填空",
     "start": "开始游戏",
-    "singlePlayerGame": "单人游戏", "multiPlayerGame": "多人游戏"
+    "singlePlayerGame": "单人游戏", "multiPlayerGame": "多人游戏",
+
+    "submit": "提交"
 }

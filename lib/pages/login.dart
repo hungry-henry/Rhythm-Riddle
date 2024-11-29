@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../generated/l10n.dart';
@@ -66,6 +68,8 @@ class _LoginPageState extends State<LoginPage> {
       ).timeout(const Duration(seconds:7));
 
       if(!context.mounted) return;
+      
+      print(response.body);
 
       if (response.statusCode == 200) {
         // LET'S GOOOOOO
@@ -101,23 +105,35 @@ class _LoginPageState extends State<LoginPage> {
               ],
             );
           });
-          print(response.body);
         }
       }
     }catch (e){
+      print(e);
       if(mounted){
         setState(() {
           loginText = S.current.login;
         });
-        await showDialog(context: context, builder: (context){
-          return AlertDialog(
-            content: Text(S.current.connectError),
-            actions: [
-              TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: Text(S.current.retry)),
-              TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
-            ],
-          );
-        });
+        if(e is TimeoutException){
+          await showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Text(S.current.connectError),
+              actions: [
+                TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: Text(S.current.retry)),
+                TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+              ],
+            );
+          });
+        }else{
+          await showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Text(S.current.unknownError),
+              actions: [
+                TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: Text(S.current.retry)),
+                TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+              ],
+            );
+          });
+        }
       }
     }
   }

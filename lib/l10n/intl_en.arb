@@ -27,10 +27,13 @@
     "singlePlayerOptions": "Single Player Options", "multiPlayerOptions": "Multi Player Options",
     "contains": "Contains {count} songs including {title} - {artist} and more",
     "noDes": "No Description",
+    "chooseDifficulty": "Choose Difficulty",
     "easy": "Easy", "normal": "Normal", "hard": "Hard", "custom": "Custom",
     "easyInfo": "Easy mode: 5 times mistake chances, 4 options to choose for Artist or Music title",
     "normalInfo": "Normal mode: 3 times mistake chances, 4 options to choose or fill in the blanks with hints for Artist or Music title or Album",
     "hardInfo": "Hard mode: 2 times mistake chances, fill in the blanks for Artist or Music title or Album",
     "start": "Start",
-    "singlePlayerGame": "Single Player Game", "MultiPlayerGame": "Multi Player Game"
+    "singlePlayerGame": "Single Player Game", "MultiPlayerGame": "Multi Player Game",
+
+    "submit": "Submit"
 }
