@@ -39,6 +39,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Cannot connect to server. Pls try again later or use offline mode"),
         "contains": m0,
         "custom": MessageLookupByLibrary.simpleMessage("Custom"),
+        "difficulty": MessageLookupByLibrary.simpleMessage("Difficulty"),
         "easy": MessageLookupByLibrary.simpleMessage("Easy"),
         "easyInfo": MessageLookupByLibrary.simpleMessage(
             "Easy mode: 5 times mistake chances, 4 options to choose for Artist or Music title"),

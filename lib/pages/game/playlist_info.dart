@@ -59,7 +59,6 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
         })
       ).timeout(const Duration(seconds:7));
 
-      print(response.body);
       if(response.statusCode == 200 && mounted){
         setState(() {
           title = jsonDecode(response.body)['data']['playlist_title'];
@@ -88,6 +87,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
           isLoading = false;
         });
       }else{
+        print(response.body);
         if(mounted){
           await showDialog(context: context, builder: (context){
             return AlertDialog(
@@ -153,7 +153,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
       appBar: AppBar(title:Text(title)),
       body: isLoading ? const Center(child: CircularProgressIndicator()) : LayoutBuilder(
         builder: (context, constraints){
-          bool isSmallScreen = constraints.maxWidth < 600;
+          bool isSmallScreen = constraints.maxWidth < 800;
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: isSmallScreen ? _buildSmallScreenLayout() : _buildLargeScreenLayout()
@@ -164,92 +164,87 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
   }
 
   Widget _buildSmallScreenLayout() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Center(
-            child: Column(
-              children: [
-                Image.network(
-                  "http://hungryhenry.xyz/musiclab/playlist/$playlistId.jpg",
-                  width: MediaQuery.of(context).size.width < MediaQuery.of(context).size.height * 0.3 ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height * 0.4,
-                  fit: BoxFit.cover,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Center(
+          child: Column(
+            children: [
+              Image.network(
+                "http://hungryhenry.xyz/musiclab/playlist/$playlistId.jpg",
+                width: MediaQuery.of(context).size.width < MediaQuery.of(context).size.height * 0.3 ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height * 0.4,
+                fit: BoxFit.cover,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(createdBy),
-                    const SizedBox(width: 25),
-                    const Text("|"),
-                    const SizedBox(width: 25),
-                    Text(createTime)
-                  ]
-                )
-              ]
-            ),
-          ),
-          _buildInfoRow(),
-          Text(S.current.contains(musicTitle, artist, musicCount)),
-          Row(
-            mainAxisAlignment:MainAxisAlignment.center,
-            children: [ElevatedButton(onPressed: (){
-              Navigator.of(context).pushNamed(
-                "SinglePlayer", 
-                arguments: {
-                  "id": playlistId,
-                  "title": title, 
-                  "musicTitle": musicTitle, 
-                  "artist": artist, 
-                  "createdBy": createdBy, 
-                  "createTime": createTime,
-                  "description": description,
-                  "count": musicCount
-                }
-              );
-            }, child: Text(S.current.singlePlayer)),
-            const SizedBox(width:50),
-            if(isLogin)...[
-              ElevatedButton(
-                onPressed: (){
-                  Navigator.of(context).pushNamed(
-                    "MultiPlayer", 
-                    arguments: {
-                      "id": playlistId,
-                      "title": title, 
-                      "musicTitle": musicTitle, 
-                      "artist": artist, 
-                      "createdBy": createdBy, 
-                      "createTime": createTime,
-                      "description": description,
-                      "count": musicCount
-                    }
-                  );
-                }, child: Text(S.current.multiPlayer)
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(createdBy),
+                  const SizedBox(width: 25),
+                  const Text("|"),
+                  const SizedBox(width: 25),
+                  Text(createTime)
+                ]
               )
-            ] else...[
-              TextButton(
-                onPressed:null,
-                style:ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(Colors.grey[350]),
-                  padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 25, vertical: 10)),
-                ), 
-                child:Text(S.current.multiPlayer)
-              )
-            ]]
+            ]
           ),
-          const SizedBox(height: 30)
-        ],
-      )
+        ),
+        _buildInfoRow(),
+        Text(S.current.contains(musicTitle, artist, musicCount)),
+        Row(
+          mainAxisAlignment:MainAxisAlignment.center,
+          children: [ElevatedButton(onPressed: (){
+            Navigator.of(context).pushNamed(
+              "SinglePlayer", 
+              arguments: {
+                "id": playlistId,
+                "title": title, 
+                "createdBy": createdBy, 
+                "createTime": createTime,
+                "description": description,
+              }
+            );
+          }, child: Text(S.current.singlePlayer)),
+          const SizedBox(width:50),
+          if(isLogin)...[
+            ElevatedButton(
+              onPressed: (){
+                Navigator.of(context).pushNamed(
+                  "MultiPlayer", 
+                  arguments: {
+                    "id": playlistId,
+                    "title": title, 
+                    "musicTitle": musicTitle, 
+                    "artist": artist, 
+                    "createdBy": createdBy, 
+                    "createTime": createTime,
+                    "description": description,
+                    "count": musicCount
+                  }
+                );
+              }, child: Text(S.current.multiPlayer)
+            )
+          ] else...[
+            TextButton(
+              onPressed:null,
+              style:ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(Colors.grey[350]),
+                padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 25, vertical: 10)),
+              ), 
+              child:Text(S.current.multiPlayer)
+            )
+          ]]
+        ),
+        const SizedBox(height: 30)
+      ],
     );
   }
 

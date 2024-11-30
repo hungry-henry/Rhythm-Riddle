@@ -36,6 +36,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("无法连接至服务器，请稍后再试或使用本地歌单游玩"),
         "contains": m0,
         "custom": MessageLookupByLibrary.simpleMessage("自定义"),
+        "difficulty": MessageLookupByLibrary.simpleMessage("难度"),
         "easy": MessageLookupByLibrary.simpleMessage("简单"),
         "easyInfo":
             MessageLookupByLibrary.simpleMessage("简单模式：5次失误机会，曲名或歌手4选1"),

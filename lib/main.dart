@@ -9,7 +9,7 @@ import 'pages/login.dart';
 import 'pages/home.dart';
 import 'pages/search.dart';
 import 'pages/game/playlist_info.dart';
-import 'pages/game/singe_player.dart';
+import 'pages/game/single_player.dart';
 import 'pages/game/multi_player.dart';
 import 'pages/test.dart';
 

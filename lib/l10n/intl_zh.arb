@@ -27,7 +27,7 @@
     "singlePlayerOptions": "单人模式选项", "multiPlayerOptions": "多人模式选项",
     "contains": "包含 {title} - {artist} 等 {count} 首歌曲",
     "noDes": "暂无简介",
-    "chooseDifficulty": "选择难度",
+    "chooseDifficulty": "选择难度", "difficulty": "难度",
     "easy": "简单", "normal": "普通", "hard": "困难", "custom": "自定义",
     "easyInfo": "简单模式：5次失误机会，曲名或歌手4选1",
     "normalInfo": "普通模式：3次失误机会，曲名或歌手或专辑 4选1或有提示的填空",

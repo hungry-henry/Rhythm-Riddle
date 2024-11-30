@@ -440,6 +440,16 @@ class S {
     );
   }
 
+  /// `Difficulty`
+  String get difficulty {
+    return Intl.message(
+      'Difficulty',
+      name: 'difficulty',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Easy`
   String get easy {
     return Intl.message(
