@@ -33,8 +33,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "bug": MessageLookupByLibrary.simpleMessage(
             "A bug appeared, pls report to hamrui@outlook.com"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+        "chooseArtist": MessageLookupByLibrary.simpleMessage(
+            "Choose the artist of the playing music"),
         "chooseDifficulty":
             MessageLookupByLibrary.simpleMessage("Choose Difficulty"),
+        "chooseMusic": MessageLookupByLibrary.simpleMessage(
+            "Choose the music you think is playing"),
         "connectError": MessageLookupByLibrary.simpleMessage(
             "Cannot connect to server. Pls try again later or use offline mode"),
         "contains": m0,

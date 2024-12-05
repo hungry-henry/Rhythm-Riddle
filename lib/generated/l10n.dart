@@ -559,6 +559,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Choose the music you think is playing`
+  String get chooseMusic {
+    return Intl.message(
+      'Choose the music you think is playing',
+      name: 'chooseMusic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose the artist of the playing music`
+  String get chooseArtist {
+    return Intl.message(
+      'Choose the artist of the playing music',
+      name: 'chooseArtist',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

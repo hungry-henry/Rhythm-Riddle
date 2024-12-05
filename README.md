@@ -42,6 +42,14 @@ todo:
 - **PHP**：后端 API 通过 PHP 与 MySQL 数据库通信。
 - **MySQL**：用于存储用户数据、歌曲信息和游戏进度的数据库。
 
+### 部分编写代码时间记录
+![](img_for_readme/24.9.16-24.9.22.png)
+![](img_for_readme/24.9.23-24.9.29.png)
+![](img_for_readme/24.9.30-24.10.6.png)
+![](img_for_readme/24.10.07-24.10.13.png)
+![](img_for_readme/24.10.14-24.10.20.png)
+![](img_for_readme/24.11.25-24.12.1.png)
+
 ## 帮助和贡献
 贡献者的会出现在[特别感谢](#特别感谢)中，感谢大家的帮助！
 主要代码在/lib中，如果有兴趣但不知道Flutter可以在[官网](https://docs.flutter.cn/get-started/learn-flutter)上看看
@@ -54,7 +62,6 @@ todo:
 
 ### 冰美式?热巧? ☕
 [来一杯](http://hungryhenry.xyz/reward.html)我会更快的！
-
 
 ## 许可协议
 本项目基于GNU General Public License v3.0 许可协议。详情请查看[LICENSE](/LICENSE)文件。

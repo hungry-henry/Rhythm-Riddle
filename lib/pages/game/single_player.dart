@@ -426,17 +426,21 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
   //歌曲播放准备
   final _audioPlayer = AudioPlayer();
-  int played = 0;
-  int timeForPlaying = 0;  
+  int _played = 0;
+  int _timeForPlaying = 0;  
+  bool _prepareFinished = false;
 
   Logger logger = Logger(); //日志
 
-  void _prepareAudio() async {
+  Future<void> _prepareAudio() async {
+    logger.log(Level.debug, "prepare audio");
     try{
-      int id = quizzes[played.toString()]['music_id'] ?? quizzes[played.toString()]['id'];
+      int id = quizzes[_played.toString()]['music_id'] ?? quizzes[_played.toString()]['id'];
       print(id);
       await _audioPlayer.setSourceUrl("http://hungryhenry.xyz/musiclab/music/$id.mp3").timeout(const Duration(seconds: 10));
       await _audioPlayer.seek(Duration(minutes: 1, seconds: 0)); // 跳到 startAt
+      _prepareFinished = true;
+      logger.log(Level.debug, "prepared $id");
     }catch(e){
       if(e is TimeoutException && mounted){
         showDialog(context: context, builder: (context){
@@ -444,17 +448,8 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
               content: Text(S.current.connectError),
               actions: [
                 TextButton(onPressed: () { 
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pushNamed("PlaylistInfo", arguments: playlistId);
                 }, child: Text(S.current.back)),
-                TextButton(onPressed: (){
-                  Navigator.of(context).popAndPushNamed("SinglePlayerGame", 
-                  arguments: {
-                    "id": playlistId,
-                    "title": playlistTitle,
-                    "description": description,
-                    "difficulty": difficulty
-                  });
-                }, child: Text(S.current.retry))
               ],
           );
         });
@@ -464,9 +459,12 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
   //倒计时
   void _startCountdown() {
+    logger.log(Level.debug, "start countdown");
     setState(() {
       _countdown = 3; // 初始化倒计时
-      _isButtonVisible = false; // 隐藏按钮
+      _isButtonVisible = false;
+      _canShowQuiz = false;
+      _prepareFinished = false;
     });
 
     //提前加载音频
@@ -510,13 +508,13 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         print(response.body);
       }
     } catch (e) {
-      if(e is TimeoutException) {
-        await showDialog(context: context, builder: (context){
+      if(e is TimeoutException && mounted) {
+        showDialog(context: context, builder: (context){
           return AlertDialog(
               content: Text(S.current.connectError),
               actions: [
                   TextButton(onPressed: () { 
-                    Navigator.of(context).pop();
+                    Navigator.of(context).popAndPushNamed("playlist_info", arguments: playlistId);
                   }, child: Text(S.current.back)),
                   TextButton(onPressed: (){
                     Navigator.of(context).popAndPushNamed("SinglePlayerGame", 
@@ -525,7 +523,31 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
               ],
           );
         });
+      }else{
+        logger.log(Level.debug, "error: $e");
+        showDialog(context: context, builder: (context){
+          return AlertDialog(
+              content: Text(S.current.unknownError),
+              actions: [
+                  TextButton(onPressed: () { 
+                    Navigator.of(context).popAndPushNamed("playlist_info", arguments: playlistId);
+                  }, child: Text(S.current.back))
+              ],
+          );
+        });
       }
+    }
+  }
+
+  Future<void> _resumeAndDelayAndStop() async{
+    _played++;
+    if(_prepareFinished){
+      await _audioPlayer.resume();
+      logger.log(Level.debug, "played");
+      await Future.delayed(Duration(seconds: _timeForPlaying), () {
+        _audioPlayer.pause(); 
+      });
+      logger.log(Level.debug, "paused");
     }
   }
 
@@ -533,39 +555,49 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   Widget _showQuiz(Map quizInfo, int difficulty){
     String answer = quizInfo['answer']; //正确答案
     List options = quizInfo["options"]; //选项list
+    String question = "";
+
+    switch(quizInfo["quizType"]){
+      case 0: question = S.current.chooseMusic; break;
+      case 1: question = S.current.chooseArtist; break;
+      default: S.current.unknownError; break;
+    }
     
-    return Column(
-      children: [
-        Text(answer),
-        ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8, maxHeight: 180),
-          child: ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: options.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(options[index]['title'] ?? options[index]['name']),
-                leading: Radio<String>(
-                  value: options[index]['title'] ?? options[index]['name'],
-                  groupValue: _selectedOption,
-                  onChanged: (String? value) {
-                    setState(() {
-                      _selectedOption = value;
-                    });
-                  },
-                ),
-              );
-            },
+    return SizedBox(
+      width: MediaQuery.of(context).size.width > 800 ? MediaQuery.of(context).size.width * 0.7 - 350 : MediaQuery.of(context).size.width * 0.8,
+      child: Column(
+        children: [
+          Text(question, style: const TextStyle(fontSize: 20)),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8, maxHeight: 220),
+            child: ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: options.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(options[index]['title'] ?? options[index]['name']),
+                  leading: Radio<String>(
+                    value: options[index]['title'] ?? options[index]['name'],
+                    groupValue: _selectedOption,
+                    onChanged: (String? value) {
+                      setState(() {
+                        _selectedOption = value;
+                      });
+                    },
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-        ElevatedButton(onPressed: (){
-          if(quizzes[currentQuiz.toString()]['answer'] == _selectedOption){
-            _startCountdown();
-          }else{
-            logger.log(Level.info, "wrong");
-          }
-        }, child:Text(S.current.submit))
-      ],
+          ElevatedButton(onPressed: (){
+            if(answer == _selectedOption){
+              _startCountdown();
+            }else{
+              logger.log(Level.info, "wrong");
+            }
+          }, child:Text(S.current.submit))
+        ],
+      ),
     );
   }
 
@@ -701,6 +733,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     void initState() {
       super.initState();
       Future.microtask(() {
+        //获取传入参数
         final Map args = ModalRoute.of(context)?.settings.arguments as Map;
         setState(() {
           playlistId = args["id"];
@@ -708,19 +741,28 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           description = args["description"];
           difficulty = args["difficulty"];
         });
+
+        //检测audioplayer状态
+        if(_audioPlayer.state == PlayerState.disposed){
+          Navigator.of(context).popAndPushNamed("SinglePlayerGame", arguments: args);
+        }
+
+        //获取题目
         _getQuiz(playlistId, difficulty);
+
+        //难度对应时间
         switch (difficulty) {
           case 0:
-            timeForPlaying = 6;
+            _timeForPlaying = 6;
             break;
           case 1:
-            timeForPlaying = 4;
+            _timeForPlaying = 4;
             break;
           case 2:
-            timeForPlaying = 2;
+            _timeForPlaying = 2;
             break;
           default:
-            timeForPlaying = 0;
+            _timeForPlaying = 0;
         }
       });
       _audioPlayer.onLog.listen(
@@ -737,13 +779,8 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
   @override
   Widget build(BuildContext context) {
-    if(played == currentQuiz && currentQuiz != -1 && _countdown == 0){
-      _audioPlayer.resume();
-      // 延迟 timeForPlaying 秒后暂停
-      Future.delayed(Duration(seconds: 5), () {
-        _audioPlayer.pause(); 
-      });
-      played++;
+    if(_played == currentQuiz && currentQuiz != -1 && _countdown == 0) {
+      _resumeAndDelayAndStop();
     }
     return Scaffold(
       appBar: AppBar(

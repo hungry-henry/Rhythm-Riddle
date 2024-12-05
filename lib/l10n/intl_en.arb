@@ -35,5 +35,6 @@
     "start": "Start",
     "singlePlayerGame": "Single Player Game", "MultiPlayerGame": "Multi Player Game",
 
-    "submit": "Submit"
+    "submit": "Submit",
+    "chooseMusic": "Choose the music you think is playing", "chooseArtist": "Choose the artist of the playing music"
 }

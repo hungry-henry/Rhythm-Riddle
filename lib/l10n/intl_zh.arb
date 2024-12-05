@@ -35,5 +35,6 @@
     "start": "开始游戏",
     "singlePlayerGame": "单人游戏", "multiPlayerGame": "多人游戏",
 
-    "submit": "提交"
+    "submit": "提交",
+    "chooseMusic": "选择正在播放的歌曲名", "chooseArtist": "选择正在播放的歌曲的作曲家/歌手"
 }
