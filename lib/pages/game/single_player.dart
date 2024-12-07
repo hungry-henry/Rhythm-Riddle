@@ -443,9 +443,22 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       logger.log(Level.debug, "prepared $id");
     }catch(e){
       if(e is TimeoutException && mounted){
+        logger.log(Level.error, "prepare audio timeout: $e");
         showDialog(context: context, builder: (context){
           return AlertDialog(
               content: Text(S.current.connectError),
+              actions: [
+                TextButton(onPressed: () { 
+                  Navigator.of(context).pushNamed("PlaylistInfo", arguments: playlistId);
+                }, child: Text(S.current.back)),
+              ],
+          );
+        });
+      }else{
+        logger.log(Level.error, "prepare audio error: $e");
+        showDialog(context: context, builder: (context){
+          return AlertDialog(
+              content: Text(S.current.unknownError),
               actions: [
                 TextButton(onPressed: () { 
                   Navigator.of(context).pushNamed("PlaylistInfo", arguments: playlistId);
@@ -541,13 +554,18 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
   Future<void> _resumeAndDelayAndStop() async{
     _played++;
-    if(_prepareFinished){
+    if(_prepareFinished && _audioPlayer.state != PlayerState.disposed){
       await _audioPlayer.resume();
       logger.log(Level.debug, "played");
+
       await Future.delayed(Duration(seconds: _timeForPlaying), () {
-        _audioPlayer.pause(); 
+        if(_audioPlayer.state != PlayerState.disposed){
+          _audioPlayer.pause(); 
+        }
       });
       logger.log(Level.debug, "paused");
+    }else{
+      logger.log(Level.debug, "prepare not finished");
     }
   }
 
