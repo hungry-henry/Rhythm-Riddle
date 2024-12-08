@@ -78,7 +78,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
               content: Text(S.current.bug),
               actions: [
                 TextButton(onPressed: () { 
-                  Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => false);
+                  Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
                 }, child: Text(S.current.ok)),
               ],
           );
@@ -94,7 +94,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                 content: Text(S.current.unknownError),
                 actions: [
                   TextButton(onPressed: () { 
-                    Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => false);
+                    Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
                   }, child: Text(S.current.ok)),
                 ],
             );
@@ -111,7 +111,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
             return AlertDialog(
                 content: Text(S.current.connectError),
                 actions: [
-                    TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => false);
+                    TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
 }, child: Text(S.current.ok)),
                 ],
             );
@@ -121,7 +121,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
             return AlertDialog(
                 content: Text(S.current.bug),
                 actions: [
-                    TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => false);
+                    TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
 }, child: Text(S.current.ok)),
                 ],
             );
@@ -203,7 +203,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
           mainAxisAlignment:MainAxisAlignment.center,
           children: [ElevatedButton(onPressed: (){
             Navigator.of(context).pushNamed(
-              "SinglePlayer", 
+              '/SinglePlayer', 
               arguments: {
                 "id": playlistId,
                 "title": title, 
@@ -218,7 +218,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
             ElevatedButton(
               onPressed: (){
                 Navigator.of(context).pushNamed(
-                  "MultiPlayer", 
+                  "/MultiPlayer", 
                   arguments: {
                     "id": playlistId,
                     "title": title, 
@@ -300,7 +300,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                   children: [
                     ElevatedButton(onPressed: (){
                       Navigator.of(context).pushNamed(
-                        "SinglePlayer", 
+                        '/SinglePlayer', 
                         arguments: {
                           "id": playlistId,
                           "title": title, 
@@ -318,7 +318,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                       ElevatedButton(
                         onPressed: (){
                           Navigator.of(context).pushNamed(
-                            "MultiPlayer", 
+                            "/MultiPlayer", 
                             arguments: {
                               "id": playlistId,
                               "title": title, 

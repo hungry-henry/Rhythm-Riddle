@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
           return AlertDialog(
             content: Text(S.current.bug),
             actions: [
-              TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: Text(S.current.retry)),
+              TextButton(onPressed: () {Navigator.pushNamed(context, '/login');}, child: Text(S.current.retry)),
               TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
             ],
           );
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
         return AlertDialog(
           content: Text(S.current.connectError),
           actions: [
-            TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: Text(S.current.retry)),
+            TextButton(onPressed: () {Navigator.pushNamed(context, '/login');}, child: Text(S.current.retry)),
             TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
           ],
         );
@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
         DateTime now = DateTime.now();
         String formattedDate = DateFormat('yyyy-MM-dd').format(now);
         await storage.write(key: 'date', value: formattedDate);
-        Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => false);
+        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
       } else if (response.statusCode == 401) {
         // 验证错误
         if(mounted){
@@ -100,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
             return AlertDialog(
               content: Text(S.current.unknownError),
               actions: [
-                TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: Text(S.current.retry)),
+                TextButton(onPressed: () {Navigator.pushNamed(context, '/login');}, child: Text(S.current.retry)),
                 TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
               ],
             );
@@ -118,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
             return AlertDialog(
               content: Text(S.current.connectError),
               actions: [
-                TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: Text(S.current.retry)),
+                TextButton(onPressed: () {Navigator.pushNamed(context, '/login');}, child: Text(S.current.retry)),
                 TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
               ],
             );
@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
             return AlertDialog(
               content: Text(S.current.unknownError),
               actions: [
-                TextButton(onPressed: () {Navigator.pushNamed(context, 'login');}, child: Text(S.current.retry)),
+                TextButton(onPressed: () {Navigator.pushNamed(context, '/login');}, child: Text(S.current.retry)),
                 TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
               ],
             );
@@ -178,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
                 TextButton(onPressed: () async {
                   String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
                   await storage.write(key: 'date', value: formattedDate);
-                  Navigator.pushNamed(context, 'login');
+                  Navigator.pushNamed(context, '/login');
                 }, child: Text(S.current.relogin)),
                 TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.cancel)),
               ],
@@ -298,7 +298,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: ButtonStyle(
                             backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(166, 151, 151, 151)),
                           ),
-                          onPressed: (){Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => false);},
+                          onPressed: (){Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);},
                           child: Text(
                             S.current.guest,
                             style:const TextStyle(

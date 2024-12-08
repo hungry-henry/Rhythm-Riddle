@@ -185,7 +185,7 @@ class _SinglePlayerState extends State<SinglePlayer> {
               ),
               ElevatedButton(onPressed: (){
                 Navigator.pushNamed(context, 
-                'SinglePlayerGame',
+                '/SinglePlayerGame',
                 arguments: {
                   "id": playlistId,
                   "title": playlistTitle,
@@ -353,7 +353,7 @@ class _SinglePlayerState extends State<SinglePlayer> {
             ),
             ElevatedButton(onPressed: (){
               Navigator.pushNamed(context, 
-              'SinglePlayerGame',
+              '/SinglePlayerGame',
               arguments: {
                 "id": playlistId,
                 "title": playlistTitle,
@@ -408,19 +408,18 @@ class SinglePlayerGame extends StatefulWidget {
 
 class _SinglePlayerGameState extends State<SinglePlayerGame> {
   //数据传入存储
-  int playlistId = 0;
-  String playlistTitle = '';
-  String? description;
-  int difficulty = 4;
+  int _playlistId = 0;
+  String _playlistTitle = '';
+  String? _description;
+  int _difficulty = 4;
 
-  int currentQuiz = -1; //题目计数器
+  int _currentQuiz = -1; //题目计数器
 
   //计时
   int _countdown = 0; 
-  bool _isButtonVisible = true;
   bool _canShowQuiz = false;
 
-  Map quizzes = {};
+  Map _quizzes = {};
 
   String? _selectedOption; //选项
 
@@ -435,12 +434,12 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   Future<void> _prepareAudio() async {
     logger.log(Level.debug, "prepare audio");
     try{
-      int id = quizzes[_played.toString()]['music_id'] ?? quizzes[_played.toString()]['id'];
-      print(id);
+      int id = _quizzes[_played.toString()]['music_id'] ?? _quizzes[_played.toString()]['id'];
+      logger.log(Level.debug, "start preparing $id");
       await _audioPlayer.setSourceUrl("http://hungryhenry.xyz/musiclab/music/$id.mp3").timeout(const Duration(seconds: 10));
       await _audioPlayer.seek(Duration(minutes: 1, seconds: 0)); // 跳到 startAt
       _prepareFinished = true;
-      logger.log(Level.debug, "prepared $id");
+      logger.log(Level.debug, "prepare finished $id");
     }catch(e){
       if(e is TimeoutException && mounted){
         logger.log(Level.error, "prepare audio timeout: $e");
@@ -449,7 +448,8 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
               content: Text(S.current.connectError),
               actions: [
                 TextButton(onPressed: () { 
-                  Navigator.of(context).pushNamed("PlaylistInfo", arguments: playlistId);
+                  Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
+                  Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
                 }, child: Text(S.current.back)),
               ],
           );
@@ -461,7 +461,8 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
               content: Text(S.current.unknownError),
               actions: [
                 TextButton(onPressed: () { 
-                  Navigator.of(context).pushNamed("PlaylistInfo", arguments: playlistId);
+                  Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
+                  Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
                 }, child: Text(S.current.back)),
               ],
           );
@@ -472,10 +473,9 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
   //倒计时
   void _startCountdown() {
-    logger.log(Level.debug, "start countdown");
+    logger.log(Level.debug, "starting countdown");
     setState(() {
       _countdown = 3; // 初始化倒计时
-      _isButtonVisible = false;
       _canShowQuiz = false;
       _prepareFinished = false;
     });
@@ -492,8 +492,8 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       } else {
         timer.cancel(); // 停止计时器
         setState(() {
+          _currentQuiz = ++_currentQuiz;
           _countdown = 0;
-          currentQuiz = ++currentQuiz;
         });
 
         Future.delayed(const Duration(seconds: 1), () {
@@ -513,9 +513,9 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       if (!mounted) return;
       if (response.statusCode == 200) {
         setState(() {
-          quizzes = jsonDecode(response.body);
+          _quizzes = jsonDecode(response.body);
         });
-        print(quizzes);
+        print(_quizzes);
       } else {
         print("error");
         print(response.body);
@@ -527,11 +527,12 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
               content: Text(S.current.connectError),
               actions: [
                   TextButton(onPressed: () { 
-                    Navigator.of(context).popAndPushNamed("playlist_info", arguments: playlistId);
+                    Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
+                    Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
                   }, child: Text(S.current.back)),
                   TextButton(onPressed: (){
-                    Navigator.of(context).popAndPushNamed("SinglePlayerGame", 
-                    arguments: {playlistId, playlistTitle, description, difficulty});
+                    Navigator.of(context).popAndPushNamed('/SinglePlayerGame', 
+                    arguments: {playlistId, _playlistTitle, _description, difficulty});
                   }, child: Text(S.current.retry))
               ],
           );
@@ -543,7 +544,8 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
               content: Text(S.current.unknownError),
               actions: [
                   TextButton(onPressed: () { 
-                    Navigator.of(context).popAndPushNamed("playlist_info", arguments: playlistId);
+                    Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
+                    Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
                   }, child: Text(S.current.back))
               ],
           );
@@ -558,11 +560,11 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       await _audioPlayer.resume();
       logger.log(Level.debug, "played");
 
-      await Future.delayed(Duration(seconds: _timeForPlaying), () {
-        if(_audioPlayer.state != PlayerState.disposed){
+      if(_audioPlayer.state == PlayerState.playing){
+        await Future.delayed(Duration(seconds: _timeForPlaying), () {
           _audioPlayer.pause(); 
-        }
-      });
+        });
+      }
       logger.log(Level.debug, "paused");
     }else{
       logger.log(Level.debug, "prepare not finished");
@@ -609,7 +611,11 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           ),
           ElevatedButton(onPressed: (){
             if(answer == _selectedOption){
-              _startCountdown();
+              if(_currentQuiz == _quizzes.length - 1){
+                //show result
+              }else{
+                _startCountdown();
+              }
             }else{
               logger.log(Level.info, "wrong");
             }
@@ -625,18 +631,18 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       children: [
         Column(
           children: [
-            playlistId == 0 ? const Center(child: CircularProgressIndicator()) : 
-            Image.network("http://hungryhenry.xyz/musiclab/playlist/$playlistId.jpg", width:350, height:350),
+            _playlistId == 0 ? const Center(child: CircularProgressIndicator()) : 
+            Image.network("http://hungryhenry.xyz/musiclab/playlist/$_playlistId.jpg", width:350, height:350),
             const SizedBox(height: 16),
-            Text(playlistTitle, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(_playlistTitle, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            if(description != null) ... [
-              Text(description ?? "No description", style: const TextStyle(fontSize: 18), softWrap: true),
+            if(_description != null) ... [
+              Text(_description ?? "No description", style: const TextStyle(fontSize: 18), softWrap: true),
               const SizedBox(height: 14)
             ],
             Text(
-              "${S.current.difficulty}: ${difficulty == 0 ? S.current.easy : difficulty == 1 ?
-                S.current.normal : difficulty == 2 ? S.current.hard
+              "${S.current.difficulty}: ${_difficulty == 0 ? S.current.easy : _difficulty == 1 ?
+                S.current.normal : _difficulty == 2 ? S.current.hard
                 : S.current.custom}", 
               style: const TextStyle(fontSize: 18), softWrap: true
             ),
@@ -647,8 +653,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              quizzes.isEmpty ? const CircularProgressIndicator() : //加载
-              _isButtonVisible ? ElevatedButton(onPressed:(){_startCountdown();}, child: Text(S.current.start)) : //开始按钮
+              _quizzes.isEmpty ? const CircularProgressIndicator() : //加载
               AnimatedSwitcher( //动画
                 duration: const Duration(milliseconds: 800),
                 transitionBuilder: (Widget child, Animation<double> animation) {
@@ -676,8 +681,8 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                   ) : const SizedBox.shrink(),
               ),
               const SizedBox(height: 20),
-              if (currentQuiz != -1 && _canShowQuiz) ... [
-                _showQuiz(quizzes[currentQuiz.toString()], difficulty)
+              if (_currentQuiz != -1 && _canShowQuiz) ... [
+                _showQuiz(_quizzes[_currentQuiz.toString()], _difficulty)
               ]
             ],
           ),
@@ -690,17 +695,17 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          playlistId == 0 ? const Center(child: CircularProgressIndicator()) : 
-          Image.network("http://hungryhenry.xyz/musiclab/playlist/$playlistId.jpg", 
+          _playlistId == 0 ? const Center(child: CircularProgressIndicator()) : 
+          Image.network("http://hungryhenry.xyz/musiclab/playlist/$_playlistId.jpg", 
             width: MediaQuery.of(context).size.width < MediaQuery.of(context).size.height * 0.3 ? 
               MediaQuery.of(context).size.width :
               MediaQuery.of(context).size.height * 0.4,
           ),
           const SizedBox(height: 10),
-          Text(playlistTitle, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+          Text(_playlistTitle, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
           const SizedBox(height: 20),
-          Text("${S.current.difficulty}: ${difficulty == 0 ? S.current.easy : difficulty == 1 ?
-            S.current.normal : difficulty == 2 ? S.current.hard :
+          Text("${S.current.difficulty}: ${_difficulty == 0 ? S.current.easy : _difficulty == 1 ?
+            S.current.normal : _difficulty == 2 ? S.current.hard :
             S.current.custom}", style: const TextStyle(fontSize: 16), softWrap: true),
             
           const SizedBox(height:20),
@@ -708,8 +713,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              quizzes.isEmpty ? const CircularProgressIndicator() : //加载
-              _isButtonVisible ? ElevatedButton(onPressed:(){_startCountdown();}, child: Text(S.current.start)) : //开始按钮
+              _quizzes.isEmpty ? const CircularProgressIndicator() : //加载
               AnimatedSwitcher( //动画
                 duration: const Duration(milliseconds: 800),
                 transitionBuilder: (Widget child, Animation<double> animation) {
@@ -737,8 +741,8 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                   ) : const SizedBox.shrink(),
               ),
               const SizedBox(height: 20),
-              if (currentQuiz != -1 && _canShowQuiz) ... [
-                _showQuiz(quizzes[currentQuiz.toString()], difficulty)
+              if (_currentQuiz != -1 && _canShowQuiz) ... [
+                _showQuiz(_quizzes[_currentQuiz.toString()], _difficulty)
               ]
             ],
           )
@@ -754,22 +758,22 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         //获取传入参数
         final Map args = ModalRoute.of(context)?.settings.arguments as Map;
         setState(() {
-          playlistId = args["id"];
-          playlistTitle = args["title"];
-          description = args["description"];
-          difficulty = args["difficulty"];
+          _playlistId = args["id"];
+          _playlistTitle = args["title"];
+          _description = args["description"];
+          _difficulty = args["difficulty"];
         });
 
         //检测audioplayer状态
         if(_audioPlayer.state == PlayerState.disposed){
-          Navigator.of(context).popAndPushNamed("SinglePlayerGame", arguments: args);
+          Navigator.of(context).popAndPushNamed('/SinglePlayerGame', arguments: args);
         }
 
         //获取题目
-        _getQuiz(playlistId, difficulty);
+        _getQuiz(_playlistId, _difficulty);
 
         //难度对应时间
-        switch (difficulty) {
+        switch (_difficulty) {
           case 0:
             _timeForPlaying = 6;
             break;
@@ -797,12 +801,15 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
   @override
   Widget build(BuildContext context) {
-    if(_played == currentQuiz && currentQuiz != -1 && _countdown == 0) {
-      _resumeAndDelayAndStop();
-    }
+      if (_quizzes.isNotEmpty && _currentQuiz == -1 && _countdown == 0) {
+        _startCountdown();
+      }
+      if(_played == _currentQuiz && _currentQuiz != -1 && _countdown == 0) {
+        _resumeAndDelayAndStop();
+      }
     return Scaffold(
       appBar: AppBar(
-        title: Text("${S.current.singlePlayerGame}: $playlistTitle"), 
+        title: Text("${S.current.singlePlayerGame}: $_playlistTitle"), 
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

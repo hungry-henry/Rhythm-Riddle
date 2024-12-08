@@ -79,7 +79,7 @@ class _HomeState extends State<Home> {
     await storage.delete(key: 'mail');
     await storage.delete(key: 'uid');
     if(!context.mounted) return;
-    Navigator.pushNamed(context, 'login');
+    Navigator.pushNamed(context, '/login');
   }
   
   Widget _buildHome(){
@@ -98,7 +98,7 @@ class _HomeState extends State<Home> {
                 children: [
                   SafeArea(
                     child: GestureDetector(
-                      onTap: () {Navigator.of(context).pushNamed('search');},
+                      onTap: () {Navigator.of(context).pushNamed('/search');},
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
@@ -154,7 +154,7 @@ class _HomeState extends State<Home> {
                                     ElevatedButton(
                                       onPressed: () {
                                         Navigator.of(context).pushNamed(
-                                          'PlaylistInfo',
+                                          '/PlaylistInfo',
                                           arguments: playlists[index]['id']
                                         );
                                       },
@@ -382,7 +382,7 @@ class _HomeState extends State<Home> {
       return Center(
         child: ElevatedButton(
           child: const Text('登录'),
-          onPressed: () => Navigator.of(context).pushNamed('login')
+          onPressed: () => Navigator.of(context).pushNamed('/login')
         )
       );
     }

@@ -40,13 +40,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: LoginPage(),
       routes: {
-        'login': (context) => LoginPage(),
-        'home': (context) => const Home(),
-        'search': (context) => Search(),
-        'PlaylistInfo': (context) => PlaylistInfo(),
-        'SinglePlayer': (context) => SinglePlayer(),
-        'SinglePlayerGame': (context) => SinglePlayerGame(),
-        'MultiPlayer': (context) => MultiPlayer(),
+        '/login': (context) => LoginPage(),
+        '/home': (context) => const Home(),
+        '/search': (context) => Search(),
+        '/PlaylistInfo': (context) => PlaylistInfo(),
+        '/SinglePlayer': (context) => SinglePlayer(),
+        '/SinglePlayerGame': (context) => SinglePlayerGame(),
+        '/MultiPlayer': (context) => MultiPlayer(),
       },
     );
   }

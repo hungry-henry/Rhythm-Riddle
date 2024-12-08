@@ -81,8 +81,8 @@ class _SearchState extends State<Search> {
           return AlertDialog(
             content: Text(S.current.connectError),
             actions: [
-              TextButton(onPressed: () {Navigator.pushNamed(context, 'search');}, child: Text(S.current.retry)),
-              TextButton(onPressed: () {Navigator.pushNamed(context, 'home');}, child: Text(S.current.backToHome)),
+              TextButton(onPressed: () {Navigator.pushNamed(context, '/search');}, child: Text(S.current.retry)),
+              TextButton(onPressed: () {Navigator.pushNamed(context, '/home');}, child: Text(S.current.backToHome)),
             ],
           );
         });
@@ -91,7 +91,7 @@ class _SearchState extends State<Search> {
           return AlertDialog(
             content: Text(S.current.unknownError),
             actions: [
-              TextButton(onPressed: () {Navigator.pushNamed(context, 'search');}, child: Text(S.current.retry)),
+              TextButton(onPressed: () {Navigator.pushNamed(context, '/search');}, child: Text(S.current.retry)),
               TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.backToHome)),
             ],
           );

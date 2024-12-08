@@ -1,4 +1,5 @@
 {
     "cmake.configureOnOpen": true,
-    "cmake.sourceDirectory": "D:/code/Rhythm Riddle/rhythm_riddle/linux"
+    "cmake.sourceDirectory": "D:/code/Rhythm Riddle/rhythm_riddle/linux",
+    "java.configuration.updateBuildConfiguration": "disabled"
 }
