@@ -31,9 +31,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "bug": MessageLookupByLibrary.simpleMessage(
             "游戏出现BUG了，请反馈给hamrui@outlook.com"),
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
+        "chooseAlbum": MessageLookupByLibrary.simpleMessage("选择正在播放的所属专辑"),
         "chooseArtist":
             MessageLookupByLibrary.simpleMessage("选择正在播放的歌曲的作曲家/歌手"),
         "chooseDifficulty": MessageLookupByLibrary.simpleMessage("选择难度"),
+        "chooseGenre": MessageLookupByLibrary.simpleMessage("选择正在播放的所属流派"),
         "chooseMusic": MessageLookupByLibrary.simpleMessage("选择正在播放的歌曲名"),
         "connectError":
             MessageLookupByLibrary.simpleMessage("无法连接至服务器，请稍后再试或使用本地歌单游玩"),

@@ -560,10 +560,10 @@ class S {
     );
   }
 
-  /// `Choose the music you think is playing`
+  /// `Choose the music that is playing`
   String get chooseMusic {
     return Intl.message(
-      'Choose the music you think is playing',
+      'Choose the music that is playing',
       name: 'chooseMusic',
       desc: '',
       args: [],
@@ -575,6 +575,26 @@ class S {
     return Intl.message(
       'Choose the artist of the playing music',
       name: 'chooseArtist',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose the album of the playing music`
+  String get chooseAlbum {
+    return Intl.message(
+      'Choose the album of the playing music',
+      name: 'chooseAlbum',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose the genre of the playing music`
+  String get chooseGenre {
+    return Intl.message(
+      'Choose the genre of the playing music',
+      name: 'chooseGenre',
       desc: '',
       args: [],
     );

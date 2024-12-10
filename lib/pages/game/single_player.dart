@@ -431,15 +431,23 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
   Logger logger = Logger(); //日志
 
+  bool _loadTooSlow = false;
+
   Future<void> _prepareAudio() async {
-    logger.log(Level.debug, "prepare audio");
+    logger.i("preparing audio");
     try{
       int id = _quizzes[_played.toString()]['music_id'] ?? _quizzes[_played.toString()]['id'];
-      logger.log(Level.debug, "start preparing $id");
+      logger.i("start preparing $id");
       await _audioPlayer.setSourceUrl("http://hungryhenry.xyz/musiclab/music/$id.mp3").timeout(const Duration(seconds: 10));
       await _audioPlayer.seek(Duration(minutes: 1, seconds: 0)); // 跳到 startAt
       _prepareFinished = true;
-      logger.log(Level.debug, "prepare finished $id");
+      logger.i("prepare finished $id");
+      if(_loadTooSlow){
+        setState(() {
+          _loadTooSlow = false;
+        });
+        _resumeAndDelayAndStop();
+      }
     }catch(e){
       if(e is TimeoutException && mounted){
         logger.log(Level.error, "prepare audio timeout: $e");
@@ -473,7 +481,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
   //倒计时
   void _startCountdown() {
-    logger.log(Level.debug, "starting countdown");
+    logger.i("starting countdown");
     setState(() {
       _countdown = 3; // 初始化倒计时
       _canShowQuiz = false;
@@ -538,7 +546,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           );
         });
       }else{
-        logger.log(Level.debug, "error: $e");
+        logger.i("error: $e");
         showDialog(context: context, builder: (context){
           return AlertDialog(
               content: Text(S.current.unknownError),
@@ -555,19 +563,26 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   }
 
   Future<void> _resumeAndDelayAndStop() async{
-    _played++;
-    if(_prepareFinished && _audioPlayer.state != PlayerState.disposed){
+    logger.i("call on function _resumeAndDelayAndStop");
+    if(_audioPlayer.state == PlayerState.disposed){
+      logger.i("disposed");
+      return;
+    }
+
+    if(_prepareFinished){
+      _played++;
       await _audioPlayer.resume();
-      logger.log(Level.debug, "played");
+      logger.i("played");
 
       if(_audioPlayer.state == PlayerState.playing){
         await Future.delayed(Duration(seconds: _timeForPlaying), () {
           _audioPlayer.pause(); 
         });
       }
-      logger.log(Level.debug, "paused");
+      logger.i("paused");
     }else{
-      logger.log(Level.debug, "prepare not finished");
+      _loadTooSlow = true;
+      logger.i("prepare not finished");
     }
   }
 
@@ -580,6 +595,8 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     switch(quizInfo["quizType"]){
       case 0: question = S.current.chooseMusic; break;
       case 1: question = S.current.chooseArtist; break;
+      case 2: question = S.current.chooseAlbum; break;
+      case 3: question = S.current.chooseGenre; break;
       default: S.current.unknownError; break;
     }
     
@@ -610,6 +627,8 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             ),
           ),
           ElevatedButton(onPressed: (){
+            _audioPlayer.stop();
+            logger.i("stop");
             if(answer == _selectedOption){
               if(_currentQuiz == _quizzes.length - 1){
                 //show result
@@ -617,7 +636,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                 _startCountdown();
               }
             }else{
-              logger.log(Level.info, "wrong");
+              logger.i("wrong");
             }
           }, child:Text(S.current.submit))
         ],
@@ -681,7 +700,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                   ) : const SizedBox.shrink(),
               ),
               const SizedBox(height: 20),
-              if (_currentQuiz != -1 && _canShowQuiz) ... [
+              if (_currentQuiz != -1 && _canShowQuiz && _quizzes[_currentQuiz.toString()] != null) ... [
                 _showQuiz(_quizzes[_currentQuiz.toString()], _difficulty)
               ]
             ],
@@ -741,7 +760,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                   ) : const SizedBox.shrink(),
               ),
               const SizedBox(height: 20),
-              if (_currentQuiz != -1 && _canShowQuiz) ... [
+              if (_currentQuiz != -1 && _canShowQuiz && _quizzes[_currentQuiz.toString()] != null) ... [
                 _showQuiz(_quizzes[_currentQuiz.toString()], _difficulty)
               ]
             ],
