@@ -33,9 +33,9 @@
     "normalInfo": "普通模式：3次失误机会，曲名或歌手或专辑 4选1或有提示的填空",
     "hardInfo": "困难模式：2次失误机会，曲名或歌手或专辑填空",
     "start": "开始游戏",
-    "singlePlayerGame": "单人游戏", "multiPlayerGame": "多人游戏（正在开发）",
+    "singlePlayerGame": "单人游戏", "multiPlayerGame": "多人游戏",
 
-    "submit": "提交", "next": "下一题", "end": "结束👉",
+    "submit": "提交",
     "chooseMusic": "选择正在播放的歌曲名", "chooseArtist": "选择正在播放的歌曲的作曲家/歌手",
     "chooseAlbum": "选择正在播放的所属专辑", "chooseGenre": "选择正在播放的所属流派"
 }

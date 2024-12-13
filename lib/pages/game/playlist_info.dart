@@ -314,7 +314,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                       );
                     }, child: Text(S.current.singlePlayer)),
                     SizedBox(width:MediaQuery.of(context).size.width * 0.045),
-                    /*if(isLogin)...[
+                    if(isLogin)...[
                       ElevatedButton(
                         onPressed: (){
                           Navigator.of(context).pushNamed(
@@ -332,7 +332,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                           );
                         }, child: Text(S.current.multiPlayer)
                       )
-                    ] else...[*/
+                    ] else...[
                       TextButton(
                         onPressed:null,
                         style:ButtonStyle(
@@ -341,7 +341,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                         ),
                         child:Text(S.current.multiPlayer)
                       )
-                    //]
+                    ]
                   ],
                 ),
               ],
