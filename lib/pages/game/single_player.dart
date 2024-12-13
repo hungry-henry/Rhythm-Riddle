@@ -665,7 +665,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           ConstrainedBox(
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width * 0.8,
-              maxHeight: 220,
+              maxHeight: 240,
             ),
             child: ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
