@@ -48,6 +48,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "emailOrName": MessageLookupByLibrary.simpleMessage("邮箱/用户名"),
         "emptyemail": MessageLookupByLibrary.simpleMessage("请输入邮箱"),
         "emptypassword": MessageLookupByLibrary.simpleMessage("请输入密码"),
+        "end": MessageLookupByLibrary.simpleMessage("结束👉"),
         "guest": MessageLookupByLibrary.simpleMessage("离线模式"),
         "hard": MessageLookupByLibrary.simpleMessage("困难"),
         "hardInfo":
@@ -63,6 +64,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "multiPlayer": MessageLookupByLibrary.simpleMessage("多人模式"),
         "multiPlayerOptions": MessageLookupByLibrary.simpleMessage("多人模式选项"),
         "name": MessageLookupByLibrary.simpleMessage("旋律疑谜"),
+        "next": MessageLookupByLibrary.simpleMessage("下一题"),
         "noDes": MessageLookupByLibrary.simpleMessage("暂无简介"),
         "normal": MessageLookupByLibrary.simpleMessage("普通"),
         "normalInfo": MessageLookupByLibrary.simpleMessage(

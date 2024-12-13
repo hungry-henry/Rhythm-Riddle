@@ -415,33 +415,40 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
   int _currentQuiz = -1; //题目计数器
 
-  //计时
+  //音频&题目显示计时
   int _countdown = 0; 
   bool _canShowQuiz = false;
 
-  Map _quizzes = {};
+  Map _quizzes = {}; //存储api获取的题目
 
   String? _selectedOption; //选项
+  String? _submittedOption; //提交的选项
 
   //歌曲播放准备
   final _audioPlayer = AudioPlayer();
   int _played = 0;
-  int _timeForPlaying = 0;  
+  int _audioPlayingTime = 0;  
   bool _prepareFinished = false;
 
   Logger logger = Logger(); //日志
 
-  bool _loadTooSlow = false;
+  bool _loadTooSlow = false; //在要播放时，没准备好
+
+  //答题时间
+  int _answerTime = 0;
+  int _currentAnswerTime = 0;
 
   Future<void> _prepareAudio() async {
     logger.i("preparing audio");
+    if(_audioPlayer.state==PlayerState.disposed) return;
     try{
       int id = _quizzes[_played.toString()]['music_id'] ?? _quizzes[_played.toString()]['id'];
       logger.i("start preparing $id");
       await _audioPlayer.setSourceUrl("http://hungryhenry.xyz/musiclab/music/$id.mp3").timeout(const Duration(seconds: 10));
-      await _audioPlayer.seek(Duration(minutes: 1, seconds: 0)); // 跳到 startAt
-      _prepareFinished = true;
       logger.i("prepare finished $id");
+      await _audioPlayer.seek(Duration(seconds: _quizzes[_played.toString()]['start_at'])); // 跳到 startAt
+      logger.i("seek finished ${_quizzes[_played.toString()]['start_at']} seconds");
+      _prepareFinished = true;
       if(_loadTooSlow){
         setState(() {
           _loadTooSlow = false;
@@ -449,8 +456,9 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         _resumeAndDelayAndStop();
       }
     }catch(e){
-      if(e is TimeoutException && mounted){
+      if(e is TimeoutException){
         logger.log(Level.error, "prepare audio timeout: $e");
+        if(!mounted) return;
         showDialog(context: context, builder: (context){
           return AlertDialog(
               content: Text(S.current.connectError),
@@ -464,6 +472,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         });
       }else{
         logger.log(Level.error, "prepare audio error: $e");
+        if(!mounted) return;
         showDialog(context: context, builder: (context){
           return AlertDialog(
               content: Text(S.current.unknownError),
@@ -480,7 +489,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   }
 
   //倒计时
-  void _startCountdown() {
+  void _startAudioCountdown() {
     logger.i("starting countdown");
     setState(() {
       _countdown = 3; // 初始化倒计时
@@ -523,7 +532,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         setState(() {
           _quizzes = jsonDecode(response.body);
         });
-        print(_quizzes);
+        logger.i(_quizzes);
       } else {
         print("error");
         print(response.body);
@@ -562,20 +571,38 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     }
   }
 
+  //答题倒计时
+  void _answerTimeCountdown() {
+    _currentAnswerTime = _answerTime;
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      if (_currentAnswerTime == 0 || _submittedOption != null) {
+        timer.cancel();
+        if(_currentAnswerTime == 0){
+          setState(() {
+            _submittedOption = "bruhtimeout";
+          });
+        }
+      } else {
+        setState(() {
+          _currentAnswerTime--; // 每秒减少1
+        });
+      }
+    });
+  }
+
   Future<void> _resumeAndDelayAndStop() async{
     logger.i("call on function _resumeAndDelayAndStop");
-    if(_audioPlayer.state == PlayerState.disposed){
-      logger.i("disposed");
-      return;
-    }
-
+    
+    if(_audioPlayer.state==PlayerState.disposed) return;
     if(_prepareFinished){
       _played++;
       await _audioPlayer.resume();
       logger.i("played");
+      _answerTimeCountdown();
 
       if(_audioPlayer.state == PlayerState.playing){
-        await Future.delayed(Duration(seconds: _timeForPlaying), () {
+        await Future.delayed(Duration(seconds: _audioPlayingTime), () {
           _audioPlayer.pause(); 
         });
       }
@@ -601,44 +628,116 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     }
     
     return SizedBox(
-      width: MediaQuery.of(context).size.width > 800 ? MediaQuery.of(context).size.width * 0.7 - 350 : MediaQuery.of(context).size.width * 0.8,
+      width: MediaQuery.of(context).size.width > 800
+          ? MediaQuery.of(context).size.width * 0.7 - 350
+          : MediaQuery.of(context).size.width * 0.8,
       child: Column(
         children: [
-          Text(question, style: const TextStyle(fontSize: 20)),
+          Text("${_currentQuiz+1}/${_quizzes.length-1}"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  question,
+                  style: const TextStyle(fontSize: 20),
+                ),
+              ),
+              if (_submittedOption == null)...[
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _currentAnswerTime < 6 && _currentAnswerTime != 0 ? Colors.yellow : Colors.grey[300],
+                  ),
+                  child: _loadTooSlow ? const Center(child:CircularProgressIndicator()) : Text(
+                    _currentAnswerTime.toString(),
+                    style: _currentAnswerTime < 6 && _currentAnswerTime != 0 ? const TextStyle(
+                      color: Colors.red,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ) : const TextStyle(fontSize: 24),
+                  ),
+                ),
+              ],
+            ],
+          ),
           ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8, maxHeight: 220),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.8,
+              maxHeight: 220,
+            ),
             child: ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               itemCount: options.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(options[index]['title'] ?? options[index]['name']),
-                  leading: Radio<String>(
-                    value: options[index]['title'] ?? options[index]['name'],
-                    groupValue: _selectedOption,
-                    onChanged: (String? value) {
-                      setState(() {
-                        _selectedOption = value;
-                      });
-                    },
+                String currOption = options[index]['title'] ?? options[index]['name'];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  child: ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(
+                        color: _submittedOption == null
+                            ? Colors.transparent
+                            : currOption == answer
+                                ? Colors.green
+                                : Colors.red,
+                        width: 1,
+                      ),
+                    ),
+                    title: Text(options[index]['title'] ?? options[index]['name']),
+                    leading: Radio<String>(
+                      value: options[index]['title'] ?? options[index]['name'],
+                      groupValue: _selectedOption,
+                      onChanged: (String? value) {
+                        setState(() {
+                          _selectedOption = value;
+                        });
+                      },
+                    ),
                   ),
                 );
               },
             ),
           ),
-          ElevatedButton(onPressed: (){
-            _audioPlayer.stop();
-            logger.i("stop");
-            if(answer == _selectedOption){
-              if(_currentQuiz == _quizzes.length - 1){
-                //show result
-              }else{
-                _startCountdown();
-              }
-            }else{
-              logger.i("wrong");
-            }
-          }, child:Text(S.current.submit))
+          if (_submittedOption == null) ...[
+            //提交按钮
+            ElevatedButton(
+              onPressed: () {
+                logger.i("submitted with $_selectedOption");
+                _audioPlayer.stop();
+                setState(() {
+                  _submittedOption = _selectedOption;
+                });
+              },
+              child: Text(S.current.submit), 
+            ),
+          ] else ...[
+            const SizedBox(height: 10),
+            _submittedOption == "bruhtimeout" ? const Text("时间到") : _submittedOption == answer ? const Text("正确!") : const Text("错误!"),
+            const SizedBox(height: 10),
+            //下一题/结束
+            if(_currentQuiz + 2 == _quizzes.length) ... [
+              ElevatedButton(
+                onPressed: (){
+
+                },
+                child: Text(S.current.end),
+              )
+            ] else ... [
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _submittedOption = null;
+                    _selectedOption = null;
+                    _startAudioCountdown();
+                  });
+                },
+                child: Text(S.current.next),
+              ),
+            ]
+          ]
         ],
       ),
     );
@@ -794,16 +893,20 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         //难度对应时间
         switch (_difficulty) {
           case 0:
-            _timeForPlaying = 6;
+            _audioPlayingTime = 6;
+            _answerTime = 15;
             break;
           case 1:
-            _timeForPlaying = 4;
+            _audioPlayingTime = 4;
+            _answerTime = 10;
             break;
           case 2:
-            _timeForPlaying = 2;
+            _audioPlayingTime = 2;
+            _answerTime = 5;
             break;
           default:
-            _timeForPlaying = 0;
+            _audioPlayingTime = 0;
+            _answerTime = 0;
         }
       });
       _audioPlayer.onLog.listen(
@@ -821,7 +924,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   @override
   Widget build(BuildContext context) {
       if (_quizzes.isNotEmpty && _currentQuiz == -1 && _countdown == 0) {
-        _startCountdown();
+        _startAudioCountdown();
       }
       if(_played == _currentQuiz && _currentQuiz != -1 && _countdown == 0) {
         _resumeAndDelayAndStop();

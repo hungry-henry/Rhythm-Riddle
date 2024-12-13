@@ -540,10 +540,10 @@ class S {
     );
   }
 
-  /// `Multi Player Game`
+  /// `Multi Player Game (coming soon)`
   String get MultiPlayerGame {
     return Intl.message(
-      'Multi Player Game',
+      'Multi Player Game (coming soon)',
       name: 'MultiPlayerGame',
       desc: '',
       args: [],
@@ -555,6 +555,26 @@ class S {
     return Intl.message(
       'Submit',
       name: 'submit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Next`
+  String get next {
+    return Intl.message(
+      'Next',
+      name: 'next',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `End👉`
+  String get end {
+    return Intl.message(
+      'End👉',
+      name: 'end',
       desc: '',
       args: [],
     );
