@@ -560,6 +560,26 @@ class S {
     );
   }
 
+  /// `Next`
+  String get next {
+    return Intl.message(
+      'Next',
+      name: 'next',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `End👉`
+  String get end {
+    return Intl.message(
+      'End👉',
+      name: 'end',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Choose the music that is playing`
   String get chooseMusic {
     return Intl.message(
