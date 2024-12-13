@@ -25,8 +25,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "MultiPlayerGame":
-            MessageLookupByLibrary.simpleMessage("Multi Player Game"),
+        "MultiPlayerGame": MessageLookupByLibrary.simpleMessage(
+            "Multi Player Game (coming soon)"),
         "account": MessageLookupByLibrary.simpleMessage("Account"),
         "back": MessageLookupByLibrary.simpleMessage("Back"),
         "backToHome": MessageLookupByLibrary.simpleMessage("Back to Home"),
@@ -56,6 +56,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Please enter your email"),
         "emptypassword":
             MessageLookupByLibrary.simpleMessage("Please enter your password"),
+        "end": MessageLookupByLibrary.simpleMessage("End👉"),
         "guest": MessageLookupByLibrary.simpleMessage("offline mode"),
         "hard": MessageLookupByLibrary.simpleMessage("Hard"),
         "hardInfo": MessageLookupByLibrary.simpleMessage(
@@ -73,6 +74,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "multiPlayerOptions":
             MessageLookupByLibrary.simpleMessage("Multi Player Options"),
         "name": MessageLookupByLibrary.simpleMessage("Rhythm Riddle"),
+        "next": MessageLookupByLibrary.simpleMessage("Next"),
         "noDes": MessageLookupByLibrary.simpleMessage("No Description"),
         "normal": MessageLookupByLibrary.simpleMessage("Normal"),
         "normalInfo": MessageLookupByLibrary.simpleMessage(
