@@ -540,10 +540,10 @@ class S {
     );
   }
 
-  /// `Multi Player Game`
+  /// `Multi Player Game (coming soon)`
   String get MultiPlayerGame {
     return Intl.message(
-      'Multi Player Game',
+      'Multi Player Game (coming soon)',
       name: 'MultiPlayerGame',
       desc: '',
       args: [],

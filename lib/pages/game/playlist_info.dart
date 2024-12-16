@@ -213,35 +213,36 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
               }
             );
           }, child: Text(S.current.singlePlayer)),
-          const SizedBox(width:50),
-          if(isLogin)...[
-            ElevatedButton(
-              onPressed: (){
-                Navigator.of(context).pushNamed(
-                  "/MultiPlayer", 
-                  arguments: {
-                    "id": playlistId,
-                    "title": title, 
-                    "musicTitle": musicTitle, 
-                    "artist": artist, 
-                    "createdBy": createdBy, 
-                    "createTime": createTime,
-                    "description": description,
-                    "count": musicCount
-                  }
-                );
-              }, child: Text(S.current.multiPlayer)
-            )
-          ] else...[
-            TextButton(
-              onPressed:null,
-              style:ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(Colors.grey[350]),
-                padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 25, vertical: 10)),
-              ), 
-              child:Text(S.current.multiPlayer)
-            )
-          ]]
+            const SizedBox(width:50),
+            /*if(isLogin)...[
+              ElevatedButton(
+                onPressed: (){
+                  Navigator.of(context).pushNamed(
+                    "/MultiPlayer", 
+                    arguments: {
+                      "id": playlistId,
+                      "title": title, 
+                      "musicTitle": musicTitle, 
+                      "artist": artist, 
+                      "createdBy": createdBy, 
+                      "createTime": createTime,
+                      "description": description,
+                      "count": musicCount
+                    }
+                  );
+                }, child: Text(S.current.multiPlayer)
+              )
+            ] else...[*/
+              TextButton(
+                onPressed:null,
+                style:ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(Colors.grey[350]),
+                  padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 25, vertical: 10)),
+                ), 
+                child:Text(S.current.multiPlayer)
+              )
+            //]
+          ]
         ),
         const SizedBox(height: 30)
       ],
@@ -314,7 +315,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                       );
                     }, child: Text(S.current.singlePlayer)),
                     SizedBox(width:MediaQuery.of(context).size.width * 0.045),
-                    if(isLogin)...[
+                    /*if(isLogin)...[
                       ElevatedButton(
                         onPressed: (){
                           Navigator.of(context).pushNamed(
@@ -332,7 +333,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                           );
                         }, child: Text(S.current.multiPlayer)
                       )
-                    ] else...[
+                    ] else...[*/
                       TextButton(
                         onPressed:null,
                         style:ButtonStyle(
@@ -341,7 +342,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                         ),
                         child:Text(S.current.multiPlayer)
                       )
-                    ]
+                    //]
                   ],
                 ),
               ],
