@@ -8,9 +8,13 @@ import 'package:window_size/window_size.dart' as window_size;
 import 'pages/login.dart';
 import 'pages/home.dart';
 import 'pages/search.dart';
-import 'pages/game/playlist_info.dart';
-import 'pages/game/single_player.dart';
-import 'pages/game/multi_player.dart';
+import 'pages/playlist_info.dart';
+
+import 'pages/singleplayer_game/single_player.dart';
+import 'pages/singleplayer_game/game.dart';
+
+import 'pages/multiplayer_game/multi_player.dart';
+// ignore: unused_import
 import 'pages/test.dart';
 
 void main(){  
