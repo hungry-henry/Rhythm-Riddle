@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'dart:convert';
 import 'dart:async';
 
@@ -308,9 +309,13 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               //题目
-              Text(
-                question,
-                style: const TextStyle(fontSize: 20),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
+                child:Text(
+                  question,
+                  style: const TextStyle(fontSize: 20),
+                  textAlign: TextAlign.center,
+                ),
               ),
 
               if (_submittedOption == null)...[
@@ -335,17 +340,11 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           ),
 
           //选项
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.8,
-              maxHeight: 300,
-            ),
-            child: ListView.builder( //构造器
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: options.length,
-              itemBuilder: (context, index) {
-                String currOption = options[index]['title'] ?? options[index]['name']; //正确选项
-                return Padding(
+          Column(
+            mainAxisAlignment: MediaQuery.of(context).size.width > 800 ? MainAxisAlignment.start : MainAxisAlignment.center,
+            children: [
+              for (int index = 0; index < options.length; index++)
+                Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: ListTile(
                     shape: RoundedRectangleBorder(
@@ -353,36 +352,85 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                       side: BorderSide(
                         color: _submittedOption == null
                             ? Colors.transparent
-                            : currOption == answer
+                            : (options[index]['title'] ?? options[index]['name']) == answer
                                 ? Colors.green
                                 : Colors.red,
                         width: 1,
                       ),
                     ),
                     title: Text(
-                      (options[index]['title'] ?? options[index]['name']) 
-                      + (_submittedOption == null || infoShowAfterSubmit == null || quizType!=2 ? //选择专辑
-                      "" : " - ${options[index]['artist_name']}").toString(),
+                      (options[index]['title'] ?? options[index]['name']) +
+                          (_submittedOption == null ||
+                                  infoShowAfterSubmit == null ||
+                                  quizType != 2
+                              ? "" // 不显示额外信息
+                              : " - ${options[index]['artist_name']}"),
                     ),
-                    subtitle: _submittedOption == null || infoShowAfterSubmit == null ? const Text("")
-                    : quizType==0 ? Text(infoShowAfterSubmit[index]) 
-                    : quizType==1 ? Image.network("http://hungryhenry.xyz/musiclab/artist/${infoShowAfterSubmit[index].toString()}_logo.jpg",width:75,height:75)
-                    : quizType==2 ? Image.network("http://hungryhenry.xyz/musiclab/album/${infoShowAfterSubmit[index].toString()}.jpg",width:75,height:75)
-                    : null,
+                    subtitle: _submittedOption == null || infoShowAfterSubmit == null
+                        ? null
+                        : quizType == 0
+                            ? Text(infoShowAfterSubmit[index])
+                            : quizType == 1
+                                ? Image.network(
+                                    "http://hungryhenry.xyz/musiclab/artist/${infoShowAfterSubmit[index].toString()}_logo.jpg",
+                                    width: 75,
+                                    height: 75,
+                                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        return child;
+                                      } else {
+                                        return Center(
+                                          child: CircularProgressIndicator(
+                                            value: loadingProgress.expectedTotalBytes != null ? 
+                                            loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1) : null,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                                      return const Icon(Icons.image, color: Colors.grey);
+                                    }
+                                  )
+                                : quizType == 2
+                                    ? Image.network(
+                                        "http://hungryhenry.xyz/musiclab/album/${infoShowAfterSubmit[index].toString()}.jpg",
+                                        width: 75,
+                                        height: 75,
+                                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                          if (loadingProgress == null) {
+                                            return child;
+                                          } else {
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value: loadingProgress.expectedTotalBytes != null ? 
+                                                loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1) : null,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                                          return const Icon(Icons.image, color: Colors.grey);
+                                        }
+                                      )
+                                    : null,
                     leading: Radio<String>(
                       value: options[index]['title'] ?? options[index]['name'],
+                      fillColor: WidgetStateProperty.all(_submittedOption == null ? Theme.of(context).colorScheme.secondary : Colors.grey),
+                      overlayColor:WidgetStateProperty.all(_submittedOption == null ? Theme.of(context).colorScheme.onSurface.withOpacity(0.08) : Colors.transparent),
                       groupValue: _selectedOption,
                       onChanged: (String? value) {
-                        setState(() {
-                          _selectedOption = value;
-                        });
+                        if(_selectedOption == null){
+                          setState(() {
+                            _selectedOption = value;
+                          });
+                        }
                       },
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+            ],
           ),
+
           if (_submittedOption == null) ...[
             //提交按钮
             ElevatedButton(
@@ -490,71 +538,68 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   }
 
   Widget _largeScreen(){
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Column(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            _playlistId == 0 ? const Center(child: CircularProgressIndicator()) : 
+            Image.network("http://hungryhenry.xyz/musiclab/playlist/$_playlistId.jpg", width:350, height:350),
+            const SizedBox(height: 16),
+            Text(_playlistTitle, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            if(_description != null) ... [
+              Text(_description ?? "No description", style: const TextStyle(fontSize: 18), softWrap: true),
+              const SizedBox(height: 14)
+            ],
+            Text(
+              "${S.current.difficulty}: ${_difficulty == 0 ? S.current.easy : _difficulty == 1 ?
+                S.current.normal : _difficulty == 2 ? S.current.hard
+                : S.current.custom}", 
+              style: const TextStyle(fontSize: 18), softWrap: true
+            ),
+          ],
+        ),
+    
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _playlistId == 0 ? const Center(child: CircularProgressIndicator()) : 
-              Image.network("http://hungryhenry.xyz/musiclab/playlist/$_playlistId.jpg", width:350, height:350),
-              const SizedBox(height: 16),
-              Text(_playlistTitle, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              if(_description != null) ... [
-                Text(_description ?? "No description", style: const TextStyle(fontSize: 18), softWrap: true),
-                const SizedBox(height: 14)
-              ],
-              Text(
-                "${S.current.difficulty}: ${_difficulty == 0 ? S.current.easy : _difficulty == 1 ?
-                  S.current.normal : _difficulty == 2 ? S.current.hard
-                  : S.current.custom}", 
-                style: const TextStyle(fontSize: 18), softWrap: true
+              _quizzes.isEmpty ? const CircularProgressIndicator() : //加载
+              AnimatedSwitcher( //动画
+                duration: const Duration(milliseconds: 800),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return ScaleTransition(
+                    scale: animation,
+                    child: FadeTransition(opacity: animation, child: child),
+                  );
+                },
+                child: _countdown > 0 ? 
+                  Container(
+                    key: ValueKey<int>(_countdown), // 使用倒计时数字作为key
+                    padding: const EdgeInsets.all(24), // 调整内边距来增加背景的大小
+                    decoration: const BoxDecoration(
+                      color: Colors.red, 
+                      shape: BoxShape.circle, 
+                    ),
+                    child: Text(
+                      '$_countdown',
+                      style: const TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ) : const SizedBox.shrink(),
               ),
+              const SizedBox(height: 20),
+              if (_currentQuiz != -1 && _canShowQuiz && _quizzes[_currentQuiz.toString()] != null) ... [
+                _showQuiz(_quizzes[_currentQuiz.toString()], _difficulty)
+              ],
             ],
           ),
-      
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _quizzes.isEmpty ? const CircularProgressIndicator() : //加载
-                AnimatedSwitcher( //动画
-                  duration: const Duration(milliseconds: 800),
-                  transitionBuilder: (Widget child, Animation<double> animation) {
-                    return ScaleTransition(
-                      scale: animation,
-                      child: FadeTransition(opacity: animation, child: child),
-                    );
-                  },
-                  child: _countdown > 0 ? 
-                    Container(
-                      key: ValueKey<int>(_countdown), // 使用倒计时数字作为key
-                      padding: const EdgeInsets.all(24), // 调整内边距来增加背景的大小
-                      decoration: const BoxDecoration(
-                        color: Colors.red, 
-                        shape: BoxShape.circle, 
-                      ),
-                      child: Text(
-                        '$_countdown',
-                        style: const TextStyle(
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ) : const SizedBox.shrink(),
-                ),
-                const SizedBox(height: 20),
-                if (_currentQuiz != -1 && _canShowQuiz && _quizzes[_currentQuiz.toString()] != null) ... [
-                  _showQuiz(_quizzes[_currentQuiz.toString()], _difficulty)
-                ],
-              ],
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     );
   }
 
@@ -712,7 +757,12 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       appBar: AppBar(
         title: Text("${S.current.singlePlayerGame}: $_playlistTitle"), 
       ),
-      body: MediaQuery.of(context).size.width > 800 ? _largeScreen() : _smallScreen(),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SingleChildScrollView(
+          child: MediaQuery.of(context).size.width > 800 ? _largeScreen() : _smallScreen(),
+        )
+      ),
     );
   }
 }
