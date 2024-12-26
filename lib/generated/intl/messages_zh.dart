@@ -23,6 +23,8 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m0(count, title, artist) =>
       "包含 ${title} - ${artist} 等 ${count} 首歌曲";
 
+  static String m1(playlist) => "${playlist} 的答题结果";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("账户"),
@@ -73,6 +75,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "or": MessageLookupByLibrary.simpleMessage("或"),
         "password": MessageLookupByLibrary.simpleMessage("密码"),
         "played": MessageLookupByLibrary.simpleMessage("玩过"),
+        "quizResult": m1,
         "rank": MessageLookupByLibrary.simpleMessage("排行榜"),
         "recm": MessageLookupByLibrary.simpleMessage("推荐"),
         "register": MessageLookupByLibrary.simpleMessage("没有账号? 点此注册!"),

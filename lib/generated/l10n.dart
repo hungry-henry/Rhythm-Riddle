@@ -619,6 +619,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Result of {playlist}`
+  String quizResult(Object playlist) {
+    return Intl.message(
+      'Result of $playlist',
+      name: 'quizResult',
+      desc: '',
+      args: [playlist],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

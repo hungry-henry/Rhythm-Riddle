@@ -12,6 +12,7 @@ import 'pages/playlist_info.dart';
 
 import 'pages/singleplayer_game/single_player.dart';
 import 'pages/singleplayer_game/game.dart';
+import 'pages/singleplayer_game/result.dart';
 
 import 'pages/multiplayer_game/multi_player.dart';
 // ignore: unused_import
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
         '/PlaylistInfo': (context) => PlaylistInfo(),
         '/SinglePlayer': (context) => SinglePlayer(),
         '/SinglePlayerGame': (context) => SinglePlayerGame(),
+        '/SinglePlayerGameResult': (context) => SinglePlayerGameResult(),
         '/MultiPlayer': (context) => MultiPlayer(),
       },
     );

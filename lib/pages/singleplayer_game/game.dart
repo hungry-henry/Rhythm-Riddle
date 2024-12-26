@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'dart:convert';
 import 'dart:async';
 
@@ -23,6 +22,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   int _difficulty = 4;
 
   int _currentQuiz = -1; //题目计数器
+  Map _resultMap = {}; //结果存储
 
   //音频&题目显示计时
   int _countdown = 0; 
@@ -214,6 +214,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         if(_currentAnswerTime == 0 && mounted){
           setState(() {
             _submittedOption = "bruhtimeout";
+            _resultMap[_currentQuiz] = {"answer": _quizzes[_currentQuiz.toString()]["answer"], "submitted": "bruhtimeout", "time": _answerTime};
           });
           if(_playerState == PlayerState.paused){
             _audioPlayer.resume();
@@ -310,7 +311,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             children: [
               //题目
               ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
+                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8 - 55),
                 child:Text(
                   question,
                   style: const TextStyle(fontSize: 20),
@@ -321,7 +322,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
               if (_submittedOption == null)...[
                 //倒计时
                 Container(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: _loadTooSlow ? const EdgeInsets.all(8.0) : const EdgeInsets.all(14.0),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _currentAnswerTime < 6 && !_loadTooSlow ? Colors.yellow : Colors.grey[300],
@@ -418,8 +419,9 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                       fillColor: WidgetStateProperty.all(_submittedOption == null ? Theme.of(context).colorScheme.secondary : Colors.grey),
                       overlayColor:WidgetStateProperty.all(_submittedOption == null ? Theme.of(context).colorScheme.onSurface.withOpacity(0.08) : Colors.transparent),
                       groupValue: _selectedOption,
+                      mouseCursor: _submittedOption == null ? SystemMouseCursors.click : SystemMouseCursors.basic,
                       onChanged: (String? value) {
-                        if(_selectedOption == null){
+                        if(_submittedOption == null){
                           setState(() {
                             _selectedOption = value;
                           });
@@ -438,6 +440,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                 logger.i("submitted with $_selectedOption");
                 setState(() {
                   _submittedOption = _selectedOption;
+                  _resultMap[_currentQuiz] = {"answer": answer, "submitted": _selectedOption, "time": _answerTime - _currentAnswerTime};
                 });
                 if(_playerState != PlayerState.playing){
                   _audioPlayer.resume();
@@ -455,7 +458,13 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
               //结束
               ElevatedButton(
                 onPressed: (){
-                  //TODO: RESULT HERE
+                  _audioPlayer.stop();
+                  print(_resultMap);
+                  Navigator.pushReplacementNamed(context, "SinglePlayerGameResult", arguments:  {
+                    "playlistId": _playlistId,
+                    "playlistTitle": _playlistTitle,
+                    "resultMap": _resultMap
+                  });
                 },
                 child: Text(S.current.end),
               )

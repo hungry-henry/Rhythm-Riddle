@@ -23,6 +23,8 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m0(count, title, artist) =>
       "Contains ${count} songs including ${title} - ${artist} and more";
 
+  static String m1(playlist) => "Result of ${playlist}";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "MultiPlayerGame": MessageLookupByLibrary.simpleMessage(
@@ -83,6 +85,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "or": MessageLookupByLibrary.simpleMessage("or"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "played": MessageLookupByLibrary.simpleMessage("Played"),
+        "quizResult": m1,
         "rank": MessageLookupByLibrary.simpleMessage("Rank"),
         "recm": MessageLookupByLibrary.simpleMessage("Recommend"),
         "register": MessageLookupByLibrary.simpleMessage(
