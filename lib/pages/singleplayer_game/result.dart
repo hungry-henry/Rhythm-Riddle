@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '/generated/l10n.dart';
 
@@ -12,14 +13,17 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
   String? _playlistTitle;
 
   @override
-  void initState() {
-    super.initState();
-    setState(() {
-      final args = ModalRoute.of(context)?.settings.arguments as Map;
-      _resultMap = args['resultMap'];
-      _playlistId = args['playlistId'];
-      _playlistTitle = args['playlistTitle'];
-    });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 在 didChangeDependencies 中获取 ModalRoute 的参数
+    final args = ModalRoute.of(context)?.settings.arguments as Map?;
+    if (args != null) {
+      setState(() {
+        _resultMap = args['resultMap'];
+        _playlistId = args['playlistId'];
+        _playlistTitle = args['playlistTitle'];
+      });
+    }
   }
 
   @override

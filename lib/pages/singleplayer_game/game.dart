@@ -232,8 +232,6 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   }
 
   Future<void> _resumeAndDelayAndStop() async{
-    logger.i("call on function _resumeAndDelayAndStop");
-    
     if(_playerState==PlayerState.disposed) return;
     if(_prepareFinished){
       _played++;
@@ -380,10 +378,14 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                                       if (loadingProgress == null) {
                                         return child;
                                       } else {
-                                        return Center(
-                                          child: CircularProgressIndicator(
-                                            value: loadingProgress.expectedTotalBytes != null ? 
-                                            loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1) : null,
+                                        return SizedBox(
+                                          height:75,
+                                          width: 75,
+                                          child: Center(
+                                            child: CircularProgressIndicator(
+                                              value: loadingProgress.expectedTotalBytes != null ? 
+                                              loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1) : 1,
+                                            ),
                                           ),
                                         );
                                       }
@@ -401,10 +403,14 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                                           if (loadingProgress == null) {
                                             return child;
                                           } else {
-                                            return Center(
-                                              child: CircularProgressIndicator(
-                                                value: loadingProgress.expectedTotalBytes != null ? 
-                                                loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1) : null,
+                                            return SizedBox(
+                                              height: 75,
+                                              width: 75,
+                                              child: Center(
+                                                child: CircularProgressIndicator(
+                                                  value: loadingProgress.expectedTotalBytes != null ? 
+                                                  loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1) : 1,
+                                                ),
                                               ),
                                             );
                                           }
@@ -460,7 +466,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                 onPressed: (){
                   _audioPlayer.stop();
                   print(_resultMap);
-                  Navigator.pushReplacementNamed(context, "SinglePlayerGameResult", arguments:  {
+                  Navigator.pushReplacementNamed(context, "/SinglePlayerGameResult", arguments:  {
                     "playlistId": _playlistId,
                     "playlistTitle": _playlistTitle,
                     "resultMap": _resultMap
@@ -553,7 +559,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         Column(
           children: [
             _playlistId == 0 ? const Center(child: CircularProgressIndicator()) : 
-            Image.network("http://hungryhenry.xyz/musiclab/playlist/$_playlistId.jpg", width:350, height:350),
+            Image.network("http://hungryhenry.xyz/musiclab/playlist/$_playlistId.jpg", width:MediaQuery.of(context).size.width * 0.3),
             const SizedBox(height: 16),
             Text(_playlistTitle, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
@@ -767,7 +773,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         title: Text("${S.current.singlePlayerGame}: $_playlistTitle"), 
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: MediaQuery.of(context).size.width > 800 ? _largeScreen() : _smallScreen(),
         )

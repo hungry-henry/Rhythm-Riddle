@@ -11,7 +11,7 @@ const storage = FlutterSecureStorage();
 class Home extends StatefulWidget{
   const Home({super.key});
   @override
-  _HomeState createState() => _HomeState();
+  State createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
@@ -179,7 +179,7 @@ class _HomeState extends State<Home> {
                                               return Center(
                                                 child: CircularProgressIndicator(
                                                   value: loadingProgress.expectedTotalBytes != null ? 
-                                                  loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1) : null,
+                                                  loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1) : 1,
                                                 ),
                                               );
                                             }
