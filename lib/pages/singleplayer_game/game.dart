@@ -88,16 +88,16 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     }catch(e){
       if(e is TimeoutException){
         logger.log(Level.error, "prepare audio timeout: $e");
-          if(mounted){
+        if(mounted){
           showDialog(context: context, builder: (context){
             return AlertDialog(
-                content: Text(S.current.connectError),
-                actions: [
-                  TextButton(onPressed: () { 
-                    Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
-                    Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
-                  }, child: Text(S.current.back)),
-                ],
+              content: Text(S.current.connectError),
+              actions: [
+                TextButton(onPressed: () { 
+                  Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
+                  Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
+                }, child: Text(S.current.back)),
+              ],
             );
           });
         }
@@ -174,17 +174,17 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       if(e is TimeoutException && mounted) {
         showDialog(context: context, builder: (context){
           return AlertDialog(
-              content: Text(S.current.connectError),
-              actions: [
-                  TextButton(onPressed: () { 
-                    Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
-                    Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
-                  }, child: Text(S.current.back)),
-                  TextButton(onPressed: (){
-                    Navigator.of(context).popAndPushNamed('/SinglePlayerGame', 
-                    arguments: {playlistId, _playlistTitle, _description, difficulty});
-                  }, child: Text(S.current.retry))
-              ],
+            content: Text(S.current.connectError),
+            actions: [
+              TextButton(onPressed: () { 
+                Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
+                Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
+              }, child: Text(S.current.back)),
+              TextButton(onPressed: (){
+                Navigator.of(context).popAndPushNamed('/SinglePlayerGame', 
+                arguments: {playlistId, _playlistTitle, _description, difficulty});
+              }, child: Text(S.current.retry))
+            ],
           );
         });
       }else{
@@ -192,13 +192,13 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         print(responseBody);
         showDialog(context: context, builder: (context){
           return AlertDialog(
-              content: Text(S.current.unknownError),
-              actions: [
-                  TextButton(onPressed: () { 
-                    Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
-                    Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
-                  }, child: Text(S.current.back))
-              ],
+            content: Text(S.current.unknownError),
+            actions: [
+              TextButton(onPressed: () { 
+                Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
+                Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
+              }, child: Text(S.current.back))
+            ],
           );
         });
       }
@@ -214,11 +214,15 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         if(_currentAnswerTime == 0 && mounted){
           setState(() {
             _submittedOption = "bruhtimeout";
-            _resultMap[_currentQuiz] = {"answer": _quizzes[_currentQuiz.toString()]["answer"], "submitted": "bruhtimeout", "time": _answerTime};
+            _resultMap[_currentQuiz] = {
+              "quizType": _quizzes[_currentQuiz.toString()]["quizType"],
+              "answer": _quizzes[_currentQuiz.toString()]["answer"],
+              "submitText": "bruhtimeout",
+              "answerTime": _answerTime
+            };
           });
-          if(_playerState == PlayerState.paused){
+          if(_isPaused){
             _audioPlayer.resume();
-            _playerState = PlayerState.playing;
           }
         }
       } else {
@@ -236,19 +240,25 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     if(_prepareFinished){
       _played++;
       await _audioPlayer.resume();
-      _playerState = PlayerState.playing;
       logger.i("played");
+
+      //等待playerstate状态为playerstate.playing
+      if(_audioPlayer.state != PlayerState.playing){
+        logger.i("played but not playing");
+        await for (var state in _audioPlayer.onPlayerStateChanged) {
+          if (state == PlayerState.playing) {
+            break;
+          }
+        }
+      }
+      logger.i("playing");
       _answerTimeCountdown();
 
-      if(_playerState == PlayerState.playing){
-        await Future.delayed(Duration(seconds: _audioPlayingTime), () {
-          if(_submittedOption == null){
-            _audioPlayer.pause(); 
-            _playerState = PlayerState.paused;
-            logger.i("paused");
-          }
-        });
-      }
+      await Future.delayed(Duration(seconds: _audioPlayingTime), () {
+        if (_submittedOption == null && mounted) {
+          _audioPlayer.pause();
+        }
+      });
     }else{
       _loadTooSlow = true;
       logger.i("prepare not finished");
@@ -446,7 +456,11 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                 logger.i("submitted with $_selectedOption");
                 setState(() {
                   _submittedOption = _selectedOption;
-                  _resultMap[_currentQuiz] = {"answer": answer, "submitted": _selectedOption, "time": _answerTime - _currentAnswerTime};
+                  _resultMap[_currentQuiz.toString()] = {
+                    "quizType": quizInfo['quizType'],
+                    "answer": answer, 
+                    "submitText": _selectedOption, 
+                    "answerTime": _answerTime - _currentAnswerTime};
                 });
                 if(_playerState != PlayerState.playing){
                   _audioPlayer.resume();
@@ -467,6 +481,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                   _audioPlayer.stop();
                   print(_resultMap);
                   Navigator.pushReplacementNamed(context, "/SinglePlayerGameResult", arguments:  {
+                    "quizType": quizInfo['quizType'],
                     "playlistId": _playlistId,
                     "playlistTitle": _playlistTitle,
                     "resultMap": _resultMap
@@ -520,7 +535,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                           }
                           final position = value * duration.inMilliseconds;
                           _audioPlayer.seek(Duration(milliseconds: position.round()));
-                          if(_playerState == PlayerState.paused){
+                          if(_isPaused){
                             _audioPlayer.resume();
                             _playerState = PlayerState.playing;
                           }
@@ -698,7 +713,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       setState(() {
         _playerState = state;
       });
-      print(state.toString());
+      logger.i(state);
     });
   }
 

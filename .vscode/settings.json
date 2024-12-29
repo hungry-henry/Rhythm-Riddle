@@ -1,5 +1,6 @@
 {
     "cmake.configureOnOpen": true,
     "cmake.sourceDirectory": "D:/code/Rhythm Riddle/rhythm_riddle/linux",
-    "java.configuration.updateBuildConfiguration": "disabled"
+    "java.configuration.updateBuildConfiguration": "disabled",
+    "Codegeex.CommitMessageStyle": "ConventionalCommits"
 }
