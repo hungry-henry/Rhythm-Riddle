@@ -22,7 +22,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   int _difficulty = 4;
 
   int _currentQuiz = -1; //题目计数器
-  Map _resultMap = {}; //结果存储
+  final Map _resultMap = {}; //结果存储
 
   //音频&题目显示计时
   int _countdown = 0; 
@@ -214,10 +214,11 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         if(_currentAnswerTime == 0 && mounted){
           setState(() {
             _submittedOption = "bruhtimeout";
-            _resultMap[_currentQuiz] = {
+            _resultMap[_currentQuiz.toString()] = {
               "quizType": _quizzes[_currentQuiz.toString()]["quizType"],
               "answer": _quizzes[_currentQuiz.toString()]["answer"],
               "submitText": "bruhtimeout",
+              "options": _quizzes[_currentQuiz.toString()]["options"],
               "answerTime": _answerTime
             };
           });
@@ -242,18 +243,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       await _audioPlayer.resume();
       logger.i("played");
 
-      //等待playerstate状态为playerstate.playing
-      if(_audioPlayer.state != PlayerState.playing){
-        logger.i("played but not playing");
-        await for (var state in _audioPlayer.onPlayerStateChanged) {
-          if (state == PlayerState.playing) {
-            break;
-          }
-        }
-      }
-      logger.i("playing");
       _answerTimeCountdown();
-
       await Future.delayed(Duration(seconds: _audioPlayingTime), () {
         if (_submittedOption == null && mounted) {
           _audioPlayer.pause();
@@ -460,6 +450,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                     "quizType": quizInfo['quizType'],
                     "answer": answer, 
                     "submitText": _selectedOption, 
+                    "options": options,
                     "answerTime": _answerTime - _currentAnswerTime};
                 });
                 if(_playerState != PlayerState.playing){

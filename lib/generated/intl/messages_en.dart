@@ -49,6 +49,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Cannot connect to server. Pls try again later or use offline mode"),
         "contains": m0,
         "custom": MessageLookupByLibrary.simpleMessage("Custom"),
+        "details": MessageLookupByLibrary.simpleMessage("Answer Details"),
         "difficulty": MessageLookupByLibrary.simpleMessage("Difficulty"),
         "easy": MessageLookupByLibrary.simpleMessage("Easy"),
         "easyInfo": MessageLookupByLibrary.simpleMessage(

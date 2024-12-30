@@ -629,6 +629,16 @@ class S {
       args: [playlist],
     );
   }
+
+  /// `Answer Details`
+  String get details {
+    return Intl.message(
+      'Answer Details',
+      name: 'details',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

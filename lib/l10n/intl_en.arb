@@ -39,5 +39,5 @@
     "chooseMusic": "Choose the music that is playing", "chooseArtist": "Choose the artist of the playing music",
     "chooseAlbum": "Choose the album of the playing music", "chooseGenre": "Choose the genre of the playing music",
 
-    "quizResult": "Result of {playlist}"
+    "quizResult": "Result of {playlist}", "details": "Answer Details"
 }
