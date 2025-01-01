@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '/generated/l10n.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class SinglePlayerGameResult extends StatefulWidget {
   @override
@@ -13,18 +15,46 @@ class SinglePlayerGameResult extends StatefulWidget {
 }
 
 class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
+  //用户信息
   static const storage = FlutterSecureStorage();
   String? _uid;
   String? _password;
 
+  //传入参数
   Map _resultMap = {};
   int? _playlistId;
   String? _playlistTitle;
 
   Logger logger = Logger();
 
+  //api返回数据
   Map? _responseData;
   int? _score;
+
+  //播放器
+  final _audioPlayer = AudioPlayer();
+  //播放变化监测变量
+  PlayerState? _playerState;
+  Duration? _duration;
+  Duration? _position;
+  StreamSubscription? _durationSubscription;
+  StreamSubscription? _positionSubscription;
+  StreamSubscription? _playerCompleteSubscription;
+  StreamSubscription? _playerStateChangeSubscription;
+  bool get _isPlaying => _playerState == PlayerState.playing;
+  bool get _isPaused => _playerState == PlayerState.paused;
+  String get _durationTextUnSplited => _duration?.toString() ?? "";
+  String get _positionTextUnSplited => _position?.toString() ?? "";
+  String get _durationText => _durationTextUnSplited.substring(
+    _durationTextUnSplited.indexOf(":")+1,
+    _durationTextUnSplited.lastIndexOf(".")
+  );
+  String get _positionText => _positionTextUnSplited.substring(
+    _positionTextUnSplited.indexOf(":")+1,
+    _positionTextUnSplited.lastIndexOf(".")
+  );
+
+  bool _loading = false;
 
   Future<void> _postResult() async {
     try{
@@ -80,6 +110,31 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
     }
   }
 
+  void _initStreams() {
+    _durationSubscription = _audioPlayer.onDurationChanged.listen((duration) {
+      setState(() => _duration = duration);
+    });
+
+    _positionSubscription = _audioPlayer.onPositionChanged.listen(
+      (p) => setState(() => _position = p),
+    );
+
+    _playerCompleteSubscription = _audioPlayer.onPlayerComplete.listen((event) {
+      setState(() {
+        _playerState = PlayerState.stopped;
+        _position = Duration.zero;
+      });
+    });
+
+    _playerStateChangeSubscription =
+        _audioPlayer.onPlayerStateChanged.listen((state) {
+      setState(() {
+        _playerState = state;
+      });
+      logger.i(state);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -102,6 +157,17 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
       }
       _postResult();
     });
+    _initStreams();
+  }
+  
+  @override
+  void dispose() { //释放资源内存
+    _audioPlayer.dispose();
+    _durationSubscription?.cancel();
+    _positionSubscription?.cancel();
+    _playerCompleteSubscription?.cancel();
+    _playerStateChangeSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -145,64 +211,184 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
               ),
 
               // 详细信息
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: 600
-                ),
-                child: Column(
-                  children:[
-                    for (var item in _resultMap.entries)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Card(
-                          elevation: 3,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "${int.parse(item.key) + 1}. ${item.value['quizType'] == 0 ? S.current.chooseMusic
-                                      : item.value['quizType'] == 1 ? S.current.chooseArtist
-                                      : item.value['quizType'] == 2 ? S.current.chooseAlbum
-                                      : item.value['quizType'] == 3 ? S.current.chooseGenre : "WTF??HOW??"}",
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
+              Wrap(
+                spacing: 16.0, // Horizontal spacing between cards
+                runSpacing: 16.0, // Vertical spacing between rows
+                alignment: WrapAlignment.center,
+                children:[
+                  for (var item in _resultMap.entries)
+                    SizedBox(
+                      width:300,
+                      height:_isPlaying && _audioPlayer.source.toString() ==
+                              UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3").toString() ? 370 : 345,
+                      child: Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: ListView(
+                            children: [
+                              if(_isPlaying && _audioPlayer.source.toString() ==
+                              UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3").toString())...
+                              [
+                                //进度条
+                                SliderTheme(
+                                  data: SliderTheme.of(context).copyWith(
+                                    trackHeight: 2,
+                                    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
+                                    overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
+                                  ),
+                                  child: Slider(
+                                    onChanged: (value) {
+                                      final duration = _duration;
+                                      if (duration == null) {
+                                        return;
+                                      }
+                                      final position = value * duration.inMilliseconds;
+                                      _audioPlayer.seek(Duration(milliseconds: position.round()));
+                                      if(_isPaused){
+                                        _audioPlayer.resume();
+                                        _playerState = PlayerState.playing;
+                                      }
+                                    },
+                                    value: (_position != null &&
+                                            _duration != null &&
+                                            _position!.inMilliseconds > 0 &&
+                                            _position!.inMilliseconds < _duration!.inMilliseconds)
+                                        ? _position!.inMilliseconds / _duration!.inMilliseconds
+                                        : 0.0,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
-                                for (var option in item.value['options'])
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(vertical: 4.0),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      border: Border.all(
-                                        color: (option["title"] ?? option["name"]) == item.value['answer']
-                                            ? Colors.green : Colors.red,
-                                        width: 1.5,
+                                Row(
+                                  children: [
+                                    Text(
+                                      _position != null ? _positionText : '',
+                                      style: const TextStyle(fontSize: 16.0),
+                                    ),
+                                    const Spacer(),
+                                    Text(
+                                      _duration != null ? _durationText : '',
+                                      style: const TextStyle(fontSize: 16.0),
+                                    ),
+                                  ],
+                                )
+                              ],
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text( //题目
+                                      "${int.parse(item.key) + 1}. ${item.value['quizType'] == 0 ? S.current.chooseMusic
+                                          : item.value['quizType'] == 1 ? S.current.chooseArtist
+                                          : item.value['quizType'] == 2 ? S.current.chooseAlbum
+                                          : item.value['quizType'] == 3 ? S.current.chooseGenre : "WTF??HOW??"}",
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    child: ListTile(
-                                      leading: (option["title"] ?? option["name"]) == item.value['submitText']
-                                          ? const Icon(Icons.flag, color: Colors.blue)
-                                          : null,
-                                      title: Text((option["title"] ?? option["name"])),
-                                      trailing: (option["title"] ?? option["name"]) == item.value['answer']
-                                          ? Icon(Icons.check, color: Colors.green) : null
+                                  ),
+
+                                  //播放按钮
+                                  _loading && _audioPlayer.source.toString() == 
+                                  UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3").toString() ? 
+                                  const CircularProgressIndicator() :
+                                  IconButton(
+                                    icon: _audioPlayer.source == null || !_isPlaying ? (
+                                      const Icon(Icons.play_arrow)
+                                    ):(
+                                      _audioPlayer.source.toString() == 
+                                      UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3").toString() ? 
+                                        const Icon(Icons.pause) : const Icon(Icons.play_arrow)
+                                    ),
+                                    onPressed: () async{
+                                      try{
+                                        if(!_isPlaying){
+                                          if(_audioPlayer.source == null || 
+                                            _audioPlayer.source.toString() != 
+                                              UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3").toString())
+                                          {
+                                            setState(() {_loading = true;});
+                                            await _audioPlayer.stop();
+                                            await _audioPlayer.play(UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3"));
+                                            setState(() {_loading = false;});
+                                          }else{
+                                            setState(() {_loading = true;});
+                                            await _audioPlayer.resume();
+                                            setState(() {_loading = false;});
+                                          }
+                                        }else{
+                                          if(_audioPlayer.source.toString() == 
+                                          UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3").toString())
+                                          {
+                                            await _audioPlayer.pause();
+                                          } else{
+                                            setState(() {_loading = true;});
+                                            await _audioPlayer.play(UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3"));
+                                            setState(() {_loading = false;});
+                                          }
+                                        }
+                                      }catch(e){
+                                        if(mounted){
+                                          setState(() {_loading = false;});
+                                          if(e is TimeoutException){
+                                            showDialog(context: context, builder: (context){
+                                              return AlertDialog(
+                                                content: Text(S.current.connectError),
+                                                actions: [
+                                                  TextButton(onPressed: () { Navigator.pop(context);
+                                                  }, child: Text(S.current.back)),
+                                                ],
+                                              );
+                                            });
+                                          }else{
+                                            showDialog(context: context, builder: (context){
+                                              return AlertDialog(
+                                                  content: Text(S.current.unknownError),
+                                                  actions: [
+                                                    TextButton(onPressed: () { 
+                                                      Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
+                                                      Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
+                                                    }, child: Text(S.current.back)),
+                                                  ],
+                                              );
+                                            });
+                                          }
+                                        }
+                                      }
+                                    },
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              for (var option in item.value['options'])
+                                Container(
+                                  margin: const EdgeInsets.symmetric(vertical: 4.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    border: Border.all(
+                                      color: (option["text"]) == item.value['answer']
+                                          ? Colors.green : Colors.red,
+                                      width: 1.5,
                                     ),
                                   ),
-                              ],
-                            ),
+                                  child: ListTile(
+                                    leading: (option["text"]) == item.value['submitText']
+                                        ? const Icon(Icons.flag, color: Colors.blue)
+                                        : null,
+                                    title: Text((option["text"])),
+                                    trailing: (option["text"]) == item.value['answer']
+                                        ? Icon(Icons.check, color: Colors.green) : null
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                       ),
-                  ]
-                )
+                    ),
+                ]
               ),
             ],
           ),
@@ -228,7 +414,7 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                 : value > 0
                     ? value
                     : 0,
-            child: Icon(
+            child: const Icon(
               Icons.star, // 前景已选中的星星
               size: 40,
               color: Colors.amber,

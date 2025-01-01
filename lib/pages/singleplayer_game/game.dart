@@ -217,6 +217,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             _resultMap[_currentQuiz.toString()] = {
               "quizType": _quizzes[_currentQuiz.toString()]["quizType"],
               "answer": _quizzes[_currentQuiz.toString()]["answer"],
+              "musicId": _quizzes[_currentQuiz.toString()]["music_id"] ?? _quizzes[_currentQuiz.toString()]["id"],
               "submitText": "bruhtimeout",
               "options": _quizzes[_currentQuiz.toString()]["options"],
               "answerTime": _answerTime
@@ -351,14 +352,14 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                       side: BorderSide(
                         color: _submittedOption == null
                             ? Colors.transparent
-                            : (options[index]['title'] ?? options[index]['name']) == answer
+                            : (options[index]['text']) == answer
                                 ? Colors.green
                                 : Colors.red,
                         width: 1,
                       ),
                     ),
                     title: Text(
-                      (options[index]['title'] ?? options[index]['name']) +
+                      (options[index]['text']) +
                           (_submittedOption == null ||
                                   infoShowAfterSubmit == null ||
                                   quizType != 2
@@ -421,7 +422,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                                       )
                                     : null,
                     leading: Radio<String>(
-                      value: options[index]['title'] ?? options[index]['name'],
+                      value: options[index]['text'],
                       fillColor: WidgetStateProperty.all(_submittedOption == null ? Theme.of(context).colorScheme.secondary : Colors.grey),
                       overlayColor:WidgetStateProperty.all(_submittedOption == null ? Theme.of(context).colorScheme.onSurface.withOpacity(0.08) : Colors.transparent),
                       groupValue: _selectedOption,
@@ -450,6 +451,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                     "quizType": quizInfo['quizType'],
                     "answer": answer, 
                     "submitText": _selectedOption, 
+                    "musicId": quizInfo['music_id'] ?? quizInfo['id'],
                     "options": options,
                     "answerTime": _answerTime - _currentAnswerTime};
                 });
