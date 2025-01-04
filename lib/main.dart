@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
-import 'package:window_size/window_size.dart' as window_size;
+import 'package:window_manager/window_manager.dart';
 
 import 'pages/login.dart';
 import 'pages/home.dart';
@@ -15,19 +15,25 @@ import 'pages/singleplayer_game/game.dart';
 import 'pages/singleplayer_game/result.dart';
 
 import 'pages/multiplayer_game/multi_player.dart';
-// ignore: unused_import
-import 'pages/test.dart';
+
+//import 'pages/test.dart';
 
 void main(){  
   if(Platform.isWindows || Platform.isMacOS || Platform.isLinux){
     WidgetsFlutterBinding.ensureInitialized();
-    window_size.setWindowMinSize(const Size(400, 500)); // 设置最小窗口大小
+    WindowOptions windowOptions = const WindowOptions(
+    minimumSize: Size(500, 500),
+  );
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
   }
-  runApp(const MyApp());
+  runApp(const RhythmRiddle());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class RhythmRiddle extends StatelessWidget {
+  const RhythmRiddle({super.key});
 
   @override
   Widget build(BuildContext context) {

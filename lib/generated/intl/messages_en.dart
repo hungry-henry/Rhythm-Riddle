@@ -44,7 +44,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "chooseGenre": MessageLookupByLibrary.simpleMessage(
             "Choose the genre of the playing music"),
         "chooseMusic": MessageLookupByLibrary.simpleMessage(
-            "Choose the music that is playing"),
+            "Choose the music currently playing"),
         "connectError": MessageLookupByLibrary.simpleMessage(
             "Cannot connect to server. Pls try again later or use offline mode"),
         "contains": m0,
@@ -60,6 +60,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "emptypassword":
             MessageLookupByLibrary.simpleMessage("Please enter your password"),
         "end": MessageLookupByLibrary.simpleMessage("End👉"),
+        "enterAlbum": MessageLookupByLibrary.simpleMessage(
+            "Enter the album of the playing music"),
+        "enterArtist": MessageLookupByLibrary.simpleMessage(
+            "Enter the artist of the playing music"),
+        "enterGenre": MessageLookupByLibrary.simpleMessage(
+            "Enter the genre of the playing music"),
+        "enterMusic": MessageLookupByLibrary.simpleMessage(
+            "Enter the name of the playing music"),
         "guest": MessageLookupByLibrary.simpleMessage("offline mode"),
         "hard": MessageLookupByLibrary.simpleMessage("Hard"),
         "hardInfo": MessageLookupByLibrary.simpleMessage(
@@ -104,6 +112,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "sort": MessageLookupByLibrary.simpleMessage("Sort"),
         "start": MessageLookupByLibrary.simpleMessage("Start"),
         "submit": MessageLookupByLibrary.simpleMessage("Submit"),
+        "tip": MessageLookupByLibrary.simpleMessage("Tips: "),
         "unknownError": MessageLookupByLibrary.simpleMessage(
             "Cannot connect to server. Pls use offline mode or contact hamrui@outlook.com")
       };

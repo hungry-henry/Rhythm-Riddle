@@ -1,4 +1,4 @@
-package com.example.rhythm_riddle
+package com.hungryhenry.rhythm_riddle
 
 import io.flutter.embedding.android.FlutterActivity
 

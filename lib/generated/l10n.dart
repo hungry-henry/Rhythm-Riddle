@@ -580,10 +580,10 @@ class S {
     );
   }
 
-  /// `Choose the music that is playing`
+  /// `Choose the music currently playing`
   String get chooseMusic {
     return Intl.message(
-      'Choose the music that is playing',
+      'Choose the music currently playing',
       name: 'chooseMusic',
       desc: '',
       args: [],
@@ -620,6 +620,46 @@ class S {
     );
   }
 
+  /// `Enter the name of the playing music`
+  String get enterMusic {
+    return Intl.message(
+      'Enter the name of the playing music',
+      name: 'enterMusic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter the artist of the playing music`
+  String get enterArtist {
+    return Intl.message(
+      'Enter the artist of the playing music',
+      name: 'enterArtist',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter the album of the playing music`
+  String get enterAlbum {
+    return Intl.message(
+      'Enter the album of the playing music',
+      name: 'enterAlbum',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter the genre of the playing music`
+  String get enterGenre {
+    return Intl.message(
+      'Enter the genre of the playing music',
+      name: 'enterGenre',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Result of {playlist}`
   String quizResult(Object playlist) {
     return Intl.message(
@@ -635,6 +675,16 @@ class S {
     return Intl.message(
       'Answer Details',
       name: 'details',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tips: `
+  String get tip {
+    return Intl.message(
+      'Tips: ',
+      name: 'tip',
       desc: '',
       args: [],
     );

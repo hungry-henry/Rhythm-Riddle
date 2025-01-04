@@ -23,6 +23,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
   int _currentQuiz = -1; //题目计数器
   final Map _resultMap = {}; //结果存储
+  final _controller = TextEditingController();
 
   //音频&题目显示计时
   int _countdown = 0; 
@@ -74,7 +75,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     try{
       int id = _quizzes[_played.toString()]['music_id'] ?? _quizzes[_played.toString()]['id'];
       logger.i("start preparing $id");
-      await _audioPlayer.setSourceUrl("http://hungryhenry.xyz/musiclab/music/$id.mp3").timeout(const Duration(seconds: 10));
+      await _audioPlayer.setSourceUrl("http://hungryhenry.xyz/musiclab/music/$id.mp3").timeout(const Duration(seconds: 15));
       logger.i("prepare finished $id");
       await _audioPlayer.seek(Duration(seconds: _quizzes[_played.toString()]['start_at'])); // 跳到 startAt
       logger.i("seek finished ${_quizzes[_played.toString()]['start_at']} seconds");
@@ -256,11 +257,43 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     }
   }
 
+  //给答案挖空
+  String? replaceWithBlanks(String answer, List blanks) {
+    // 按位置插入空格
+    if(blanks.isEmpty) return null;
+    for (int i = 0; i < blanks.length; i++) {
+      int position = blanks[i]; // 转换为 0-based index
+      if (position >= 0 && position < answer.length) {
+        answer = answer.substring(0, position) + '_' + answer.substring(position + 1);
+      }
+    }
+    return answer;
+  }
+
   //显示题目
   Widget _showQuiz(Map quizInfo, int difficulty){
-    String answer = quizInfo['answer']; //正确答案
-    List options = quizInfo["options"]; //选项list
     int quizType = quizInfo["quizType"]; //题目类型
+    bool true4SelectFalse4Enter = quizType == 0 || quizType == 1 || quizType == 2 || quizType == 3;
+
+    String answer = quizInfo['answer']; //正确答案
+
+    List? options; //选项list
+    String? tip;
+    if(true4SelectFalse4Enter){
+      options = quizInfo["options"];
+    }else{
+      tip = replaceWithBlanks(answer, quizInfo["blanks"]);
+      if(tip == null){
+        if(quizType == 4) {
+          tip = quizInfo["artists"];
+        } else if(quizType == 5) {
+          tip = quizInfo["music"];
+        } else{
+          tip = "";
+        }
+      }
+    }
+
     String question = "";
     List? infoShowAfterSubmit;
     String musicInfo = "";
@@ -269,7 +302,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       case 0: //选择歌曲
         question = S.current.chooseMusic;
         infoShowAfterSubmit = options
-          .where((item) => item.containsKey("artists"))
+          ?.where((item) => item.containsKey("artists"))
           .map((item) => item["artists"] as String)
           .toList();
         musicInfo = quizInfo["answer"] + " - " + quizInfo["artists"];
@@ -277,7 +310,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       case 1: //选择歌手
         question = S.current.chooseArtist; 
         infoShowAfterSubmit = options
-          .where((item) => item.containsKey("id"))
+          ?.where((item) => item.containsKey("id"))
           .map((item) => item["id"])
           .toList();
         musicInfo = quizInfo["music"] + " - " + quizInfo["answer"];
@@ -285,15 +318,18 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       case 2: //选择专辑
         question = S.current.chooseAlbum;
         infoShowAfterSubmit = options
-          .where((item) => item.containsKey("id"))
+          ?.where((item) => item.containsKey("id"))
           .map((item) => item["id"])
           .toList();
           musicInfo = quizInfo["music"] + " - " + quizInfo["artists"];
         break;
-      case 3: 
+      case 3: //选择流派
         question = S.current.chooseGenre;
         musicInfo = quizInfo["music"] + " - " + quizInfo["artist"];
         break;
+      case 4: //填写歌曲
+        question = S.current.enterMusic;
+        musicInfo = quizInfo["answer"] + " - " + quizInfo["artists"];
       default: S.current.unknownError; break;
     }
     
@@ -339,11 +375,11 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             ],
           ),
 
-          //选项
           Column(
             mainAxisAlignment: MediaQuery.of(context).size.width > 800 ? MainAxisAlignment.start : MainAxisAlignment.center,
-            children: [
-              for (int index = 0; index < options.length; index++)
+            children: true4SelectFalse4Enter ? 
+            [//选择
+              for (int index = 0; index < options!.length; index++)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: ListTile(
@@ -437,6 +473,26 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                     ),
                   ),
                 ),
+            ] : [ //填写
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      onSubmitted: (value){
+                      },
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: (){
+
+                    },
+                    child: Text(S.current.submit),
+                  )
+                ],
+              ),
+              const SizedBox(height:10),
+              Text(tip!, style: TextStyle(letterSpacing: 2, fontSize: 18))
             ],
           ),
 

@@ -33,12 +33,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "bug": MessageLookupByLibrary.simpleMessage(
             "游戏出现BUG了，请反馈给hamrui@outlook.com"),
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
-        "chooseAlbum": MessageLookupByLibrary.simpleMessage("选择正在播放的所属专辑"),
-        "chooseArtist":
-            MessageLookupByLibrary.simpleMessage("选择正在播放的歌曲的作曲家/歌手"),
+        "chooseAlbum": MessageLookupByLibrary.simpleMessage("选择当前播放的所属专辑"),
+        "chooseArtist": MessageLookupByLibrary.simpleMessage("选择当前播放歌曲的歌手"),
         "chooseDifficulty": MessageLookupByLibrary.simpleMessage("选择难度"),
-        "chooseGenre": MessageLookupByLibrary.simpleMessage("选择正在播放的所属流派"),
-        "chooseMusic": MessageLookupByLibrary.simpleMessage("选择正在播放的歌曲名"),
+        "chooseGenre": MessageLookupByLibrary.simpleMessage("选择当前播放的所属流派"),
+        "chooseMusic": MessageLookupByLibrary.simpleMessage("选择当前播放的歌曲名"),
         "connectError":
             MessageLookupByLibrary.simpleMessage("无法连接至服务器，请稍后再试或使用本地歌单游玩"),
         "contains": m0,
@@ -52,6 +51,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "emptyemail": MessageLookupByLibrary.simpleMessage("请输入邮箱"),
         "emptypassword": MessageLookupByLibrary.simpleMessage("请输入密码"),
         "end": MessageLookupByLibrary.simpleMessage("结束👉"),
+        "enterAlbum": MessageLookupByLibrary.simpleMessage("填写当前播放的所属专辑"),
+        "enterArtist": MessageLookupByLibrary.simpleMessage("填写当前播放的歌曲的歌手"),
+        "enterGenre": MessageLookupByLibrary.simpleMessage("填写当前播放的所属流派"),
+        "enterMusic": MessageLookupByLibrary.simpleMessage("填写当前播放的歌曲名"),
         "guest": MessageLookupByLibrary.simpleMessage("离线模式"),
         "hard": MessageLookupByLibrary.simpleMessage("困难"),
         "hardInfo":
@@ -66,7 +69,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginExpired": MessageLookupByLibrary.simpleMessage("登录已过期，请重新登录"),
         "multiPlayer": MessageLookupByLibrary.simpleMessage("多人模式"),
         "multiPlayerOptions": MessageLookupByLibrary.simpleMessage("多人模式选项"),
-        "name": MessageLookupByLibrary.simpleMessage("旋律疑谜"),
+        "name": MessageLookupByLibrary.simpleMessage("这歌我熟"),
         "next": MessageLookupByLibrary.simpleMessage("下一题"),
         "noDes": MessageLookupByLibrary.simpleMessage("暂无简介"),
         "normal": MessageLookupByLibrary.simpleMessage("普通"),
@@ -90,6 +93,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "sort": MessageLookupByLibrary.simpleMessage("分类"),
         "start": MessageLookupByLibrary.simpleMessage("开始游戏"),
         "submit": MessageLookupByLibrary.simpleMessage("提交"),
+        "tip": MessageLookupByLibrary.simpleMessage("提示: "),
         "unknownError": MessageLookupByLibrary.simpleMessage(
             "软件/服务器问题，请重试或免登录进入或联系hamrui@outlook.com")
       };
