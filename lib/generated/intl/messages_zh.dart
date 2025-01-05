@@ -41,6 +41,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "connectError":
             MessageLookupByLibrary.simpleMessage("无法连接至服务器，请稍后再试或使用本地歌单游玩"),
         "contains": m0,
+        "correctAnswer": MessageLookupByLibrary.simpleMessage("正确答案: "),
         "custom": MessageLookupByLibrary.simpleMessage("自定义"),
         "details": MessageLookupByLibrary.simpleMessage("答题细节"),
         "difficulty": MessageLookupByLibrary.simpleMessage("难度"),

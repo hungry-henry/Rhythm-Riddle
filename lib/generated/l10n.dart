@@ -660,6 +660,26 @@ class S {
     );
   }
 
+  /// `Tips: `
+  String get tip {
+    return Intl.message(
+      'Tips: ',
+      name: 'tip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Correct Answer: `
+  String get correctAnswer {
+    return Intl.message(
+      'Correct Answer: ',
+      name: 'correctAnswer',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Result of {playlist}`
   String quizResult(Object playlist) {
     return Intl.message(
@@ -675,16 +695,6 @@ class S {
     return Intl.message(
       'Answer Details',
       name: 'details',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Tips: `
-  String get tip {
-    return Intl.message(
-      'Tips: ',
-      name: 'tip',
       desc: '',
       args: [],
     );

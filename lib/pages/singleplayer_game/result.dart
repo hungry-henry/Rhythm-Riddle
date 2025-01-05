@@ -218,9 +218,8 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                 children:[
                   for (var item in _resultMap.entries)
                     SizedBox(
-                      width:300,
-                      height:_isPlaying && _audioPlayer.source.toString() ==
-                              UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3").toString() ? 370 : 345,
+                      width:340,
+                      height: 360,
                       child: Card(
                         elevation: 3,
                         shape: RoundedRectangleBorder(
@@ -282,14 +281,19 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                                       "${int.parse(item.key) + 1}. ${item.value['quizType'] == 0 ? S.current.chooseMusic
                                           : item.value['quizType'] == 1 ? S.current.chooseArtist
                                           : item.value['quizType'] == 2 ? S.current.chooseAlbum
-                                          : item.value['quizType'] == 3 ? S.current.chooseGenre : "WTF??HOW??"}",
+                                          : item.value['quizType'] == 3 ? S.current.chooseGenre
+                                          : item.value['quizType'] == 4 ? S.current.enterMusic
+                                          : item.value['quizType'] == 5 ? S.current.enterArtist
+                                          : item.value['quizType'] == 6 ? S.current.enterAlbum
+                                          : item.value['quizType'] == 7 ? S.current.enterGenre
+                                          : "WTF??HOW??"}",
                                       style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ),
-
+                          
                                   //播放按钮
                                   _loading && _audioPlayer.source.toString() == 
                                   UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3").toString() ? 
@@ -362,27 +366,47 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              for (var option in item.value['options'])
-                                Container(
-                                  margin: const EdgeInsets.symmetric(vertical: 4.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    border: Border.all(
-                                      color: (option["text"]) == item.value['answer']
-                                          ? Colors.green : Colors.red,
-                                      width: 1.5,
+                              if(item.value['options'] != null)...[
+                                for (var option in item.value['options'])...[
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(vertical: 4.0),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      border: Border.all(
+                                        color: (option["text"]) == item.value['answer']
+                                            ? Colors.green : Colors.red,
+                                        width: 1.5,
+                                      ),
                                     ),
-                                  ),
-                                  child: ListTile(
-                                    leading: (option["text"]) == item.value['submitText']
-                                        ? const Icon(Icons.flag, color: Colors.blue)
-                                        : null,
-                                    title: Text((option["text"])),
-                                    trailing: (option["text"]) == item.value['answer']
-                                        ? Icon(Icons.check, color: Colors.green) : null
+                                    child: ListTile(
+                                      leading: (option["text"]) == item.value['submitText']
+                                          ? option["text"] == item.value["answer"] 
+                                          ? const Icon(Icons.check, color: Colors.green)
+                                          : const Icon(Icons.close, color: Colors.red) : null,
+                                      title: Text((option["text"])),
+                                    ),
+                                  )
+                                ],
+                                const SizedBox(height: 5),
+                                Text("用时：${item.value['answerTime']}s", textAlign: TextAlign.center)
+                              ]else ...[
+                                ListTile(
+                                  trailing: item.value['answer'] != null ?
+                                      item.value['submitText'].toString().toLowerCase() == item.value['answer'].toString().toLowerCase()
+                                        ? const Icon(Icons.check, color: Colors.green) : const Icon(Icons.close, color: Colors.red)
+                                    : item.value["answerList"].any(
+                                      (answers) => item.value['submitText'].toString().toLowerCase() == answers.toString().toLowerCase()
+                                    ) ? const Icon(Icons.check, color: Colors.green) : const Icon(Icons.close, color: Colors.red),
+                                  title: Text("输入："+item.value['submitText']),
+                                ),
+                                ListTile(
+                                  title: Text("答案：${item.value['answer'] ?? item.value['answerList'].join(", ")}"
                                   ),
                                 ),
+                                ListTile(
+                                  title: Text("回答用时：${item.value['answerTime']}s"),
+                                )
+                              ]
                             ],
                           ),
                         ),
@@ -399,7 +423,7 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
   
   Widget _buildStar(double value) {
     return Stack(
-      alignment: Alignment.center,
+      alignment: Alignment.centerLeft,
       children: [
         const Icon(
           Icons.star_border, // 背景未选中的星星

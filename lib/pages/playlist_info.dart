@@ -147,22 +147,6 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title:Text(title)),
-      body: isLoading ? const Center(child: CircularProgressIndicator()) : LayoutBuilder(
-        builder: (context, constraints){
-          bool isSmallScreen = constraints.maxWidth < 800;
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: isSmallScreen ? _buildSmallScreenLayout() : _buildLargeScreenLayout()
-          );
-        }
-      )
-    );
-  }
-
   Widget _buildSmallScreenLayout() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -395,6 +379,22 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
           ],
         ),
       ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: isLoading ? const Center(child: CircularProgressIndicator()) : LayoutBuilder(
+        builder: (context, constraints){
+          bool isSmallScreen = constraints.maxWidth < 800;
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: isSmallScreen ? _buildSmallScreenLayout() : _buildLargeScreenLayout()
+          );
+        }
+      )
     );
   }
 }

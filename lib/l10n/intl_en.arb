@@ -39,7 +39,8 @@
     "chooseMusic": "Choose the music currently playing", "chooseArtist": "Choose the artist of the playing music",
     "chooseAlbum": "Choose the album of the playing music", "chooseGenre": "Choose the genre of the playing music",
     "enterMusic": "Enter the name of the playing music", "enterArtist": "Enter the artist of the playing music",
-    "enterAlbum": "Enter the album of the playing music", "enterGenre": "Enter the genre of the playing music",
+    "enterAlbum": "Enter the album of the playing music", "enterGenre": "Enter the genre of the playing music", 
+    "tip": "Tips: ", "correctAnswer": "Correct Answer: ",
 
-    "quizResult": "Result of {playlist}", "details": "Answer Details", "tip": "Tips: "
+    "quizResult": "Result of {playlist}", "details": "Answer Details"
 }

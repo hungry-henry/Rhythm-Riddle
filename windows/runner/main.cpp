@@ -1,4 +1,4 @@
-#include <flutter/dart_project.h>
+ï»¿#include <flutter/dart_project.h>
 #include <flutter/flutter_view_controller.h>
 #include <windows.h>
 
@@ -30,7 +30,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
 
   // zh_CN? create window
   if (GetUserDefaultUILanguage() == 0x0804) { 
-    if (!window.Create(L"Õâ¸èÎÒÊì", origin, size)) {
+    if (!window.Create(L"è¿™æ­Œæˆ‘ç†Ÿ", origin, size)) {
       return EXIT_FAILURE;
     } 
   }else{

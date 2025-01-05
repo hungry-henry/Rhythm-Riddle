@@ -75,7 +75,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     try{
       int id = _quizzes[_played.toString()]['music_id'] ?? _quizzes[_played.toString()]['id'];
       logger.i("start preparing $id");
-      await _audioPlayer.setSourceUrl("http://hungryhenry.xyz/musiclab/music/$id.mp3").timeout(const Duration(seconds: 15));
+      await _audioPlayer.setSourceUrl("http://music.hungryhenry.xyz/$id.mp3").timeout(const Duration(seconds: 15));
       logger.i("prepare finished $id");
       await _audioPlayer.seek(Duration(seconds: _quizzes[_played.toString()]['start_at'])); // 跳到 startAt
       logger.i("seek finished ${_quizzes[_played.toString()]['start_at']} seconds");
@@ -276,21 +276,30 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     bool true4SelectFalse4Enter = quizType == 0 || quizType == 1 || quizType == 2 || quizType == 3;
 
     String answer = quizInfo['answer']; //正确答案
+    List? answerList;
 
     List? options; //选项list
     String? tip;
     if(true4SelectFalse4Enter){
       options = quizInfo["options"];
     }else{
-      tip = replaceWithBlanks(answer, quizInfo["blanks"]);
-      if(tip == null){
+      if(quizInfo["blanks"] == null){
         if(quizType == 4) {
           tip = quizInfo["artists"];
         } else if(quizType == 5) {
           tip = quizInfo["music"];
-        } else{
+        } else if(quizType == 6){
+          tip = quizInfo["artistForAlbum"];
+        } else if(quizType == 7){
+          tip = quizInfo["music"];
+          if(answer.contains(",")){
+            answerList = answer.split(", ");
+          }
+        }else{
           tip = "";
         }
+      } else {
+          tip = replaceWithBlanks(answer, quizInfo["blanks"]);
       }
     }
 
@@ -330,6 +339,19 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       case 4: //填写歌曲
         question = S.current.enterMusic;
         musicInfo = quizInfo["answer"] + " - " + quizInfo["artists"];
+        break;
+      case 5: //填写歌手
+        question = S.current.enterArtist;
+        musicInfo = quizInfo["music"] + " - " + quizInfo["artists"];
+        break;
+      case 6: //填写专辑
+        question = S.current.enterAlbum;
+        musicInfo = quizInfo["music"] + " - " + quizInfo["artists"];
+        break;
+      case 7: //填写流派
+        question = S.current.enterGenre;
+        musicInfo = quizInfo["music"] + " - " + quizInfo["artist"];
+        break;
       default: S.current.unknownError; break;
     }
     
@@ -388,7 +410,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                       side: BorderSide(
                         color: _submittedOption == null
                             ? Colors.transparent
-                            : (options[index]['text']) == answer
+                            : (options[index]['text']) == answer || answerList!.contains((options[index]['text']))
                                 ? Colors.green
                                 : Colors.red,
                         width: 1,
@@ -462,7 +484,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                       fillColor: WidgetStateProperty.all(_submittedOption == null ? Theme.of(context).colorScheme.secondary : Colors.grey),
                       overlayColor:WidgetStateProperty.all(_submittedOption == null ? Theme.of(context).colorScheme.onSurface.withOpacity(0.08) : Colors.transparent),
                       groupValue: _selectedOption,
-                      mouseCursor: _submittedOption == null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+                      mouseCursor: _submittedOption == null ? SystemMouseCursors.click : SystemMouseCursors.basic, //鼠标样式
                       onChanged: (String? value) {
                         if(_submittedOption == null){
                           setState(() {
@@ -478,21 +500,70 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                 children: [
                   Expanded(
                     child: TextField(
+                      enabled: _submittedOption == null,
                       controller: _controller,
                       onSubmitted: (value){
+                        setState(() {
+                          _submittedOption = value;
+                          _resultMap[_currentQuiz.toString()] = {
+                            "quizType": quizInfo['quizType'],
+                            "answer": answer.contains(",") ? null : answer, 
+                            "answerList": answerList, //will be null if it's a choice question
+                            "submitText": _submittedOption, 
+                            "musicId": quizInfo['music_id'] ?? quizInfo['id'],
+                            "options": options, //will be null if it's a fill-in-the-blank
+                            "answerTime": _answerTime - _currentAnswerTime
+                          };
+                        });
+                        if(_playerState != PlayerState.playing){
+                          _audioPlayer.resume();
+                          _playerState = PlayerState.playing;
+                        }
                       },
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: (){
-
-                    },
-                    child: Text(S.current.submit),
-                  )
                 ],
               ),
               const SizedBox(height:10),
-              Text(tip!, style: TextStyle(letterSpacing: 2, fontSize: 18))
+              if(_submittedOption == null) ...[
+                Text(S.current.tip),
+                Text(tip!, style: const TextStyle(letterSpacing: 2, fontSize: 18))
+              ]else ...[
+                Text(S.current.correctAnswer),
+                Text(answer, style: const TextStyle(letterSpacing: 2, fontSize: 18)),
+                const SizedBox(height: 10),
+                Image.network(
+                  quizType == 4 ? "http://hungryhenry.xyz/musiclab/album/${quizInfo['album_id']}.jpg"
+                  : quizType == 5 ? "http://hungryhenry.xyz/musiclab/artist/${quizInfo['id']}_logo.jpg"
+                  : quizType == 6 ? "http://hungryhenry.xyz/musiclab/album/${quizInfo['id']}.jpg"
+                  : "http://hungryhenry.xyz/musiclab/album/${quizInfo['album_id']}.jpg",
+                  width: 150,
+                  height: 150,
+                  loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child;
+                    } else {
+                      return SizedBox(
+                        height: 150,
+                        width: 150,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null ? 
+                            loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1) : 1,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                    return const SizedBox(
+                        height: 150,
+                        width: 150,
+                        child: Center(child: Icon(Icons.image, color: Colors.grey)),
+                      );
+                  }
+                )
+              ]
             ],
           ),
 
@@ -500,16 +571,18 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             //提交按钮
             ElevatedButton(
               onPressed: () {
-                logger.i("submitted with $_selectedOption");
+                logger.i("submitted with ${_selectedOption ?? _controller.text}");
                 setState(() {
-                  _submittedOption = _selectedOption;
+                  _submittedOption = _selectedOption ?? _controller.text;
                   _resultMap[_currentQuiz.toString()] = {
                     "quizType": quizInfo['quizType'],
-                    "answer": answer, 
-                    "submitText": _selectedOption, 
+                    "answer": answer.contains(",") ? null : answer, 
+                    "answerList": answerList, //will be null if it's a choice question
+                    "submitText": _submittedOption, 
                     "musicId": quizInfo['music_id'] ?? quizInfo['id'],
-                    "options": options,
-                    "answerTime": _answerTime - _currentAnswerTime};
+                    "options": options, //will be null if it's a fill-in-the-blank
+                    "answerTime": _answerTime - _currentAnswerTime
+                  };
                 });
                 if(_playerState != PlayerState.playing){
                   _audioPlayer.resume();
@@ -520,7 +593,9 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             ),
           ] else ...[
             const SizedBox(height: 10),
-            _submittedOption == "bruhtimeout" ? const Text("时间到") : _submittedOption == answer ? const Text("正确!") : const Text("错误!"),
+            _submittedOption == "bruhtimeout" ? const Text("时间到") 
+            : _submittedOption!.toLowerCase() == answer.toLowerCase() || 
+            answerList!.any((item)=> item.toLowerCase() == _submittedOption!.toLowerCase()) ? const Text("正确!") : const Text("错误!"),
             const SizedBox(height: 10),
 
             if(_currentQuiz + 2 == _quizzes.length) ... [
@@ -528,7 +603,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
               ElevatedButton(
                 onPressed: (){
                   _audioPlayer.stop();
-                  print(_resultMap);
+                  logger.i(_resultMap);
                   Navigator.pushReplacementNamed(context, "/SinglePlayerGameResult", arguments:  {
                     "quizType": quizInfo['quizType'],
                     "playlistId": _playlistId,
@@ -546,6 +621,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                   setState(() {
                     _submittedOption = null;
                     _selectedOption = null;
+                    _controller.text = "";
                     _startAudioCountdown();
                   });
                 },
