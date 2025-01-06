@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'package:http/http.dart' as http;
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';
 import '/generated/l10n.dart';
 
@@ -34,30 +34,27 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   String? _selectedOption; //选项
   String? _submittedOption; //提交的选项
 
-  //歌曲播放准备
-  final _audioPlayer = AudioPlayer();
-  int _played = 0;
-  int _audioPlayingTime = 0;  
-  bool _prepareFinished = false;
-
   Logger logger = Logger(); //日志
-
-  bool _loadTooSlow = false; //在要播放时，没准备好
 
   //答题时间
   int _answerTime = 0;
   int _currentAnswerTime = 0;
 
+
+  //歌曲播放准备
+  final _audioPlayer = AudioPlayer();
+  int _played = 0;
+  int _audioPlayingTime = 0;  
+
   //播放变化监测变量
-  PlayerState? _playerState;
+  ProcessingState _processingState = ProcessingState.idle;
+  bool get _prepareFinished => _processingState == ProcessingState.ready;
+
   Duration? _duration;
   Duration? _position;
+
   StreamSubscription? _durationSubscription;
   StreamSubscription? _positionSubscription;
-  StreamSubscription? _playerCompleteSubscription;
-  StreamSubscription? _playerStateChangeSubscription;
-  bool get _isPlaying => _playerState == PlayerState.playing;
-  bool get _isPaused => _playerState == PlayerState.paused;
   String get _durationTextUnSplited => _duration?.toString() ?? "";
   String get _positionTextUnSplited => _position?.toString() ?? "";
   String get _durationText => _durationTextUnSplited.substring(
@@ -71,19 +68,14 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
   Future<void> _prepareAudio() async {
     logger.i("preparing audio");
-    if(_playerState==PlayerState.disposed) return;
     try{
       int id = _quizzes[_played.toString()]['music_id'] ?? _quizzes[_played.toString()]['id'];
       logger.i("start preparing $id");
-      await _audioPlayer.setSourceUrl("http://music.hungryhenry.xyz/$id.mp3").timeout(const Duration(seconds: 15));
+      await _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse("http://music.hungryhenry.xyz/$id.mp3")),preload: true).timeout(const Duration(seconds: 15));
       logger.i("prepare finished $id");
       await _audioPlayer.seek(Duration(seconds: _quizzes[_played.toString()]['start_at'])); // 跳到 startAt
       logger.i("seek finished ${_quizzes[_played.toString()]['start_at']} seconds");
-      _prepareFinished = true;
-      if(_loadTooSlow){
-        setState(() {
-          _loadTooSlow = false;
-        });
+      if(!_prepareFinished){
         _resumeAndDelayAndStop();
       }
     }catch(e){
@@ -127,7 +119,6 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     setState(() {
       _countdown = 3; // 初始化倒计时
       _canShowQuiz = false;
-      _prepareFinished = false;
     });
 
     //提前加载音频
@@ -146,7 +137,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             _countdown = 0;
           });
 
-          Future.delayed(const Duration(seconds: 1), () {
+          Future.delayed(const Duration(milliseconds: 600), () {
             setState(() {
               _canShowQuiz = true;
             });
@@ -224,12 +215,12 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
               "answerTime": _answerTime
             };
           });
-          if(_isPaused){
-            _audioPlayer.resume();
+          if(!_audioPlayer.playing){
+            _audioPlayer.play();
           }
         }
       } else {
-        if(mounted){
+        if(mounted && _prepareFinished){
           setState(() {
             _currentAnswerTime--; // 每秒减少1
           });
@@ -239,21 +230,15 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   }
 
   Future<void> _resumeAndDelayAndStop() async{
-    if(_playerState==PlayerState.disposed) return;
     if(_prepareFinished){
       _played++;
-      await _audioPlayer.resume();
-      logger.i("played");
-
+      await _audioPlayer.play();
       _answerTimeCountdown();
       await Future.delayed(Duration(seconds: _audioPlayingTime), () {
         if (_submittedOption == null && mounted) {
           _audioPlayer.pause();
         }
       });
-    }else{
-      _loadTooSlow = true;
-      logger.i("prepare not finished");
     }
   }
 
@@ -379,14 +364,14 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
               if (_submittedOption == null)...[
                 //倒计时
                 Container(
-                  padding: _loadTooSlow ? const EdgeInsets.all(8.0) : const EdgeInsets.all(14.0),
+                  padding: !_prepareFinished ? const EdgeInsets.all(8.0) : const EdgeInsets.all(14.0),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: _currentAnswerTime < 6 && !_loadTooSlow ? Colors.yellow : Colors.grey[300],
+                    color: _currentAnswerTime < 6 && !_prepareFinished ? Colors.yellow : Colors.grey[300],
                   ),
-                  child: _loadTooSlow ? const Center(child:CircularProgressIndicator()) : Text(
+                  child: !_prepareFinished ? const Center(child:CircularProgressIndicator()) : Text(
                     _currentAnswerTime.toString(),
-                    style: _currentAnswerTime < 6 && !_loadTooSlow ? const TextStyle(
+                    style: _currentAnswerTime < 6 && !_prepareFinished ? const TextStyle(
                       color: Colors.red,
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -410,9 +395,10 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                       side: BorderSide(
                         color: _submittedOption == null
                             ? Colors.transparent
-                            : (options[index]['text']) == answer || answerList!.contains((options[index]['text']))
+                            : (options[index]['text']) == answer
                                 ? Colors.green
-                                : Colors.red,
+                                : answerList!=null ? answerList.contains((options[index]['text'])) 
+                                ?Colors.green : Colors.red : Colors.red,
                         width: 1,
                       ),
                     ),
@@ -514,10 +500,10 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                             "options": options, //will be null if it's a fill-in-the-blank
                             "answerTime": _answerTime - _currentAnswerTime
                           };
+                          _currentAnswerTime = _answerTime;
                         });
-                        if(_playerState != PlayerState.playing){
-                          _audioPlayer.resume();
-                          _playerState = PlayerState.playing;
+                        if(!_audioPlayer.playing){
+                          _audioPlayer.play();
                         }
                       },
                     ),
@@ -583,10 +569,10 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                     "options": options, //will be null if it's a fill-in-the-blank
                     "answerTime": _answerTime - _currentAnswerTime
                   };
+                  _currentAnswerTime = _answerTime;
                 });
-                if(_playerState != PlayerState.playing){
-                  _audioPlayer.resume();
-                  _playerState = PlayerState.playing;
+                if(!_audioPlayer.playing){
+                  _audioPlayer.play();
                 }
               },
               child: Text(S.current.submit), 
@@ -594,8 +580,9 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           ] else ...[
             const SizedBox(height: 10),
             _submittedOption == "bruhtimeout" ? const Text("时间到") 
-            : _submittedOption!.toLowerCase() == answer.toLowerCase() || 
-            answerList!.any((item)=> item.toLowerCase() == _submittedOption!.toLowerCase()) ? const Text("正确!") : const Text("错误!"),
+            : _submittedOption!.toLowerCase() == answer.toLowerCase() ? const Text("正确!") 
+            : answerList != null ? answerList.any((item)=> item.toLowerCase() == _submittedOption!.toLowerCase()) ?
+            const Text("正确!") : const Text("错误!") : const Text("错误!"),
             const SizedBox(height: 10),
 
             if(_currentQuiz + 2 == _quizzes.length) ... [
@@ -637,12 +624,9 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                   //播放/暂停按钮
                   IconButton(
                     onPressed: (){
-                      _isPlaying ? _audioPlayer.pause() : _audioPlayer.resume();
-                      setState(() {
-                        _playerState = _isPlaying ? PlayerState.paused : PlayerState.playing;
-                      });
+                      _audioPlayer.playing ? _audioPlayer.pause() : _audioPlayer.play();
                     }, 
-                    icon: _isPlaying ? const Icon(Icons.pause) : const Icon(Icons.play_arrow),
+                    icon: _audioPlayer.playing ? const Icon(Icons.pause) : const Icon(Icons.play_arrow),
                   ),
                   //进度条
                   Expanded(
@@ -660,9 +644,8 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                           }
                           final position = value * duration.inMilliseconds;
                           _audioPlayer.seek(Duration(milliseconds: position.round()));
-                          if(_isPaused){
-                            _audioPlayer.resume();
-                            _playerState = PlayerState.playing;
+                          if(!_audioPlayer.playing){
+                            _audioPlayer.play();
                           }
                         },
                         value: (_position != null &&
@@ -816,31 +799,6 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     );
   }
 
-  //状态更新
-  void _initStreams() {
-    _durationSubscription = _audioPlayer.onDurationChanged.listen((duration) {
-      setState(() => _duration = duration);
-    });
-
-    _positionSubscription = _audioPlayer.onPositionChanged.listen(
-      (p) => setState(() => _position = p),
-    );
-
-    _playerCompleteSubscription = _audioPlayer.onPlayerComplete.listen((event) {
-      setState(() {
-        _playerState = PlayerState.stopped;
-        _position = Duration.zero;
-      });
-    });
-
-    _playerStateChangeSubscription =
-        _audioPlayer.onPlayerStateChanged.listen((state) {
-      setState(() {
-        _playerState = state;
-      });
-      logger.i(state);
-    });
-  }
 
   @override
     void initState() {
@@ -856,11 +814,6 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           _difficulty = args["difficulty"];
         });
 
-        //检测audioplayer状态
-        if(_playerState == PlayerState.disposed){
-          Navigator.of(context).popAndPushNamed('/SinglePlayerGame', arguments: args);
-        }
-
         //获取题目
         _getQuiz(_playlistId, _difficulty);
 
@@ -871,11 +824,11 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             _answerTime = 15;
             break;
           case 1:
-            _audioPlayingTime = 4;
+            _audioPlayingTime = 5;
             _answerTime = 10;
             break;
           case 2:
-            _audioPlayingTime = 2;
+            _audioPlayingTime = 3;
             _answerTime = 5;
             break;
           default:
@@ -883,11 +836,22 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             _answerTime = 0;
         }
       });
-      _audioPlayer.onLog.listen(
-        (String message) => logger.log(Level.info,message),
-        onError: (Object e, [StackTrace? stackTrace]) => logger.log(Level.error, stackTrace),
-      );
-      _initStreams();
+
+      //状态更新
+      _audioPlayer.playbackEventStream.listen((event) {}, onError: (error) {
+        logger.e(error);
+      });
+      _durationSubscription = _audioPlayer.durationStream.listen((duration){
+        setState(() => _duration = duration);
+      });
+
+      _positionSubscription = _audioPlayer.positionStream.listen((position){
+        setState(() => _position = position);
+      });
+
+      _audioPlayer.processingStateStream.listen((processingState){
+        setState(() => _processingState = processingState);
+      });
     }
 
   @override
@@ -895,8 +859,6 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     _audioPlayer.dispose();
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
-    _playerCompleteSubscription?.cancel();
-    _playerStateChangeSubscription?.cancel();
     super.dispose();
   }
 
@@ -905,7 +867,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     if (_quizzes.isNotEmpty && _currentQuiz == -1 && _countdown == 0 && mounted) {
       _startAudioCountdown();
     }
-    if(_played == _currentQuiz && _currentQuiz != -1 && _countdown == 0 && mounted) {
+    if(_played == _currentQuiz && _prepareFinished && _currentQuiz != -1 && _countdown == 0 && mounted) {
       _resumeAndDelayAndStop();
     }
     return Scaffold(

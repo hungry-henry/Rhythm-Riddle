@@ -2,12 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '/generated/l10n.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 
 class SinglePlayerGameResult extends StatefulWidget {
   @override
@@ -34,15 +33,16 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
   //播放器
   final _audioPlayer = AudioPlayer();
   //播放变化监测变量
-  PlayerState? _playerState;
   Duration? _duration;
   Duration? _position;
   StreamSubscription? _durationSubscription;
   StreamSubscription? _positionSubscription;
-  StreamSubscription? _playerCompleteSubscription;
-  StreamSubscription? _playerStateChangeSubscription;
-  bool get _isPlaying => _playerState == PlayerState.playing;
-  bool get _isPaused => _playerState == PlayerState.paused;
+  StreamSubscription? _processSubscription;
+  StreamSubscription? _sequenceSubscription;
+
+  String? _source;
+  ProcessingState _processingState = ProcessingState.idle;
+  bool get _loading => _processingState != ProcessingState.ready;
   String get _durationTextUnSplited => _duration?.toString() ?? "";
   String get _positionTextUnSplited => _position?.toString() ?? "";
   String get _durationText => _durationTextUnSplited.substring(
@@ -53,8 +53,6 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
     _positionTextUnSplited.indexOf(":")+1,
     _positionTextUnSplited.lastIndexOf(".")
   );
-
-  bool _loading = false;
 
   Future<void> _postResult() async {
     try{
@@ -110,31 +108,6 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
     }
   }
 
-  void _initStreams() {
-    _durationSubscription = _audioPlayer.onDurationChanged.listen((duration) {
-      setState(() => _duration = duration);
-    });
-
-    _positionSubscription = _audioPlayer.onPositionChanged.listen(
-      (p) => setState(() => _position = p),
-    );
-
-    _playerCompleteSubscription = _audioPlayer.onPlayerComplete.listen((event) {
-      setState(() {
-        _playerState = PlayerState.stopped;
-        _position = Duration.zero;
-      });
-    });
-
-    _playerStateChangeSubscription =
-        _audioPlayer.onPlayerStateChanged.listen((state) {
-      setState(() {
-        _playerState = state;
-      });
-      logger.i(state);
-    });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -156,8 +129,32 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
         });
       }
       _postResult();
+
+      //状态更新
+      _audioPlayer.playbackEventStream.listen((event) {}, onError: (error) {
+        logger.e(error);
+      });
+      _durationSubscription = _audioPlayer.durationStream.listen((duration){
+        setState(() => _duration = duration);
+      });
+
+      _positionSubscription = _audioPlayer.positionStream.listen((position){
+        setState(() => _position = position);
+      });
+
+      _processSubscription =_audioPlayer.processingStateStream.listen((processingState){
+        setState(() => _processingState = processingState);
+      });
+
+      _audioPlayer.sequenceStateStream.listen((sequenceState){
+        if (sequenceState != null) {
+          final currentSource = sequenceState.currentSource;
+          if (currentSource is UriAudioSource) {
+            _source = currentSource.uri.toString();
+          }
+        }
+      });
     });
-    _initStreams();
   }
   
   @override
@@ -165,8 +162,6 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
     _audioPlayer.dispose();
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
-    _playerCompleteSubscription?.cancel();
-    _playerStateChangeSubscription?.cancel();
     super.dispose();
   }
 
@@ -229,8 +224,8 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                           padding: const EdgeInsets.all(12.0),
                           child: ListView(
                             children: [
-                              if(_isPlaying && _audioPlayer.source.toString() ==
-                              UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3").toString())...
+                              if(_audioPlayer.playing && _source ==
+                              "http://music.hungryhenry.xyz/${item.value['musicId']}.mp3")...
                               [
                                 //进度条
                                 SliderTheme(
@@ -247,9 +242,8 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                                       }
                                       final position = value * duration.inMilliseconds;
                                       _audioPlayer.seek(Duration(milliseconds: position.round()));
-                                      if(_isPaused){
-                                        _audioPlayer.resume();
-                                        _playerState = PlayerState.playing;
+                                      if(!_audioPlayer.playing){
+                                        _audioPlayer.play();
                                       }
                                     },
                                     value: (_position != null &&
@@ -295,73 +289,66 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                                   ),
                           
                                   //播放按钮
-                                  _loading && _audioPlayer.source.toString() == 
-                                  UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3").toString() ? 
+                                  _loading && _source == 
+                                  "http://music.hungryhenry.xyz/${item.value['musicId']}.mp3" ? 
                                   const CircularProgressIndicator() :
                                   IconButton(
-                                    icon: _audioPlayer.source == null || !_isPlaying ? (
+                                    icon: _source == null || !_audioPlayer.playing ? (
                                       const Icon(Icons.play_arrow)
                                     ):(
-                                      _audioPlayer.source.toString() == 
-                                      UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3").toString() ? 
-                                        const Icon(Icons.pause) : const Icon(Icons.play_arrow)
-                                    ),
+                                      _source == 
+                                      "http://music.hungryhenry.xyz/${item.value['musicId']}.mp3") ? 
+                                        const Icon(Icons.pause) : const Icon(Icons.play_arrow),
                                     onPressed: () async{
                                       try{
-                                        if(!_isPlaying){
-                                          if(_audioPlayer.source == null || 
-                                            _audioPlayer.source.toString() != 
-                                              UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3").toString())
+                                        if(!_audioPlayer.playing){
+                                          if(_source == null || 
+                                            _source != 
+                                              "http://music.hungryhenry.xyz/${item.value['musicId']}.mp3")
                                           {
-                                            setState(() {_loading = true;});
                                             await _audioPlayer.stop();
-                                            await _audioPlayer.play(UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3"));
-                                            setState(() {_loading = false;});
+                                            await _audioPlayer.setUrl("http://music.hungryhenry.xyz/${item.value['musicId']}.mp3");
+                                            await _audioPlayer.play();
                                           }else{
-                                            setState(() {_loading = true;});
-                                            await _audioPlayer.resume();
-                                            setState(() {_loading = false;});
+                                            await _audioPlayer.play();
                                           }
                                         }else{
-                                          if(_audioPlayer.source.toString() == 
-                                          UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3").toString())
+                                          if(_source == 
+                                          "http://music.hungryhenry.xyz/${item.value['musicId']}.mp3")
                                           {
                                             await _audioPlayer.pause();
                                           } else{
-                                            setState(() {_loading = true;});
-                                            await _audioPlayer.play(UrlSource("http://hungryhenry.xyz/musiclab/music/${item.value['musicId']}.mp3"));
-                                            setState(() {_loading = false;});
+                                            await _audioPlayer.setUrl("http://music.hungryhenry.xyz/${item.value['musicId']}.mp3");
+                                            await _audioPlayer.play();
                                           }
                                         }
                                       }catch(e){
-                                        if(mounted){
-                                          setState(() {_loading = false;});
-                                          if(e is TimeoutException){
-                                            showDialog(context: context, builder: (context){
-                                              return AlertDialog(
-                                                content: Text(S.current.connectError),
+                                        if(mounted) dispose();
+                                        if(e is TimeoutException){
+                                          showDialog(context: context, builder: (context){
+                                            return AlertDialog(
+                                              content: Text(S.current.connectError),
+                                              actions: [
+                                                TextButton(onPressed: () { Navigator.pop(context);
+                                                }, child: Text(S.current.back)),
+                                              ],
+                                            );
+                                          });
+                                        }else{
+                                          showDialog(context: context, builder: (context){
+                                            return AlertDialog(
+                                                content: Text(S.current.unknownError),
                                                 actions: [
-                                                  TextButton(onPressed: () { Navigator.pop(context);
+                                                  TextButton(onPressed: () { 
+                                                    Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
+                                                    Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
                                                   }, child: Text(S.current.back)),
                                                 ],
-                                              );
-                                            });
-                                          }else{
-                                            showDialog(context: context, builder: (context){
-                                              return AlertDialog(
-                                                  content: Text(S.current.unknownError),
-                                                  actions: [
-                                                    TextButton(onPressed: () { 
-                                                      Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
-                                                      Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
-                                                    }, child: Text(S.current.back)),
-                                                  ],
-                                              );
-                                            });
-                                          }
+                                            );
+                                          });
                                         }
                                       }
-                                    },
+                                    }
                                   )
                                 ],
                               ),

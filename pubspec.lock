@@ -9,62 +9,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.11.0"
-  audioplayers:
-    dependency: "direct main"
-    description:
-      name: audioplayers
-      sha256: c346ba5a39dc208f1bab55fc239855f573d69b0e832402114bf0b793622adc4d
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "6.1.0"
-  audioplayers_android:
+  audio_session:
     dependency: transitive
     description:
-      name: audioplayers_android
-      sha256: de576b890befe27175c2f511ba8b742bec83765fa97c3ce4282bba46212f58e4
+      name: audio_session
+      sha256: b2a26ba8b7efa1790d6460e82971fde3e398cfbe2295df9dea22f3499d2c12a7
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "5.0.0"
-  audioplayers_darwin:
-    dependency: transitive
-    description:
-      name: audioplayers_darwin
-      sha256: e507887f3ff18d8e5a10a668d7bedc28206b12e10b98347797257c6ae1019c3b
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "6.0.0"
-  audioplayers_linux:
-    dependency: transitive
-    description:
-      name: audioplayers_linux
-      sha256: "3d3d244c90436115417f170426ce768856d8fe4dfc5ed66a049d2890acfa82f9"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "4.0.0"
-  audioplayers_platform_interface:
-    dependency: transitive
-    description:
-      name: audioplayers_platform_interface
-      sha256: "6834dd48dfb7bc6c2404998ebdd161f79cd3774a7e6779e1348d54a3bfdcfaa5"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "7.0.0"
-  audioplayers_web:
-    dependency: transitive
-    description:
-      name: audioplayers_web
-      sha256: "3609bdf0e05e66a3d9750ee40b1e37f2a622c4edb796cc600b53a90a30a2ace4"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "5.0.1"
-  audioplayers_windows:
-    dependency: transitive
-    description:
-      name: audioplayers_windows
-      sha256: "8605762dddba992138d476f6a0c3afd9df30ac5b96039929063eceed416795c2"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "4.0.0"
+    version: "0.1.23"
   boolean_selector:
     dependency: transitive
     description:
@@ -261,6 +213,38 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.9.0"
+  just_audio:
+    dependency: "direct main"
+    description:
+      name: just_audio
+      sha256: a49e7120b95600bd357f37a2bb04cd1e88252f7cdea8f3368803779b925b1049
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.9.42"
+  just_audio_platform_interface:
+    dependency: transitive
+    description:
+      name: just_audio_platform_interface
+      sha256: "0243828cce503c8366cc2090cefb2b3c871aa8ed2f520670d76fd47aa1ab2790"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.3.0"
+  just_audio_web:
+    dependency: transitive
+    description:
+      name: just_audio_web
+      sha256: "9a98035b8b24b40749507687520ec5ab404e291d2b0937823ff45d92cb18d448"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.4.13"
+  just_audio_windows:
+    dependency: "direct main"
+    description:
+      name: just_audio_windows
+      sha256: b1ba5305d841c0e3883644e20fc11aaa23f28cfdd43ec20236d1e119a402ef29
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.2"
   leak_tracker:
     dependency: transitive
     description:
@@ -405,6 +389,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.8"
+  rxdart:
+    dependency: "direct main"
+    description:
+      name: rxdart
+      sha256: "5c3004a4a8dbb94bd4bf5412a4def4acdaa12e12f269737a5751369e12d1a962"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.28.0"
   screen_retriever:
     dependency: transitive
     description:
@@ -546,14 +538,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.2.0"
-  synchronized:
-    dependency: transitive
-    description:
-      name: synchronized
-      sha256: "539ef412b170d65ecdafd780f924e5be3f60032a1128df156adad6c5b373d558"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.1.0+1"
   term_glyph:
     dependency: transitive
     description:

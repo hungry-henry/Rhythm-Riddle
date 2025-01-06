@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 
 class Test extends StatefulWidget {
   const Test({Key? key}) : super(key: key);
@@ -10,11 +10,15 @@ class Test extends StatefulWidget {
 }
 
 class _TestState extends State<Test> {
-  AudioPlayer player = AudioPlayer();
+  final player = AudioPlayer();
   String url = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
   void _play() async {
-    await player.setSourceUrl(url);
-    await player.resume();
+    await player.play();
+  }
+  @override
+  void initState() {
+    super.initState();
+    player.setUrl(url);
   }
   @override
   Widget build(BuildContext context) {

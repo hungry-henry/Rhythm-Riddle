@@ -47,10 +47,12 @@ dependencies:
   flutter_secure_storage_macos: ^3.1.2
   flutter_secure_storage_windows: ^3.1.2
   flutter_secure_storage_linux: ^1.2.1
-  audioplayers: ^6.1.0
   logger: ^2.5.0
   palette_generator: ^0.3.3+5
   window_manager: ^0.4.3
+  just_audio: ^0.9.42
+  rxdart: ^0.28.0
+  just_audio_windows: ^0.2.2
 
 dev_dependencies:
   flutter_test:
