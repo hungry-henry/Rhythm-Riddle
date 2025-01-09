@@ -380,10 +380,10 @@ class S {
     );
   }
 
-  /// `Multi Player`
+  /// `Multi Player (Coming Soon)`
   String get multiPlayer {
     return Intl.message(
-      'Multi Player',
+      'Multi Player (Coming Soon)',
       name: 'multiPlayer',
       desc: '',
       args: [],
@@ -530,26 +530,6 @@ class S {
     );
   }
 
-  /// `Single Player Game`
-  String get singlePlayerGame {
-    return Intl.message(
-      'Single Player Game',
-      name: 'singlePlayerGame',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Multi Player Game (coming soon)`
-  String get MultiPlayerGame {
-    return Intl.message(
-      'Multi Player Game (coming soon)',
-      name: 'MultiPlayerGame',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Submit`
   String get submit {
     return Intl.message(
@@ -675,6 +655,26 @@ class S {
     return Intl.message(
       'Correct Answer: ',
       name: 'correctAnswer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Correct✔`
+  String get correct {
+    return Intl.message(
+      'Correct✔',
+      name: 'correct',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Wrong❌`
+  String get wrong {
+    return Intl.message(
+      'Wrong❌',
+      name: 'wrong',
       desc: '',
       args: [],
     );

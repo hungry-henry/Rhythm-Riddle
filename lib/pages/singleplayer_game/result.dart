@@ -63,8 +63,8 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
         },
         body: jsonEncode({
           'playlist_id': _playlistId.toString(),
-          'player_id': _uid ?? '',
-          'player_password': _password ?? '',
+          'player_id': _uid, //mb null
+          'player_password': _password, //mb null
           'result_map': _resultMap
         })
       ).timeout(const Duration(seconds:7));
@@ -112,48 +112,50 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
   void initState() {
     super.initState();
     storage.read(key: 'uid').then((value) => setState(() {
-      _uid = value!;
+      _uid = value;
     }));
     storage.read(key: 'password').then((value) => setState(() {
-      _password = value!;
+      _password = value;
     }));
 
     //延迟执行
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final args = ModalRoute.of(context)?.settings.arguments as Map?;
-      if (args != null) {
-        setState(() {
-          _resultMap = args['resultMap'];
-          _playlistId = args['playlistId'];
-          _playlistTitle = args['playlistTitle'];
+      if(mounted){
+        final args = ModalRoute.of(context)?.settings.arguments as Map?;
+        if (args != null) {
+          setState(() {
+            _resultMap = args['resultMap'];
+            _playlistId = args['playlistId'];
+            _playlistTitle = args['playlistTitle'];
+          });
+        }
+        _postResult();
+
+        //状态更新
+        _audioPlayer.playbackEventStream.listen((event) {}, onError: (error) {
+          logger.e(error);
+        });
+        _durationSubscription = _audioPlayer.durationStream.listen((duration){
+          if(mounted){setState(() => _duration = duration);}
+        });
+
+        _positionSubscription = _audioPlayer.positionStream.listen((position){
+          if(mounted){setState(() => _position = position);}
+        });
+
+        _processSubscription =_audioPlayer.processingStateStream.listen((processingState){
+          if(mounted){setState(() => _processingState = processingState);}
+        });
+
+        _audioPlayer.sequenceStateStream.listen((sequenceState){
+          if (sequenceState != null) {
+            final currentSource = sequenceState.currentSource;
+            if (currentSource is UriAudioSource) {
+              _source = currentSource.uri.toString();
+            }
+          }
         });
       }
-      _postResult();
-
-      //状态更新
-      _audioPlayer.playbackEventStream.listen((event) {}, onError: (error) {
-        logger.e(error);
-      });
-      _durationSubscription = _audioPlayer.durationStream.listen((duration){
-        setState(() => _duration = duration);
-      });
-
-      _positionSubscription = _audioPlayer.positionStream.listen((position){
-        setState(() => _position = position);
-      });
-
-      _processSubscription =_audioPlayer.processingStateStream.listen((processingState){
-        setState(() => _processingState = processingState);
-      });
-
-      _audioPlayer.sequenceStateStream.listen((sequenceState){
-        if (sequenceState != null) {
-          final currentSource = sequenceState.currentSource;
-          if (currentSource is UriAudioSource) {
-            _source = currentSource.uri.toString();
-          }
-        }
-      });
     });
   }
   
@@ -308,9 +310,9 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                                           {
                                             await _audioPlayer.stop();
                                             await _audioPlayer.setUrl("http://music.hungryhenry.xyz/${item.value['musicId']}.mp3");
-                                            await _audioPlayer.play();
+                                            _audioPlayer.play();
                                           }else{
-                                            await _audioPlayer.play();
+                                            _audioPlayer.play();
                                           }
                                         }else{
                                           if(_source == 
@@ -319,7 +321,7 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                                             await _audioPlayer.pause();
                                           } else{
                                             await _audioPlayer.setUrl("http://music.hungryhenry.xyz/${item.value['musicId']}.mp3");
-                                            await _audioPlayer.play();
+                                            _audioPlayer.play();
                                           }
                                         }
                                       }catch(e){
@@ -400,6 +402,14 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                       ),
                     ),
                 ]
+              ),
+              const SizedBox(height: 16),
+              // 返回按钮
+              ElevatedButton(
+                child: Text(S.current.back),
+                onPressed: () {
+                  Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
+                },
               ),
             ],
           ),

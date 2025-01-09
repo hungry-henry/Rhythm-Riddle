@@ -41,6 +41,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "connectError":
             MessageLookupByLibrary.simpleMessage("无法连接至服务器，请稍后再试或使用本地歌单游玩"),
         "contains": m0,
+        "correct": MessageLookupByLibrary.simpleMessage("正确✔"),
         "correctAnswer": MessageLookupByLibrary.simpleMessage("正确答案: "),
         "custom": MessageLookupByLibrary.simpleMessage("自定义"),
         "details": MessageLookupByLibrary.simpleMessage("答题细节"),
@@ -56,7 +57,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "enterArtist": MessageLookupByLibrary.simpleMessage("填写当前播放的歌曲的歌手"),
         "enterGenre": MessageLookupByLibrary.simpleMessage("填写当前播放的所属流派"),
         "enterMusic": MessageLookupByLibrary.simpleMessage("填写当前播放的歌曲名"),
-        "guest": MessageLookupByLibrary.simpleMessage("离线模式"),
+        "guest": MessageLookupByLibrary.simpleMessage("免登录进入"),
         "hard": MessageLookupByLibrary.simpleMessage("困难"),
         "hardInfo":
             MessageLookupByLibrary.simpleMessage("困难模式：2次失误机会，曲名或歌手或专辑填空"),
@@ -68,7 +69,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "loggingIn": MessageLookupByLibrary.simpleMessage("登录中..."),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
         "loginExpired": MessageLookupByLibrary.simpleMessage("登录已过期，请重新登录"),
-        "multiPlayer": MessageLookupByLibrary.simpleMessage("多人模式"),
+        "multiPlayer": MessageLookupByLibrary.simpleMessage("多人模式（敬请期待）"),
         "multiPlayerOptions": MessageLookupByLibrary.simpleMessage("多人模式选项"),
         "name": MessageLookupByLibrary.simpleMessage("这歌我熟"),
         "next": MessageLookupByLibrary.simpleMessage("下一题"),
@@ -88,7 +89,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "retry": MessageLookupByLibrary.simpleMessage("重试"),
         "search": MessageLookupByLibrary.simpleMessage("搜索歌单、歌曲或歌手"),
         "singlePlayer": MessageLookupByLibrary.simpleMessage("单人模式"),
-        "singlePlayerGame": MessageLookupByLibrary.simpleMessage("单人游戏"),
         "singlePlayerOptions": MessageLookupByLibrary.simpleMessage("单人模式选项"),
         "songs": MessageLookupByLibrary.simpleMessage("歌曲"),
         "sort": MessageLookupByLibrary.simpleMessage("分类"),
@@ -96,6 +96,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "submit": MessageLookupByLibrary.simpleMessage("提交"),
         "tip": MessageLookupByLibrary.simpleMessage("提示: "),
         "unknownError": MessageLookupByLibrary.simpleMessage(
-            "软件/服务器问题，请重试或免登录进入或联系hamrui@outlook.com")
+            "软件/服务器问题，请重试或免登录进入或联系hamrui@outlook.com"),
+        "wrong": MessageLookupByLibrary.simpleMessage("错误❌")
       };
 }

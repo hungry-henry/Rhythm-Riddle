@@ -53,6 +53,7 @@ dependencies:
   just_audio: ^0.9.42
   rxdart: ^0.28.0
   just_audio_windows: ^0.2.2
+  just_audio_mpv: ^0.1.7
 
 dev_dependencies:
   flutter_test:

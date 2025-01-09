@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';
+
 import '/generated/l10n.dart';
 
 class SinglePlayerGame extends StatefulWidget {
@@ -23,11 +24,12 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
   int _currentQuiz = -1; //题目计数器
   final Map _resultMap = {}; //结果存储
-  final _controller = TextEditingController();
+  TextEditingController _controller = TextEditingController();
 
   //音频&题目显示计时
   int _countdown = 0; 
   bool _canShowQuiz = false;
+  bool _countingDown = false;
 
   Map _quizzes = {}; //存储api获取的题目
 
@@ -44,7 +46,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   //歌曲播放准备
   final _audioPlayer = AudioPlayer();
   int _played = 0;
-  int _audioPlayingTime = 0;  
+  int _audioPlayingTime = 0;
 
   //播放变化监测变量
   ProcessingState _processingState = ProcessingState.idle;
@@ -70,13 +72,11 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     logger.i("preparing audio");
     try{
       int id = _quizzes[_played.toString()]['music_id'] ?? _quizzes[_played.toString()]['id'];
-      logger.i("start preparing $id");
       await _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse("http://music.hungryhenry.xyz/$id.mp3")),preload: true).timeout(const Duration(seconds: 15));
-      logger.i("prepare finished $id");
       await _audioPlayer.seek(Duration(seconds: _quizzes[_played.toString()]['start_at'])); // 跳到 startAt
       logger.i("seek finished ${_quizzes[_played.toString()]['start_at']} seconds");
-      if(!_prepareFinished){
-        _resumeAndDelayAndStop();
+      if(!_prepareFinished && !_audioPlayer.playing){
+        _playAndDelayAndPause();
       }
     }catch(e){
       if(e is TimeoutException){
@@ -137,7 +137,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             _countdown = 0;
           });
 
-          Future.delayed(const Duration(milliseconds: 600), () {
+          Future.delayed(const Duration(seconds: 1), () {
             setState(() {
               _canShowQuiz = true;
             });
@@ -198,11 +198,14 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   }
 
   //答题倒计时
-  void _answerTimeCountdown() {
-    _currentAnswerTime = _answerTime;
+  void _answerTimeCountdown(){
+    if(!mounted) return;
+    _currentAnswerTime = _quizzes[_currentQuiz.toString()]["quizType"] > 3 ? _answerTime + 5 : _answerTime;
+    _countingDown = true;
     Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_currentAnswerTime == 0 || _submittedOption != null) {
         timer.cancel();
+        _countingDown = false;
         if(_currentAnswerTime == 0 && mounted){
           setState(() {
             _submittedOption = "bruhtimeout";
@@ -229,10 +232,10 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     });
   }
 
-  Future<void> _resumeAndDelayAndStop() async{
-    if(_prepareFinished){
+  Future<void> _playAndDelayAndPause() async{
+    if(_prepareFinished && !_countingDown){
       _played++;
-      await _audioPlayer.play();
+      _audioPlayer.play();
       _answerTimeCountdown();
       await Future.delayed(Duration(seconds: _audioPlayingTime), () {
         if (_submittedOption == null && mounted) {
@@ -367,7 +370,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                   padding: !_prepareFinished ? const EdgeInsets.all(8.0) : const EdgeInsets.all(14.0),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: _currentAnswerTime < 6 && !_prepareFinished ? Colors.yellow : Colors.grey[300],
+                    color: _currentAnswerTime < 6 && _currentAnswerTime != 0 && !_prepareFinished? Colors.yellow : Colors.grey[300],
                   ),
                   child: !_prepareFinished ? const Center(child:CircularProgressIndicator()) : Text(
                     _currentAnswerTime.toString(),
@@ -472,7 +475,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                       groupValue: _selectedOption,
                       mouseCursor: _submittedOption == null ? SystemMouseCursors.click : SystemMouseCursors.basic, //鼠标样式
                       onChanged: (String? value) {
-                        if(_submittedOption == null){
+                        if(_submittedOption == null && mounted){
                           setState(() {
                             _selectedOption = value;
                           });
@@ -580,9 +583,18 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           ] else ...[
             const SizedBox(height: 10),
             _submittedOption == "bruhtimeout" ? const Text("时间到") 
-            : _submittedOption!.toLowerCase() == answer.toLowerCase() ? const Text("正确!") 
-            : answerList != null ? answerList.any((item)=> item.toLowerCase() == _submittedOption!.toLowerCase()) ?
-            const Text("正确!") : const Text("错误!") : const Text("错误!"),
+            : _submittedOption!.toLowerCase() == answer.toLowerCase() ? 
+            Text(
+              S.current.correct, 
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green)
+            ) : answerList != null ? 
+              answerList.any((item)=> item.toLowerCase() == _submittedOption!.toLowerCase()) ?
+              Text(
+                S.current.correct, 
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green)
+              ) : 
+            Text(S.current.wrong, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red)) : 
+            Text(S.current.wrong, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red)),
             const SizedBox(height: 10),
 
             if(_currentQuiz + 2 == _quizzes.length) ... [
@@ -825,11 +837,11 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             break;
           case 1:
             _audioPlayingTime = 5;
-            _answerTime = 10;
+            _answerTime = 15;
             break;
           case 2:
             _audioPlayingTime = 3;
-            _answerTime = 5;
+            _answerTime = 10;
             break;
           default:
             _audioPlayingTime = 0;
@@ -842,15 +854,15 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         logger.e(error);
       });
       _durationSubscription = _audioPlayer.durationStream.listen((duration){
-        setState(() => _duration = duration);
+        if(mounted){setState(() => _duration = duration);}
       });
 
       _positionSubscription = _audioPlayer.positionStream.listen((position){
-        setState(() => _position = position);
+        if(mounted){setState(() => _position = position);}
       });
 
       _audioPlayer.processingStateStream.listen((processingState){
-        setState(() => _processingState = processingState);
+        if(mounted){setState(() => _processingState = processingState);}
       });
     }
 
@@ -859,6 +871,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     _audioPlayer.dispose();
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -867,12 +880,12 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     if (_quizzes.isNotEmpty && _currentQuiz == -1 && _countdown == 0 && mounted) {
       _startAudioCountdown();
     }
-    if(_played == _currentQuiz && _prepareFinished && _currentQuiz != -1 && _countdown == 0 && mounted) {
-      _resumeAndDelayAndStop();
+    if(_played == _currentQuiz && !_audioPlayer.playing && _prepareFinished && _currentQuiz != -1 && _countdown == 0 && mounted) {
+      _playAndDelayAndPause();
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text("${S.current.singlePlayerGame}: $_playlistTitle"), 
+        title: Text("${S.current.singlePlayer}: $_playlistTitle"), 
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -27,8 +27,6 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "MultiPlayerGame": MessageLookupByLibrary.simpleMessage(
-            "Multi Player Game (coming soon)"),
         "account": MessageLookupByLibrary.simpleMessage("Account"),
         "back": MessageLookupByLibrary.simpleMessage("Back"),
         "backToHome": MessageLookupByLibrary.simpleMessage("Back to Home"),
@@ -48,6 +46,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "connectError": MessageLookupByLibrary.simpleMessage(
             "Cannot connect to server. Pls try again later or use offline mode"),
         "contains": m0,
+        "correct": MessageLookupByLibrary.simpleMessage("Correct✔"),
         "correctAnswer":
             MessageLookupByLibrary.simpleMessage("Correct Answer: "),
         "custom": MessageLookupByLibrary.simpleMessage("Custom"),
@@ -83,7 +82,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "loginExpired": MessageLookupByLibrary.simpleMessage(
             "login info expired, pls login again"),
-        "multiPlayer": MessageLookupByLibrary.simpleMessage("Multi Player"),
+        "multiPlayer":
+            MessageLookupByLibrary.simpleMessage("Multi Player (Coming Soon)"),
         "multiPlayerOptions":
             MessageLookupByLibrary.simpleMessage("Multi Player Options"),
         "name": MessageLookupByLibrary.simpleMessage("Rhythm Riddle"),
@@ -106,8 +106,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "search": MessageLookupByLibrary.simpleMessage(
             "Search playlist, song and artist"),
         "singlePlayer": MessageLookupByLibrary.simpleMessage("Single Player"),
-        "singlePlayerGame":
-            MessageLookupByLibrary.simpleMessage("Single Player Game"),
         "singlePlayerOptions":
             MessageLookupByLibrary.simpleMessage("Single Player Options"),
         "songs": MessageLookupByLibrary.simpleMessage("Songs"),
@@ -116,6 +114,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "submit": MessageLookupByLibrary.simpleMessage("Submit"),
         "tip": MessageLookupByLibrary.simpleMessage("Tips: "),
         "unknownError": MessageLookupByLibrary.simpleMessage(
-            "Cannot connect to server. Pls use offline mode or contact hamrui@outlook.com")
+            "Cannot connect to server. Pls use offline mode or contact hamrui@outlook.com"),
+        "wrong": MessageLookupByLibrary.simpleMessage("Wrong❌")
       };
 }

@@ -433,24 +433,12 @@ class _HomeState extends State<Home> {
         /// Rank Page
         const Padding(
           padding: EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[
-              Card(
-                child: ListTile(
-                  leading: Icon(Icons.notifications_sharp),
-                  title: Text('Notification 1'),
-                  subtitle: Text('This is a notification'),
-                ),
-              ),
-              Card(
-                child: ListTile(
-                  leading: Icon(Icons.notifications_sharp),
-                  title: Text('Notification 2'),
-                  subtitle: Text('This is a notification'),
-                ),
-              ),
-            ],
-          ),
+          child: Center(
+            child: Text(
+              "开发中，敬请期待",
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)
+            )
+          )
         ),
         _buildAccount()
       ][currentPageIndex]

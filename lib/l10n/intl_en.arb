@@ -23,7 +23,7 @@
 
     "songs": "Songs", "played": "Played", "likes": "Likes",
     "bug": "A bug appeared, pls report to hamrui@outlook.com",
-    "singlePlayer": "Single Player", "multiPlayer": "Multi Player",
+    "singlePlayer": "Single Player", "multiPlayer": "Multi Player (Coming Soon)",
     "singlePlayerOptions": "Single Player Options", "multiPlayerOptions": "Multi Player Options",
     "contains": "Contains {count} songs including {title} - {artist} and more",
     "noDes": "No Description",
@@ -33,14 +33,13 @@
     "normalInfo": "Normal mode: 3 times mistake chances, 4 options to choose or fill in the blanks with hints for Artist or Music title or Album",
     "hardInfo": "Hard mode: 2 times mistake chances, fill in the blanks for Artist or Music title or Album",
     "start": "Start",
-    "singlePlayerGame": "Single Player Game", "MultiPlayerGame": "Multi Player Game (coming soon)",
 
     "submit": "Submit", "next": "Next", "end": "End👉",
     "chooseMusic": "Choose the music currently playing", "chooseArtist": "Choose the artist of the playing music",
     "chooseAlbum": "Choose the album of the playing music", "chooseGenre": "Choose the genre of the playing music",
     "enterMusic": "Enter the name of the playing music", "enterArtist": "Enter the artist of the playing music",
     "enterAlbum": "Enter the album of the playing music", "enterGenre": "Enter the genre of the playing music", 
-    "tip": "Tips: ", "correctAnswer": "Correct Answer: ",
+    "tip": "Tips: ", "correctAnswer": "Correct Answer: ", "correct": "Correct✔", "wrong": "Wrong❌",
 
     "quizResult": "Result of {playlist}", "details": "Answer Details"
 }

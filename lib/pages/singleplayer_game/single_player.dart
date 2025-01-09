@@ -315,15 +315,16 @@ class _SinglePlayerState extends State<SinglePlayer> {
               ),
               GestureDetector(
                 onTap: () {
-                  setState(() {
-                    selectedDifficulty = 3;
-                  });
+                  // setState(() {
+                  //   selectedDifficulty = 3;
+                  // });
                 },
                 child: Container(
                   width: 80,
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    color: selectedDifficulty == 3 ? Colors.blue : Colors.grey[300],
+                    color: //selectedDifficulty == 3 ? Colors.blue : 
+                    Colors.grey[600],
                     border: Border.all(color: Colors.grey),
                     borderRadius: const BorderRadius.horizontal(right: Radius.circular(10)),
                   ),
@@ -331,7 +332,8 @@ class _SinglePlayerState extends State<SinglePlayer> {
                     child: Text(
                       S.current.custom,
                       style: TextStyle(
-                        color: selectedDifficulty == 3 ? Colors.white : Colors.black,
+                        color: //selectedDifficulty == 3 ? Colors.white : 
+                        Colors.black,
                       ),
                     ),
                   ),
