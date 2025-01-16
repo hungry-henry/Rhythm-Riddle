@@ -24,6 +24,7 @@ if (flutterVersionName == null) {
 }
 
 android {
+    compileSdkVersion 34
     namespace = "com.hungryhenry.rhythm_riddle"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
@@ -56,4 +57,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+  coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
 }

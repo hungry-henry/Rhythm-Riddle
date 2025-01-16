@@ -68,11 +68,16 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
           'result_map': _resultMap
         })
       ).timeout(const Duration(seconds:7));
-      if(mounted){
-        setState(() {
-          _responseData = jsonDecode(response.body);
-          _score = _responseData!["score"];
-        });
+      if(response.statusCode == 200){
+        if(mounted){
+          setState(() {
+            _responseData = jsonDecode(response.body);
+            _score = _responseData!["score"];
+          });
+        }
+      }else{
+        logger.e(response.statusCode);
+        logger.e(response.body);
       }
     }catch(e){
       if(e is TimeoutException && mounted && _score == null){
@@ -128,8 +133,8 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
             _playlistId = args['playlistId'];
             _playlistTitle = args['playlistTitle'];
           });
-        }
         _postResult();
+        }
 
         //状态更新
         _audioPlayer.playbackEventStream.listen((event) {}, onError: (error) {
@@ -164,6 +169,8 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
     _audioPlayer.dispose();
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
+    _processSubscription?.cancel();
+    _sequenceSubscription?.cancel();
     super.dispose();
   }
 

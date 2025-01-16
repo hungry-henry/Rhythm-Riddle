@@ -18,16 +18,16 @@ import 'pages/multiplayer_game/multi_player.dart';
 
 //import 'pages/test.dart';
 
-void main(){  
+Future<void> main() async{  
   if(Platform.isWindows || Platform.isMacOS || Platform.isLinux){
     WidgetsFlutterBinding.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(
-    minimumSize: Size(500, 500),
-  );
-  windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.show();
-    await windowManager.focus();
-  });
+      minimumSize: Size(500, 500),
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
   }
   runApp(const RhythmRiddle());
 }

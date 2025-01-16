@@ -23,7 +23,17 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m0(count, title, artist) =>
       "Contains ${count} songs including ${title} - ${artist} and more";
 
-  static String m1(playlist) => "Result of ${playlist}";
+  static String m1(version) => "Downloading ${version}...";
+
+  static String m2(permission) =>
+      "Lack of ${permission} Permission, failed to update. Pls grant permission(s) manually";
+
+  static String m3(playlist) => "Result of ${playlist}";
+
+  static String m4(date) => "Release Date: ${date}";
+
+  static String m5(version, latestVersion) =>
+      "Curr ver.: ${version}, new ver. available: ${latestVersion}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -31,8 +41,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "back": MessageLookupByLibrary.simpleMessage("Back"),
         "backToHome": MessageLookupByLibrary.simpleMessage("Back to Home"),
         "bug": MessageLookupByLibrary.simpleMessage(
-            "A bug appeared, pls report to hamrui@outlook.com"),
+            "A bug appeared, pls report to hungryhenry101@outlook.com"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+        "checkingUpdate":
+            MessageLookupByLibrary.simpleMessage("Checking updates..."),
         "chooseAlbum": MessageLookupByLibrary.simpleMessage(
             "Choose the album of the playing music"),
         "chooseArtist": MessageLookupByLibrary.simpleMessage(
@@ -52,6 +64,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "custom": MessageLookupByLibrary.simpleMessage("Custom"),
         "details": MessageLookupByLibrary.simpleMessage("Answer Details"),
         "difficulty": MessageLookupByLibrary.simpleMessage("Difficulty"),
+        "dlUpdate": MessageLookupByLibrary.simpleMessage("Update Now"),
+        "downloadProgress":
+            MessageLookupByLibrary.simpleMessage("Download Progress: "),
+        "downloading": m1,
         "easy": MessageLookupByLibrary.simpleMessage("Easy"),
         "easyInfo": MessageLookupByLibrary.simpleMessage(
             "Easy mode: 5 times mistake chances, 4 options to choose for Artist or Music title"),
@@ -76,6 +92,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "home": MessageLookupByLibrary.simpleMessage("Home🏠"),
         "hot": MessageLookupByLibrary.simpleMessage("Hot🔥"),
         "incorrect": MessageLookupByLibrary.simpleMessage("incorrect"),
+        "installPerm":
+            MessageLookupByLibrary.simpleMessage("Install Packages Permission"),
         "likes": MessageLookupByLibrary.simpleMessage("Likes"),
         "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
         "loggingIn": MessageLookupByLibrary.simpleMessage("Loggin In..."),
@@ -92,16 +110,24 @@ class MessageLookup extends MessageLookupByLibrary {
         "normal": MessageLookupByLibrary.simpleMessage("Normal"),
         "normalInfo": MessageLookupByLibrary.simpleMessage(
             "Normal mode: 3 times mistake chances, 4 options to choose or fill in the blanks with hints for Artist or Music title or Album"),
+        "ntfPerm":
+            MessageLookupByLibrary.simpleMessage("Notification Permission"),
         "ok": MessageLookupByLibrary.simpleMessage("OK👌"),
         "or": MessageLookupByLibrary.simpleMessage("or"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
+        "permissionError": m2,
+        "permissionExplain": MessageLookupByLibrary.simpleMessage(
+            "Pls grant notification permission to prevent the process from killing by system"),
         "played": MessageLookupByLibrary.simpleMessage("Played"),
-        "quizResult": m1,
+        "quizResult": m3,
         "rank": MessageLookupByLibrary.simpleMessage("Rank"),
         "recm": MessageLookupByLibrary.simpleMessage("Recommend"),
         "register": MessageLookupByLibrary.simpleMessage(
             "No account? Click here to sign up!"),
+        "releaseDate": m4,
         "relogin": MessageLookupByLibrary.simpleMessage("Re-Login"),
+        "restart": MessageLookupByLibrary.simpleMessage(
+            "Restart the App After Granting"),
         "retry": MessageLookupByLibrary.simpleMessage("Retry"),
         "search": MessageLookupByLibrary.simpleMessage(
             "Search playlist, song and artist"),
@@ -111,10 +137,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "songs": MessageLookupByLibrary.simpleMessage("Songs"),
         "sort": MessageLookupByLibrary.simpleMessage("Sort"),
         "start": MessageLookupByLibrary.simpleMessage("Start"),
+        "storagePerm":
+            MessageLookupByLibrary.simpleMessage("Storage Permission"),
         "submit": MessageLookupByLibrary.simpleMessage("Submit"),
         "tip": MessageLookupByLibrary.simpleMessage("Tips: "),
         "unknownError": MessageLookupByLibrary.simpleMessage(
-            "Cannot connect to server. Pls use offline mode or contact hamrui@outlook.com"),
+            "Cannot connect to server. Pls use offline mode or contact hungryhenry101@outlook.com"),
+        "update": m5,
+        "versionCheckError": MessageLookupByLibrary.simpleMessage(
+            "Cannot check version. Pls try again later or contact hungryhenry101@outlook.com"),
         "wrong": MessageLookupByLibrary.simpleMessage("Wrong❌")
       };
 }

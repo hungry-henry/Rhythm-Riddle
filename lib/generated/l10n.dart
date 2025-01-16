@@ -160,10 +160,10 @@ class S {
     );
   }
 
-  /// `Cannot connect to server. Pls use offline mode or contact hamrui@outlook.com`
+  /// `Cannot connect to server. Pls use offline mode or contact hungryhenry101@outlook.com`
   String get unknownError {
     return Intl.message(
-      'Cannot connect to server. Pls use offline mode or contact hamrui@outlook.com',
+      'Cannot connect to server. Pls use offline mode or contact hungryhenry101@outlook.com',
       name: 'unknownError',
       desc: '',
       args: [],
@@ -185,6 +185,76 @@ class S {
     return Intl.message(
       'Cannot connect to server. Pls try again later or use offline mode',
       name: 'connectError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cannot check version. Pls try again later or contact hungryhenry101@outlook.com`
+  String get versionCheckError {
+    return Intl.message(
+      'Cannot check version. Pls try again later or contact hungryhenry101@outlook.com',
+      name: 'versionCheckError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Lack of {permission} Permission, failed to update. Pls grant permission(s) manually`
+  String permissionError(Object permission) {
+    return Intl.message(
+      'Lack of $permission Permission, failed to update. Pls grant permission(s) manually',
+      name: 'permissionError',
+      desc: '',
+      args: [permission],
+    );
+  }
+
+  /// `Pls grant notification permission to prevent the process from killing by system`
+  String get permissionExplain {
+    return Intl.message(
+      'Pls grant notification permission to prevent the process from killing by system',
+      name: 'permissionExplain',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Storage Permission`
+  String get storagePerm {
+    return Intl.message(
+      'Storage Permission',
+      name: 'storagePerm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Notification Permission`
+  String get ntfPerm {
+    return Intl.message(
+      'Notification Permission',
+      name: 'ntfPerm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Install Packages Permission`
+  String get installPerm {
+    return Intl.message(
+      'Install Packages Permission',
+      name: 'installPerm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restart the App After Granting`
+  String get restart {
+    return Intl.message(
+      'Restart the App After Granting',
+      name: 'restart',
       desc: '',
       args: [],
     );
@@ -257,6 +327,66 @@ class S {
       name: 'loading',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Checking updates...`
+  String get checkingUpdate {
+    return Intl.message(
+      'Checking updates...',
+      name: 'checkingUpdate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Curr ver.: {version}, new ver. available: {latestVersion}`
+  String update(Object version, Object latestVersion) {
+    return Intl.message(
+      'Curr ver.: $version, new ver. available: $latestVersion',
+      name: 'update',
+      desc: '',
+      args: [version, latestVersion],
+    );
+  }
+
+  /// `Download Progress: `
+  String get downloadProgress {
+    return Intl.message(
+      'Download Progress: ',
+      name: 'downloadProgress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update Now`
+  String get dlUpdate {
+    return Intl.message(
+      'Update Now',
+      name: 'dlUpdate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Release Date: {date}`
+  String releaseDate(Object date) {
+    return Intl.message(
+      'Release Date: $date',
+      name: 'releaseDate',
+      desc: '',
+      args: [date],
+    );
+  }
+
+  /// `Downloading {version}...`
+  String downloading(Object version) {
+    return Intl.message(
+      'Downloading $version...',
+      name: 'downloading',
+      desc: '',
+      args: [version],
     );
   }
 
@@ -360,10 +490,10 @@ class S {
     );
   }
 
-  /// `A bug appeared, pls report to hamrui@outlook.com`
+  /// `A bug appeared, pls report to hungryhenry101@outlook.com`
   String get bug {
     return Intl.message(
-      'A bug appeared, pls report to hamrui@outlook.com',
+      'A bug appeared, pls report to hungryhenry101@outlook.com',
       name: 'bug',
       desc: '',
       args: [],

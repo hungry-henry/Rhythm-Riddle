@@ -23,7 +23,16 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m0(count, title, artist) =>
       "包含 ${title} - ${artist} 等 ${count} 首歌曲";
 
-  static String m1(playlist) => "${playlist} 的答题结果";
+  static String m1(version) => "正在下载${version}...";
+
+  static String m2(permission) => "缺少${permission}权限，无法更新，请手动授予权限";
+
+  static String m3(playlist) => "${playlist} 的答题结果";
+
+  static String m4(date) => "发布日期：${date}";
+
+  static String m5(version, latestVersion) =>
+      "当前版本：${version}，有新版本：${latestVersion}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -31,8 +40,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "back": MessageLookupByLibrary.simpleMessage("返回"),
         "backToHome": MessageLookupByLibrary.simpleMessage("返回主页"),
         "bug": MessageLookupByLibrary.simpleMessage(
-            "游戏出现BUG了，请反馈给hamrui@outlook.com"),
+            "游戏出现BUG了，请反馈给hungryhenry101@outlook.com"),
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
+        "checkingUpdate": MessageLookupByLibrary.simpleMessage("检查更新中..."),
         "chooseAlbum": MessageLookupByLibrary.simpleMessage("选择当前播放的所属专辑"),
         "chooseArtist": MessageLookupByLibrary.simpleMessage("选择当前播放歌曲的歌手"),
         "chooseDifficulty": MessageLookupByLibrary.simpleMessage("选择难度"),
@@ -46,6 +56,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "custom": MessageLookupByLibrary.simpleMessage("自定义"),
         "details": MessageLookupByLibrary.simpleMessage("答题细节"),
         "difficulty": MessageLookupByLibrary.simpleMessage("难度"),
+        "dlUpdate": MessageLookupByLibrary.simpleMessage("立即下载"),
+        "downloadProgress": MessageLookupByLibrary.simpleMessage("下载进度："),
+        "downloading": m1,
         "easy": MessageLookupByLibrary.simpleMessage("简单"),
         "easyInfo":
             MessageLookupByLibrary.simpleMessage("简单模式：5次失误机会，曲名或歌手4选1"),
@@ -64,6 +77,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "home": MessageLookupByLibrary.simpleMessage("主页🏠"),
         "hot": MessageLookupByLibrary.simpleMessage("热门🔥"),
         "incorrect": MessageLookupByLibrary.simpleMessage("错误"),
+        "installPerm": MessageLookupByLibrary.simpleMessage("安装应用权限"),
         "likes": MessageLookupByLibrary.simpleMessage("赞"),
         "loading": MessageLookupByLibrary.simpleMessage("加载中..."),
         "loggingIn": MessageLookupByLibrary.simpleMessage("登录中..."),
@@ -77,15 +91,21 @@ class MessageLookup extends MessageLookupByLibrary {
         "normal": MessageLookupByLibrary.simpleMessage("普通"),
         "normalInfo": MessageLookupByLibrary.simpleMessage(
             "普通模式：3次失误机会，曲名或歌手或专辑 4选1或有提示的填空"),
+        "ntfPerm": MessageLookupByLibrary.simpleMessage("通知权限"),
         "ok": MessageLookupByLibrary.simpleMessage("确定👌"),
         "or": MessageLookupByLibrary.simpleMessage("或"),
         "password": MessageLookupByLibrary.simpleMessage("密码"),
+        "permissionError": m2,
+        "permissionExplain":
+            MessageLookupByLibrary.simpleMessage("请授予通知权限，以防止软件更新时被系统结束进程"),
         "played": MessageLookupByLibrary.simpleMessage("玩过"),
-        "quizResult": m1,
+        "quizResult": m3,
         "rank": MessageLookupByLibrary.simpleMessage("排行榜"),
         "recm": MessageLookupByLibrary.simpleMessage("推荐"),
         "register": MessageLookupByLibrary.simpleMessage("没有账号? 点此注册!"),
+        "releaseDate": m4,
         "relogin": MessageLookupByLibrary.simpleMessage("重新登录"),
+        "restart": MessageLookupByLibrary.simpleMessage("授权后请重启软件"),
         "retry": MessageLookupByLibrary.simpleMessage("重试"),
         "search": MessageLookupByLibrary.simpleMessage("搜索歌单、歌曲或歌手"),
         "singlePlayer": MessageLookupByLibrary.simpleMessage("单人模式"),
@@ -93,10 +113,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "songs": MessageLookupByLibrary.simpleMessage("歌曲"),
         "sort": MessageLookupByLibrary.simpleMessage("分类"),
         "start": MessageLookupByLibrary.simpleMessage("开始游戏"),
+        "storagePerm": MessageLookupByLibrary.simpleMessage("文件读写"),
         "submit": MessageLookupByLibrary.simpleMessage("提交"),
         "tip": MessageLookupByLibrary.simpleMessage("提示: "),
         "unknownError": MessageLookupByLibrary.simpleMessage(
-            "软件/服务器问题，请重试或免登录进入或联系hamrui@outlook.com"),
+            "软件/服务器问题，请重试或免登录进入或联系hungryhenry101@outlook.com"),
+        "update": m5,
+        "versionCheckError": MessageLookupByLibrary.simpleMessage(
+            "版本检查失败，请稍后再试或联系hungryhenry101@outlook.com"),
         "wrong": MessageLookupByLibrary.simpleMessage("错误❌")
       };
 }

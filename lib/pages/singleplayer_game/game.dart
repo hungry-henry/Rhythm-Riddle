@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import '/generated/l10n.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';
-
-import '/generated/l10n.dart';
 
 class SinglePlayerGame extends StatefulWidget {
   const SinglePlayerGame({super.key});
@@ -24,12 +24,11 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
   int _currentQuiz = -1; //题目计数器
   final Map _resultMap = {}; //结果存储
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
 
   //音频&题目显示计时
   int _countdown = 0; 
   bool _canShowQuiz = false;
-  bool _countingDown = false;
 
   Map _quizzes = {}; //存储api获取的题目
 
@@ -72,12 +71,9 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     logger.i("preparing audio");
     try{
       int id = _quizzes[_played.toString()]['music_id'] ?? _quizzes[_played.toString()]['id'];
-      await _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse("http://music.hungryhenry.xyz/$id.mp3")),preload: true).timeout(const Duration(seconds: 15));
+      await _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse("http://hungryhenry.xyz/musiclab/music/$id.mp3"))).timeout(const Duration(seconds: 15));
       await _audioPlayer.seek(Duration(seconds: _quizzes[_played.toString()]['start_at'])); // 跳到 startAt
       logger.i("seek finished ${_quizzes[_played.toString()]['start_at']} seconds");
-      if(!_prepareFinished && !_audioPlayer.playing){
-        _playAndDelayAndPause();
-      }
     }catch(e){
       if(e is TimeoutException){
         logger.log(Level.error, "prepare audio timeout: $e");
@@ -136,6 +132,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             _currentQuiz = ++_currentQuiz;
             _countdown = 0;
           });
+          _playAndDelayAndPause();
 
           Future.delayed(const Duration(seconds: 1), () {
             setState(() {
@@ -201,11 +198,9 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   void _answerTimeCountdown(){
     if(!mounted) return;
     _currentAnswerTime = _quizzes[_currentQuiz.toString()]["quizType"] > 3 ? _answerTime + 5 : _answerTime;
-    _countingDown = true;
     Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_currentAnswerTime == 0 || _submittedOption != null) {
         timer.cancel();
-        _countingDown = false;
         if(_currentAnswerTime == 0 && mounted){
           setState(() {
             _submittedOption = "bruhtimeout";
@@ -233,16 +228,14 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   }
 
   Future<void> _playAndDelayAndPause() async{
-    if(_prepareFinished && !_countingDown){
-      _played++;
-      _audioPlayer.play();
-      _answerTimeCountdown();
-      await Future.delayed(Duration(seconds: _audioPlayingTime), () {
-        if (_submittedOption == null && mounted) {
-          _audioPlayer.pause();
-        }
-      });
-    }
+    _played++;
+    _audioPlayer.play();
+    _answerTimeCountdown();
+    await Future.delayed(Duration(seconds: _audioPlayingTime), () {
+      if (_submittedOption == null && mounted) {
+        _audioPlayer.pause();
+      }
+    });
   }
 
   //给答案挖空
@@ -439,6 +432,12 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                                       }
                                     },
                                     errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                                      if(infoShowAfterSubmit != null){
+                                        logger.e("${infoShowAfterSubmit[index].toString()}_logo.jpg");
+                                        logger.e(exception);
+                                      }else{
+                                        logger.e(exception);
+                                      }
                                       return const Icon(Icons.image, color: Colors.grey);
                                     }
                                   )
@@ -638,7 +637,10 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                     onPressed: (){
                       _audioPlayer.playing ? _audioPlayer.pause() : _audioPlayer.play();
                     }, 
-                    icon: _audioPlayer.playing ? const Icon(Icons.pause) : const Icon(Icons.play_arrow),
+                    icon: _audioPlayer.playing ? const Icon(Icons.pause) : 
+                      _audioPlayer.processingState != ProcessingState.ready ?
+                      const CircularProgressIndicator() :
+                      const Icon(Icons.play_arrow),
                   ),
                   //进度条
                   Expanded(
@@ -813,7 +815,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
 
   @override
-    void initState() {
+    void initState(){
       super.initState();
       WidgetsFlutterBinding.ensureInitialized(); // 确保绑定已初始化
       Future.microtask(() {
@@ -879,9 +881,6 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   Widget build(BuildContext context) {
     if (_quizzes.isNotEmpty && _currentQuiz == -1 && _countdown == 0 && mounted) {
       _startAudioCountdown();
-    }
-    if(_played == _currentQuiz && !_audioPlayer.playing && _prepareFinished && _currentQuiz != -1 && _countdown == 0 && mounted) {
-      _playAndDelayAndPause();
     }
     return Scaffold(
       appBar: AppBar(

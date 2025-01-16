@@ -331,7 +331,7 @@ class _SinglePlayerState extends State<SinglePlayer> {
                   child: Center(
                     child: Text(
                       S.current.custom,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: //selectedDifficulty == 3 ? Colors.white : 
                         Colors.black,
                       ),
