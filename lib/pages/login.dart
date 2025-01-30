@@ -100,6 +100,7 @@ class _LoginPageState extends State<LoginPage> {
   String? _latestVesion;
   String? _changelog;
   String? _date;
+  bool _force = false;
 
   int _progress = 0;
   double _speed = 0.0;
@@ -132,6 +133,9 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _changelog = data['latest']['changlog'];
           _date = data['latest']['date'];
+          if(data['latest']['force'] == true){
+            _force = true;
+          }
         });
         return true;
       }else{
@@ -146,14 +150,17 @@ class _LoginPageState extends State<LoginPage> {
   Future<bool> _checkPermission(Permission permission) async {
     if (Platform.isAndroid) {
       var status = await permission.status;
-      if(!status.isGranted){
+      if (!status.isGranted) {
+        // 申请权限
         await permission.request();
-        if(status.isGranted){
+        // 重新获取权限状态
+        var newStatus = await permission.status;
+        if (newStatus.isGranted) {
           return true;
-        }else{
+        } else {
           return false;
         }
-      }else{
+      } else {
         return true;
       }
     } else {
@@ -407,25 +414,33 @@ class _LoginPageState extends State<LoginPage> {
           _loginText = S.current.login;
         });
         if(e is TimeoutException){
-          await showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Text(S.current.connectError),
-              actions: [
-                TextButton(onPressed: () {Navigator.pushNamed(context, '/login');}, child: Text(S.current.retry)),
-                TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
-              ],
-            );
-          });
+          if(!mounted){
+            logger.e("login timeout");
+          }else{
+            await showDialog(context: context, builder: (context){
+              return AlertDialog(
+                content: Text(S.current.connectError),
+                actions: [
+                  TextButton(onPressed: () {Navigator.pushNamed(context, '/login');}, child: Text(S.current.retry)),
+                  TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+                ],
+              );
+            });
+          }
         }else{
-          await showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Text(S.current.unknownError),
-              actions: [
-                TextButton(onPressed: () {Navigator.pushNamed(context, '/login');}, child: Text(S.current.retry)),
-                TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
-              ],
-            );
-          });
+          if(mounted){
+            await showDialog(context: context, builder: (context){
+              return AlertDialog(
+                content: Text(S.current.unknownError),
+                actions: [
+                  TextButton(onPressed: () {Navigator.pushNamed(context, '/login');}, child: Text(S.current.retry)),
+                  TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+                ],
+              );
+            });
+          }else{
+            logger.e("login error: $e");
+          }
         }
       }
     }
@@ -477,9 +492,11 @@ class _LoginPageState extends State<LoginPage> {
               content: Text(S.current.loginExpired),
               actions: [
                 TextButton(onPressed: () async {
-                  String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-                  await storage.write(key: 'date', value: formattedDate);
-                  Navigator.pushNamed(context, '/login');
+                  _emailController.text = username!;
+                  await storage.delete(key: 'username');
+                  await storage.delete(key: 'password');
+                  await storage.delete(key: 'date');
+                  Navigator.of(context).pop(false);
                 }, child: Text(S.current.relogin)),
                 TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.cancel)),
               ],
@@ -706,26 +723,28 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // 关闭对话框
-                        loginUsingStorage();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[400],
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                    if(!_force)...[
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // 关闭对话框
+                          loginUsingStorage();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey[400],
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        S.current.cancel,
-                        style: const TextStyle(
-                          color: Colors.black87,
-                          fontSize: 16.0,
+                        child: Text(
+                          S.current.cancel,
+                          style: const TextStyle(
+                            color: Colors.black87,
+                            fontSize: 16.0,
+                          ),
                         ),
-                      ),
-                    ),
+                      )
+                    ],
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
@@ -758,6 +777,9 @@ class _LoginPageState extends State<LoginPage> {
           }
         );
       }else{
+        setState(() {
+          _loginText = S.current.login;
+        });
         loginUsingStorage();
       }
     });

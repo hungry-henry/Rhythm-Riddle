@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import '/generated/l10n.dart';
 
 import 'package:flutter/material.dart';
@@ -40,7 +39,6 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   //答题时间
   int _answerTime = 0;
   int _currentAnswerTime = 0;
-
 
   //歌曲播放准备
   final _audioPlayer = AudioPlayer();
@@ -127,12 +125,12 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             _countdown--; // 每秒减少1
           });
         } else {
-          timer.cancel(); // 停止计时器
           setState(() {
             _currentQuiz = ++_currentQuiz;
             _countdown = 0;
           });
-          _playAndDelayAndPause();
+          _playAndDelayAndPause(); // 开始播放
+          timer.cancel(); // 停止计时器
 
           Future.delayed(const Duration(seconds: 1), () {
             setState(() {
@@ -177,7 +175,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           );
         });
       }else{
-        logger.i("error: $e");
+        logger.e("error: $e");
         print(responseBody);
         showDialog(context: context, builder: (context){
           return AlertDialog(
@@ -197,7 +195,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   //答题倒计时
   void _answerTimeCountdown(){
     if(!mounted) return;
-    _currentAnswerTime = _quizzes[_currentQuiz.toString()]["quizType"] > 3 ? _answerTime + 5 : _answerTime;
+    _currentAnswerTime = _answerTime;
     Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_currentAnswerTime == 0 || _submittedOption != null) {
         timer.cancel();
@@ -228,8 +226,16 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   }
 
   Future<void> _playAndDelayAndPause() async{
-    _played++;
+    //如果没有准备好播放，等待直到准备好
+    while(_processingState != ProcessingState.ready){
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
     _audioPlayer.play();
+    _played++;
+
+    while(_processingState != ProcessingState.ready){
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
     _answerTimeCountdown();
     await Future.delayed(Duration(seconds: _audioPlayingTime), () {
       if (_submittedOption == null && mounted) {
@@ -280,7 +286,13 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           tip = "";
         }
       } else {
-          tip = replaceWithBlanks(answer, quizInfo["blanks"]);
+          if(quizInfo["blanks"] is List){
+            tip = replaceWithBlanks(answer, quizInfo["blanks"]);
+          }else if(quizInfo["blanks"] is String){
+            tip = quizInfo["blanks"];
+          }else{
+            tip = "";
+          }
       }
     }
 
@@ -606,6 +618,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                     "quizType": quizInfo['quizType'],
                     "playlistId": _playlistId,
                     "playlistTitle": _playlistTitle,
+                    "difficulty": _difficulty,
                     "resultMap": _resultMap
                   });
                 },
@@ -839,11 +852,11 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             break;
           case 1:
             _audioPlayingTime = 5;
-            _answerTime = 15;
+            _answerTime = 10;
             break;
           case 2:
             _audioPlayingTime = 3;
-            _answerTime = 10;
+            _answerTime = 7;
             break;
           default:
             _audioPlayingTime = 0;

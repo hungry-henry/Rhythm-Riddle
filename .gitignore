@@ -44,3 +44,5 @@ app.*.map.json
 
 # Android Java path may be different in different devices
 android/gradle.properties
+
+/lib/pages/test.dart

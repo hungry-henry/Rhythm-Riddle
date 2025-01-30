@@ -16,7 +16,7 @@ import 'pages/singleplayer_game/result.dart';
 
 import 'pages/multiplayer_game/multi_player.dart';
 
-//import 'pages/test.dart';
+import 'pages/test.dart';
 
 Future<void> main() async{  
   if(Platform.isWindows || Platform.isMacOS || Platform.isLinux){
@@ -49,6 +49,7 @@ class RhythmRiddle extends StatelessWidget {
         const Locale('zh'),
       ],
       debugShowCheckedModeBanner: false,
+      //home: Test(),
       home: LoginPage(),
       routes: {
         '/login': (context) => LoginPage(),

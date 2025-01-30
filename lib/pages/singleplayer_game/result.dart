@@ -23,12 +23,18 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
   Map _resultMap = {};
   int? _playlistId;
   String? _playlistTitle;
+  int? _difficulty;
 
   Logger logger = Logger();
 
   //api返回数据
   Map? _responseData;
   int? _score;
+
+  //本地计算数据
+  int _answerTime = 0;
+  int? _quizCount;
+  int? _correctCount;
 
   //播放器
   final _audioPlayer = AudioPlayer();
@@ -62,22 +68,19 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode({
+          'player_id': _uid,
+          'password': _password,
           'playlist_id': _playlistId.toString(),
-          'player_id': _uid, //mb null
-          'player_password': _password, //mb null
-          'result_map': _resultMap
+          'result_map': _resultMap,
+          'difficulty': _difficulty
         })
       ).timeout(const Duration(seconds:7));
-      if(response.statusCode == 200){
-        if(mounted){
-          setState(() {
-            _responseData = jsonDecode(response.body);
-            _score = _responseData!["score"];
-          });
-        }
-      }else{
+      if(response.statusCode != 200){
         logger.e(response.statusCode);
         logger.e(response.body);
+      }else{
+        logger.i("成功上传结果");
+        logger.i(response.body);
       }
     }catch(e){
       if(e is TimeoutException && mounted && _score == null){
@@ -88,7 +91,7 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
               actions: [
                 TextButton(onPressed: () {
                   Navigator.of(context).pop();
-                }, child: Text("好吧")),
+                }, child: Text(S.current.ok)),
               ],
             );
           });
@@ -116,51 +119,60 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
   @override
   void initState() {
     super.initState();
-    storage.read(key: 'uid').then((value) => setState(() {
-      _uid = value;
-    }));
-    storage.read(key: 'password').then((value) => setState(() {
-      _password = value;
-    }));
 
     //延迟执行
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if(mounted){
-        final args = ModalRoute.of(context)?.settings.arguments as Map?;
-        if (args != null) {
-          setState(() {
-            _resultMap = args['resultMap'];
-            _playlistId = args['playlistId'];
-            _playlistTitle = args['playlistTitle'];
-          });
-        _postResult();
-        }
+      Future.microtask(() async {
+        _uid = await storage.read(key: 'uid');
+        _password = await storage.read(key: 'password');
+        
+        if(mounted){
+          final args = ModalRoute.of(context)?.settings.arguments as Map?;
+          if (args != null) {
+            setState(() {
+              _resultMap = args['resultMap'];
+              _playlistId = args['playlistId'];
+              _playlistTitle = args['playlistTitle'];
+              _difficulty = args['difficulty'];
+            });
+            _resultMap.forEach((key, value) => _answerTime += (value["answerTime"] ?? 0) as int);
+            _correctCount = _resultMap.values.where((element) => element["answer"] == element["submitText"]).length;
+            _quizCount = _resultMap.length;
+            _score = (_correctCount! / _quizCount! * 10).round();
 
-        //状态更新
-        _audioPlayer.playbackEventStream.listen((event) {}, onError: (error) {
-          logger.e(error);
-        });
-        _durationSubscription = _audioPlayer.durationStream.listen((duration){
-          if(mounted){setState(() => _duration = duration);}
-        });
-
-        _positionSubscription = _audioPlayer.positionStream.listen((position){
-          if(mounted){setState(() => _position = position);}
-        });
-
-        _processSubscription =_audioPlayer.processingStateStream.listen((processingState){
-          if(mounted){setState(() => _processingState = processingState);}
-        });
-
-        _audioPlayer.sequenceStateStream.listen((sequenceState){
-          if (sequenceState != null) {
-            final currentSource = sequenceState.currentSource;
-            if (currentSource is UriAudioSource) {
-              _source = currentSource.uri.toString();
+            if(_uid != null && _password != null){
+              _postResult(); //上传结果
+            }else{
+              logger.i("未登录，无法上传结果");
             }
           }
-        });
-      }
+
+          //状态更新
+          _audioPlayer.playbackEventStream.listen((event) {}, onError: (error) {
+            logger.e(error);
+          });
+          _durationSubscription = _audioPlayer.durationStream.listen((duration){
+            if(mounted){setState(() => _duration = duration);}
+          });
+
+          _positionSubscription = _audioPlayer.positionStream.listen((position){
+            if(mounted){setState(() => _position = position);}
+          });
+
+          _processSubscription =_audioPlayer.processingStateStream.listen((processingState){
+            if(mounted){setState(() => _processingState = processingState);}
+          });
+
+          _audioPlayer.sequenceStateStream.listen((sequenceState){
+            if (sequenceState != null) {
+              final currentSource = sequenceState.currentSource;
+              if (currentSource is UriAudioSource) {
+                _source = currentSource.uri.toString();
+              }
+            }
+          });
+        }
+      });
     });
   }
   
