@@ -160,10 +160,10 @@ class S {
     );
   }
 
-  /// `Cannot connect to server. Pls use offline mode or contact hungryhenry101@outlook.com`
+  /// `Cannot connect to server. Pls contact hungryhenry101@outlook.com`
   String get unknownError {
     return Intl.message(
-      'Cannot connect to server. Pls use offline mode or contact hungryhenry101@outlook.com',
+      'Cannot connect to server. Pls contact hungryhenry101@outlook.com',
       name: 'unknownError',
       desc: '',
       args: [],
@@ -255,6 +255,16 @@ class S {
     return Intl.message(
       'Restart the App After Granting',
       name: 'restart',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dload and Install by Browser`
+  String get installManually {
+    return Intl.message(
+      'Dload and Install by Browser',
+      name: 'installManually',
       desc: '',
       args: [],
     );

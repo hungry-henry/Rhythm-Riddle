@@ -245,30 +245,18 @@ class _LoginPageState extends State<LoginPage> {
                     actions: [
                       TextButton(
                         onPressed: () async{
-                          Navigator.of(context).pop(false);
-                          if(await InstallPlugin.install(savePath ?? "") == false){
-                            logger.e("install apk error");
-                            if(mounted){
-                              showDialog(context: context, builder: (context){
-                                return AlertDialog(
-                                  content: Text(S.current.unknownError),
-                                  actions: [
-                                    TextButton(onPressed: () {Navigator.pushNamed(context, '/login');}, child: Text(S.current.retry)),
-                                    TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
-                                  ],
-                                );
-                              });
-                            }
+                          if(await _checkPermission(Permission.requestInstallPackages) == false){
+                            Fluttertoast.showToast(msg: S.current.permissionError(S.current.installPerm));
+                            Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
                           }
                         },
                         child: Text(S.current.retry)
                       ),
                       TextButton(
-                        onPressed: (){
-                          Navigator.of(context).pop(false);
-                          openAppSettings();
+                        onPressed: () {
+                          _launchInBrowser(Uri(scheme: "http", host: "hungryhenry.xyz", path: "/rhythm_riddle/"));
                         },
-                        child: Text(S.current.ok)
+                        child: Text(S.current.installManually)
                       )
                     ],
                   );

@@ -92,6 +92,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "home": MessageLookupByLibrary.simpleMessage("Home🏠"),
         "hot": MessageLookupByLibrary.simpleMessage("Hot🔥"),
         "incorrect": MessageLookupByLibrary.simpleMessage("incorrect"),
+        "installManually": MessageLookupByLibrary.simpleMessage(
+            "Dload and Install by Browser"),
         "installPerm":
             MessageLookupByLibrary.simpleMessage("Install Packages Permission"),
         "likes": MessageLookupByLibrary.simpleMessage("Likes"),
@@ -142,7 +144,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "submit": MessageLookupByLibrary.simpleMessage("Submit"),
         "tip": MessageLookupByLibrary.simpleMessage("Tips: "),
         "unknownError": MessageLookupByLibrary.simpleMessage(
-            "Cannot connect to server. Pls use offline mode or contact hungryhenry101@outlook.com"),
+            "Cannot connect to server. Pls contact hungryhenry101@outlook.com"),
         "update": m5,
         "versionCheckError": MessageLookupByLibrary.simpleMessage(
             "Cannot check version. Pls try again later or contact hungryhenry101@outlook.com"),

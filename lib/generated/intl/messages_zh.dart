@@ -77,6 +77,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "home": MessageLookupByLibrary.simpleMessage("主页🏠"),
         "hot": MessageLookupByLibrary.simpleMessage("热门🔥"),
         "incorrect": MessageLookupByLibrary.simpleMessage("错误"),
+        "installManually": MessageLookupByLibrary.simpleMessage("手动下载安装"),
         "installPerm": MessageLookupByLibrary.simpleMessage("安装应用权限"),
         "likes": MessageLookupByLibrary.simpleMessage("赞"),
         "loading": MessageLookupByLibrary.simpleMessage("加载中..."),
@@ -117,7 +118,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "submit": MessageLookupByLibrary.simpleMessage("提交"),
         "tip": MessageLookupByLibrary.simpleMessage("提示: "),
         "unknownError": MessageLookupByLibrary.simpleMessage(
-            "软件/服务器问题，请重试或免登录进入或联系hungryhenry101@outlook.com"),
+            "软件/服务器问题，请重试或联系hungryhenry101@outlook.com"),
         "update": m5,
         "versionCheckError": MessageLookupByLibrary.simpleMessage(
             "版本检查失败，请稍后再试或联系hungryhenry101@outlook.com"),
