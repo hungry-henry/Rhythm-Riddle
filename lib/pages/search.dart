@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:logger/logger.dart';
 
 class Search extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class _SearchState extends State<Search> {
   final TextEditingController _controller = TextEditingController();
   List<dynamic> searchResults = [];
   bool isLoading = true;
+  final logger = Logger();
 
   @override
   void initState() {
@@ -76,7 +78,8 @@ class _SearchState extends State<Search> {
       ).timeout(const Duration(seconds:7));
       isLoading = false;
     }catch(e){
-      if(e is TimeoutException){
+      logger.e("load error: $e");
+      if(e is TimeoutException && mounted){
         await showDialog(context: context, builder: (context){
           return AlertDialog(
             content: Text(S.current.connectError),
@@ -87,15 +90,17 @@ class _SearchState extends State<Search> {
           );
         });
       }else{
-        await showDialog(context: context, builder: (context){
-          return AlertDialog(
-            content: Text(S.current.unknownError),
-            actions: [
-              TextButton(onPressed: () {Navigator.pushNamed(context, '/search');}, child: Text(S.current.retry)),
-              TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.backToHome)),
-            ],
-          );
-        });
+        if(mounted){
+          await showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Text(S.current.unknownError),
+              actions: [
+                TextButton(onPressed: () {Navigator.pushNamed(context, '/search');}, child: Text(S.current.retry)),
+                TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.backToHome)),
+              ],
+            );
+          });
+        }
       }
     }
     

@@ -400,6 +400,16 @@ class S {
     );
   }
 
+  /// `Please wear your headphones for a better experience`
+  String get wearHeadphone {
+    return Intl.message(
+      'Please wear your headphones for a better experience',
+      name: 'wearHeadphone',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Home🏠`
   String get home {
     return Intl.message(

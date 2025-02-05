@@ -19,6 +19,7 @@
     "loading": "Loading...", "checkingUpdate":"Checking updates...",
     "update": "Curr ver.: {version}, new ver. available: {latestVersion}", "downloadProgress": "Download Progress: ",
     "dlUpdate": "Update Now", "releaseDate": "Release Date: {date}", "downloading": "Downloading {version}...",
+    "wearHeadphone": "Please wear your headphones for a better experience",
 
     "home": "Home🏠", "account": "Account", "rank": "Rank",
     "recm": "Recommend", "hot": "Hot🔥", "sort": "Sort",

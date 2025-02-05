@@ -918,6 +918,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   @override
   void dispose() { //释放资源内存
     _audioPlayer.dispose();
+    _assistAudio.dispose();
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
     _controller.dispose();

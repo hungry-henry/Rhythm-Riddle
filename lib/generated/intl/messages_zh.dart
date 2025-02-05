@@ -122,6 +122,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "update": m5,
         "versionCheckError": MessageLookupByLibrary.simpleMessage(
             "版本检查失败，请稍后再试或联系hungryhenry101@outlook.com"),
+        "wearHeadphone": MessageLookupByLibrary.simpleMessage("请佩戴耳机以获得最佳体验"),
         "wrong": MessageLookupByLibrary.simpleMessage("错误❌")
       };
 }

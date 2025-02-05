@@ -18,6 +18,7 @@
     "loading": "加载中...", "checkingUpdate": "检查更新中...",
     "update": "当前版本：{version}，有新版本：{latestVersion}", "downloadProgress": "下载进度：",
     "dlUpdate": "立即下载", "releaseDate": "发布日期：{date}", "downloading": "正在下载{version}...",
+    "wearHeadphone": "请佩戴耳机以获得最佳体验",
 
     "home": "主页🏠", "account": "账户", "rank": "排行榜",
     "recm": "推荐", "hot": "热门🔥", "sort":"分类",

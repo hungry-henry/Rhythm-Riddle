@@ -15,14 +15,15 @@ class Home extends StatefulWidget{
 }
 
 class _HomeState extends State<Home> {
-  int currentPageIndex = 0;
-  List<dynamic> playlists = [];
-  String? uid = '';
-  String? username = '';
-  String? password = '';
-  String? mail = '';
-  bool isLogin = false;
-  bool isLoading = true;
+  int _currentPageIndex = 0;
+  List<dynamic> _playlists = [];
+  String? _uid = '';
+  String? _username = '';
+  String? _password = '';
+  String? _mail = '';
+  bool _isLogin = false;
+  bool _isLoading = true;
+  bool _loadingTimeOut = false;
 
   void showDialogFunction(String title) async {
     await showDialog(context: context, builder: (context){
@@ -36,15 +37,18 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> getData() async {
-    uid = await storage.read(key:'uid');
-    username = await storage.read(key:'username');
-    password = await storage.read(key:'password');
-    mail = await storage.read(key:'mail');
-    if(uid != null && username != null && password != null && mail != null && mounted){
+    _uid = await storage.read(key:'uid');
+    _username = await storage.read(key:'username');
+    _password = await storage.read(key:'password');
+    _mail = await storage.read(key:'mail');
+    if(_uid != null && _username != null && _password != null && _mail != null && mounted){
       setState(() {
-        isLogin = true;
+        _isLogin = true;
       });
     }
+
+    _isLoading = true;
+    _loadingTimeOut = false;
 
     try{
       final response = await http.post(
@@ -56,20 +60,24 @@ class _HomeState extends State<Home> {
 
       if (response.statusCode == 200 && mounted) {
         setState((){
-          playlists = jsonDecode(response.body)['data'];
-          isLoading = false;
+          _playlists = jsonDecode(response.body)['data'];
+          _isLoading = false;
         });
       }else {
         // 错误
         if(mounted){
           setState((){
-            playlists = [{"id": 0, "title": "error"}];
+            _playlists = [{"id": 0, "title": "error"}];
           });
           print(response.body);
         }
       }
     }catch (e){
       showDialogFunction(S.current.connectError);
+      setState(() {
+        _loadingTimeOut = true;
+        _isLoading = false;
+      });
     }
   }
   
@@ -81,10 +89,9 @@ class _HomeState extends State<Home> {
     if(!context.mounted) return;
     Navigator.pushNamed(context, '/login');
   }
-  
+
   Widget _buildHome(){
-    return 
-    RefreshIndicator(
+    return RefreshIndicator(
       onRefresh: getData,
       color: const Color(0xFF009688),
       backgroundColor: const Color(0xFFE0F2F1),
@@ -115,7 +122,13 @@ class _HomeState extends State<Home> {
                             ),
                             if(Platform.isWindows || Platform.isLinux || Platform.isMacOS) ...[
                               const Spacer(),
-                              IconButton(icon: const Icon(Icons.refresh), color: Colors.grey, onPressed: (){getData();},)
+                              IconButton(
+                                icon: const Icon(Icons.refresh), 
+                                color: Colors.grey, 
+                                onPressed: (){
+                                  getData();
+                                },
+                              )
                             ]
                           ],
                         ),
@@ -140,12 +153,26 @@ class _HomeState extends State<Home> {
                           ],
                         ),
                         const SizedBox(height: 10),
-                        if(isLoading) ...[
+                        if(_isLoading) ...[
                           const Center(child: CircularProgressIndicator()),
+                        ] else if(_loadingTimeOut) ...[
+                          Center(
+                            child: Column(
+                              children: [
+                                IconButton(
+                                  onPressed: (){
+                                    getData();
+                                  }, 
+                                  icon: const Icon(Icons.refresh),
+                                ),
+                                Text(S.current.retry),
+                              ]
+                            ),
+                          ),
                         ]else...[
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: List.generate(playlists.length, (index) {
+                            children: List.generate(_playlists.length, (index) {
                               return SizedBox(
                                 width: 80,
                                 height: 120,
@@ -155,7 +182,7 @@ class _HomeState extends State<Home> {
                                       onPressed: () {
                                         Navigator.of(context).pushNamed(
                                           '/PlaylistInfo',
-                                          arguments: playlists[index]['id']
+                                          arguments: _playlists[index]['id']
                                         );
                                       },
                                       style: ElevatedButton.styleFrom(
@@ -169,7 +196,7 @@ class _HomeState extends State<Home> {
                                         width: 70,
                                         height: 70,
                                         child: Image.network(
-                                          "http://hungryhenry.xyz/musiclab/playlist/${playlists[index]['id']}.jpg",
+                                          "http://hungryhenry.xyz/musiclab/playlist/${_playlists[index]['id']}.jpg",
                                           loadingBuilder: (BuildContext context,
                                               Widget child,
                                               ImageChunkEvent? loadingProgress) {
@@ -194,7 +221,7 @@ class _HomeState extends State<Home> {
                                     ),
                                     const SizedBox(height: 5),
                                     Expanded(
-                                      child: Text(playlists[index]['title'],
+                                      child: Text(_playlists[index]['title'],
                                         textAlign: TextAlign.center,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
@@ -297,7 +324,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildAccount() {
-    if(isLogin){
+    if(_isLogin){
       return SingleChildScrollView(
         child: Center(
           child:Container(
@@ -308,13 +335,13 @@ class _HomeState extends State<Home> {
                 Center(
                   child: CircleAvatar(
                     radius: 70,
-                    backgroundImage: NetworkImage("http://hungryhenry.xyz/blog/usr/uploads/avatar/$uid.png")             
+                    backgroundImage: NetworkImage("http://hungryhenry.xyz/blog/usr/uploads/avatar/$_uid.png")             
                   ),
                 ),
                 const SizedBox(height: 20),
                 Center(
                   child:Text(
-                    "uid:${uid!}"
+                    "uid:${_uid!}"
                   ),
                 ),
                 ListTile(
@@ -323,7 +350,7 @@ class _HomeState extends State<Home> {
                     style: TextStyle(fontSize: 16),
                   ),
                   subtitle: Text(
-                    username!,
+                    _username!,
                     style: const TextStyle(fontSize: 19),
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -335,7 +362,7 @@ class _HomeState extends State<Home> {
                     style: TextStyle(fontSize: 16),
                   ),
                   subtitle: Text(
-                    mail!,
+                    _mail!,
                     style: const TextStyle(fontSize: 19),
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -405,10 +432,10 @@ class _HomeState extends State<Home> {
       bottomNavigationBar:NavigationBar(
         onDestinationSelected: (int index) {
           setState(() {
-            currentPageIndex = index;
+            _currentPageIndex = index;
           });
         },
-        selectedIndex: currentPageIndex,
+        selectedIndex: _currentPageIndex,
         destinations: <Widget>[
           NavigationDestination(
             selectedIcon: const Icon(Icons.sports_esports),
@@ -441,11 +468,11 @@ class _HomeState extends State<Home> {
           )
         ),
         _buildAccount()
-      ][currentPageIndex]
+      ][_currentPageIndex]
     );
   }
   String _getAppBarTitle(){
-    switch (currentPageIndex) {
+    switch (_currentPageIndex) {
     case 0:
       return S.current.home;
     case 1:

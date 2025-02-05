@@ -15,80 +15,18 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:install_plugin/install_plugin.dart';
-
-const storage = FlutterSecureStorage();
-
-///下载通知栏
-class NotificationService {
-  static final FlutterLocalNotificationsPlugin _notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
-  static Future<void> init() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
-
-    await _notificationsPlugin.initialize(initializationSettings);
-  }
-
-  static Future<void> showProgressNotification({
-    required int id,
-    required String title,
-    required String body,
-    required int progress,
-  }) async {
-    if(!Platform.isAndroid && !Platform.isIOS) return;
-    AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-      'download_channel', // 通知频道ID
-      'Downloads', // 通知频道名称
-      channelDescription: 'Shows download progress, and make sure not to be killed by system.',
-      importance: Importance.low,
-      priority: Priority.low,
-      showProgress: true,
-      maxProgress: 100,
-      progress: progress,
-      onlyAlertOnce: true,
-    );
-
-    NotificationDetails notificationDetails =
-        NotificationDetails(android: androidDetails);
-
-    await _notificationsPlugin.show(
-      id,
-      title,
-      body,
-      notificationDetails,
-      payload: null,
-    );
-  }
-
-  static Future<void> cancelNotification(int id) async {
-    if(!Platform.isAndroid && !Platform.isIOS) return;
-    await _notificationsPlugin.cancel(id);
-  }
-
-  static Future<void> cancelAll() async{
-    if(!Platform.isAndroid && !Platform.isIOS) return;
-    await _notificationsPlugin.cancelAll();
-  }
-}
-
+import 'package:just_audio/just_audio.dart';
+import '../utils/download_notification.dart';
 
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
-
-class _LoginPageState extends State<LoginPage> {
-  Future<void>? _launched;
-  final Uri _url2Launch = Uri(scheme: 'http', host: 'hungryhenry.xyz', path: 'blog/admin');
+class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin{
+  final storage = const FlutterSecureStorage();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -107,42 +45,52 @@ class _LoginPageState extends State<LoginPage> {
   final CancelToken _cancelToken = CancelToken();
   DateTime? _startTime;
 
+  bool _showHeadphoneWidget = false; // 控制过场动画是否显示
+  late AnimationController _headphoneSceneController;
+  late Animation<Offset> _slideAnimation;
+
+  final _audioPlayer = AudioPlayer();
 
   Future<bool> _checkUpdate() async {
-    _loginText = S.current.checkingUpdate;
-    Response res = await Dio().get('http://hungryhenry.xyz/rhythm_riddle/versions.json').catchError((e){
-      logger.e("version check error: $e");
-      showDialog(context: context, builder: (context){
-        return AlertDialog(
-          content: Text(S.current.unknownError),
-          actions: [
-            TextButton(onPressed: () {Navigator.pushNamed(context, '/login');}, child: Text(S.current.retry)),
-            TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
-          ],
-        );
-      });
-    });
-    if(res.statusCode == 200){
-      Map data = res.data;
-      _latestVesion = data['latest']['version'];
-
-      PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      _currentVersion = packageInfo.version;
-
-      if(_latestVesion != _currentVersion && mounted){
-        setState(() {
-          _changelog = data['latest']['changlog'];
-          _date = data['latest']['date'];
-          if(data['latest']['force'] == true){
-            _force = true;
-          }
+    try{
+      _loginText = S.current.checkingUpdate;
+      Response res = await Dio().get('http://hungryhenry.xyz/rhythm_riddle/versions.json').catchError((e){
+        logger.e("version check error: $e");
+        showDialog(context: context, builder: (context){
+          return AlertDialog(
+            content: Text(S.current.unknownError),
+            actions: [
+              TextButton(onPressed: () {Navigator.pushNamed(context, '/login');}, child: Text(S.current.retry)),
+              TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+            ],
+          );
         });
-        return true;
+      });
+      if(res.statusCode == 200){
+        Map data = res.data;
+        _latestVesion = data['latest']['version'];
+
+        PackageInfo packageInfo = await PackageInfo.fromPlatform();
+        _currentVersion = packageInfo.version;
+
+        if(_latestVesion != _currentVersion && mounted){
+          setState(() {
+            _changelog = data['latest']['changlog'];
+            _date = data['latest']['date'];
+            if(data['latest']['force'] == true){
+              _force = true;
+            }
+          });
+          return true;
+        }else{
+          return false;
+        }
       }else{
+        logger.e("version check error: ${res.statusCode} ${res.data}");
         return false;
       }
-    }else{
-      logger.e("version check error: ${res.statusCode} ${res.data}");
+    }catch(e){
+      logger.e("version check error: $e");
       return false;
     }
   }
@@ -388,7 +336,16 @@ class _LoginPageState extends State<LoginPage> {
         DateTime now = DateTime.now();
         String formattedDate = DateFormat('yyyy-MM-dd').format(now);
         await storage.write(key: 'date', value: formattedDate);
-        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+
+        _audioPlayer.play();
+        setState(() {
+          _showHeadphoneWidget = true;
+        });
+        _headphoneSceneController.forward();
+
+        Future.delayed(const Duration(seconds: 2, milliseconds: 450), (){
+            Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+        });
       } else if (response.statusCode == 401) {
         // 验证错误
         if(mounted){
@@ -579,7 +536,7 @@ class _LoginPageState extends State<LoginPage> {
                     //register
                     TextButton(
                       onPressed: () => setState(() {
-                        _launched = _launchInBrowser(_url2Launch);
+                        _launchInBrowser(Uri(scheme: 'http', host: 'hungryhenry.xyz', path: 'blog/admin'));
                       }),
                       style:ButtonStyle(
                         backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(0, 0, 0, 0)),
@@ -614,15 +571,25 @@ class _LoginPageState extends State<LoginPage> {
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(166, 151, 151, 151)),
                         ),
-                        onPressed: (){Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);},
+                        onPressed: () async {
+                          setState(() {
+                            _showHeadphoneWidget = true;
+                          });
+                          _headphoneSceneController.forward();
+
+                          _audioPlayer.play();
+                          Future.delayed(const Duration(seconds: 2, milliseconds: 400), (){
+                              Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+                          });
+                        },
                         child: Text(
                           S.current.guest,
-                          style:const TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 12
-                            ),
+                            fontSize: 12,
                           ),
-                      ),
+                        ),
+                      )
                     )
                   ],
                 ),
@@ -689,6 +656,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState(){
     super.initState();
+    _audioPlayer.setAsset('assets/sounds/loginToHome.mp3');
     _checkUpdate().then((needUpdate) {
       if(needUpdate){
         showDialog(
@@ -790,17 +758,64 @@ class _LoginPageState extends State<LoginPage> {
         loginUsingStorage();
       }
     });
+
+     _headphoneSceneController = AnimationController(
+      duration: const Duration(seconds: 2), // 动画持续时间
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(0, 1),  // 从屏幕底部进入
+      end: Offset(0, 0),    // 最终到达原位置
+    ).animate(CurvedAnimation(
+      parent: _headphoneSceneController,
+      curve: Curves.easeOut, // 缓和效果
+    ));
+  }
+
+  @override
+  void dispose() {
+    _headphoneSceneController.dispose();
+    _audioPlayer.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: _startTime == null ? _buildLoginPage() : _buildDownloadPage(),
-        ),
+      body: Stack(
+        children: [
+          //main page
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: _startTime == null ? _buildLoginPage() : _buildDownloadPage(),
+            ),
+          ),
+
+          // headphone widget
+          if (_showHeadphoneWidget)
+            SlideTransition(
+              position: _slideAnimation,
+              child: Container(
+                color: Colors.black.withOpacity(0.9),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.headphones, color: Colors.white, size: 50),
+                      const SizedBox(height: 10),
+                      Text(
+                        S.current.wearHeadphone,
+                        style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

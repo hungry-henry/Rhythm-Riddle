@@ -148,6 +148,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "update": m5,
         "versionCheckError": MessageLookupByLibrary.simpleMessage(
             "Cannot check version. Pls try again later or contact hungryhenry101@outlook.com"),
+        "wearHeadphone": MessageLookupByLibrary.simpleMessage(
+            "Please wear your headphones for a better experience"),
         "wrong": MessageLookupByLibrary.simpleMessage("Wrong❌")
       };
 }
