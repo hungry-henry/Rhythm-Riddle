@@ -40,6 +40,9 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   int _answerTime = 0;
   int _currentAnswerTime = 0;
 
+  //提示音
+  final _assistAudio = AudioPlayer();
+
   //歌曲播放准备
   final _audioPlayer = AudioPlayer();
   int _played = 0;
@@ -65,11 +68,23 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     _positionTextUnSplited.lastIndexOf(".")
   );
 
+  Future<void> _wrongTune() async {
+    await _assistAudio.setAsset("assets/sounds/wrong.mp3");
+    await _assistAudio.play();
+    logger.i("wrong tune played");
+  }
+
+  Future<void> _correctTune() async {
+    await _assistAudio.setAsset("assets/sounds/correct.mp3");
+    await _assistAudio.play();
+    logger.i("correct tune played");
+  }
+
   Future<void> _prepareAudio() async {
     logger.i("preparing audio");
     try{
       int id = _quizzes[_played.toString()]['music_id'] ?? _quizzes[_played.toString()]['id'];
-      await _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse("http://hungryhenry.xyz/musiclab/music/$id.mp3"))).timeout(const Duration(seconds: 15));
+      await _audioPlayer.setUrl("http://hungryhenry.xyz/musiclab/music/$id.mp3").timeout(const Duration(seconds: 15));
       await _audioPlayer.seek(Duration(seconds: _quizzes[_played.toString()]['start_at'])); // 跳到 startAt
       logger.i("seek finished ${_quizzes[_played.toString()]['start_at']} seconds");
     }catch(e){
@@ -281,6 +296,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           tip = quizInfo["music"];
           if(answer.contains(",")){
             answerList = answer.split(", ");
+            answerList.removeWhere((item) => item == '欧美' || item == '华语');
           }
         }else{
           tip = "";
@@ -585,9 +601,27 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                   };
                   _currentAnswerTime = _answerTime;
                 });
-                if(!_audioPlayer.playing){
-                  _audioPlayer.play();
+
+                if(_audioPlayer.playing){
+                  _audioPlayer.pause();
                 }
+                if(_submittedOption == "bruhtimeout"){
+                  _wrongTune();
+                }
+                if(answerList != null){
+                  if(answerList.any((item)=> item.toLowerCase() == _submittedOption!.toLowerCase())){
+                    _correctTune();
+                  }else{
+                    _wrongTune();
+                  }
+                }else{
+                  if(_submittedOption!.toLowerCase() == answer.toLowerCase()){
+                    _correctTune();
+                  }else{
+                    _wrongTune();
+                  }
+                }
+                Future.delayed(const Duration(seconds: 1), () => _audioPlayer.play());
               },
               child: Text(S.current.submit), 
             ),

@@ -279,10 +279,29 @@ class _LoginPageState extends State<LoginPage> {
                 }
               }
             }
+          }else{
+            //win
+            Process process = await Process.start(savePath, [], mode: ProcessStartMode.detached);
+            logger.i("start process: $process");
+            exit(0);
           }
         }catch(e){
           if(e is! DioException){
             logger.e("download error: $e");
+            NotificationService.cancelAll();
+            if(mounted){
+              await showDialog(context: context, builder: (context){
+                return AlertDialog(
+                  content: Text(S.current.unknownError),
+                  actions: [
+                    TextButton(onPressed: () {Navigator.pushNamed(context, '/login');}, child: Text(S.current.retry)),
+                    TextButton(onPressed: () {Navigator.of(context).pop(false);}, child: Text(S.current.ok)),
+                  ],
+                );
+              });
+            }
+          }else{
+            logger.e("download error: ${e.message}");
             NotificationService.cancelAll();
             if(mounted){
               await showDialog(context: context, builder: (context){
