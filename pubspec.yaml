@@ -61,6 +61,10 @@ dependencies:
   flutter_local_notifications: ^18.0.1
   fluttertoast: ^8.2.10
   install_plugin: ^2.1.0
+  settings_ui: ^2.0.2
+  language_picker: ^0.4.5
+  smtc_windows: ^1.0.0
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:

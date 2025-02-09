@@ -335,71 +335,93 @@ class _HomeState extends State<Home> {
                 Center(
                   child: CircleAvatar(
                     radius: 70,
-                    backgroundImage: NetworkImage("http://hungryhenry.xyz/blog/usr/uploads/avatar/$_uid.png")             
+                    backgroundImage: NetworkImage(
+                      "http://hungryhenry.xyz/blog/usr/uploads/avatar/$_uid.png",
+                    )             
                   ),
                 ),
                 const SizedBox(height: 20),
-                Center(
-                  child:Text(
-                    "uid:${_uid!}"
+                ListTileTheme(
+                  data: const ListTileThemeData(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0))
+                    ),
                   ),
-                ),
-                ListTile(
-                  title: const Text(
-                    '用户名',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  subtitle: Text(
-                    _username!,
-                    style: const TextStyle(fontSize: 19),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                ),
-                const Divider(),
-                ListTile(
-                  title: const Text(
-                    '邮箱',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  subtitle: Text(
-                    _mail!,
-                    style: const TextStyle(fontSize: 19),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                ),
-                const Divider(),
-                const ListTile(
-                  title: Text(
-                    '性别',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  subtitle: Text(
-                    '男',
-                    style: TextStyle(fontSize: 19),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                ),
-                const Divider(),
-                const ListTile(
-                  title: Text(
-                    '喜好',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  subtitle: Text(
-                    '音乐, 旅行, 阅读',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                ),
-                const SizedBox(height: 20),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      logout(context);
-                    },
-                    child: const Text('退出登录'),
-                  ),
-                ),
+                  child: Column(
+                    children:[
+                      //account manage
+                      ListTile(
+                        leading: const Icon(Icons.person),
+                        title: Text(
+                          S.current.accountManage,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                        onTap: (){
+                          print("accountManage");
+                        },
+                      ),
+                      const Divider(
+                        height: 1, // 高度为1，紧凑的效果
+                        thickness: 1,
+                        indent: 16,
+                        endIndent: 16,
+                      ),
+
+                      //history
+                      ListTile(
+                        leading: const Icon(Icons.history),
+                        title: Text(
+                          S.current.history,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                        onTap: (){
+                          print("history");
+                        },
+                      ),
+
+                      //my playlists
+                      const Divider(
+                        height: 1,
+                        thickness: 1, 
+                        indent: 16,
+                        endIndent: 16,
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.playlist_add_check),
+                        title: Text(
+                          S.current.myPlaylists,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        trailing: const Icon(Icons.arrow_forward_ios_rounded), 
+                        onTap: (){
+                          print("my playlists");
+                        },
+                      ),
+                      
+                      const Divider(
+                        height: 1,
+                        thickness: 1, 
+                        indent: 16,
+                        endIndent: 16,
+                      ),
+
+                      //settings
+                      ListTile(
+                        leading: const Icon(Icons.settings),
+                        title: Text(
+                          S.current.setting,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                        onTap: (){
+                          Navigator.of(context).pushNamed('/settings');
+                        },
+                      ),
+                    ]
+                  )
+                )
               ],
             )
           )
@@ -450,7 +472,7 @@ class _HomeState extends State<Home> {
           NavigationDestination(
             selectedIcon: const Icon(Icons.account_box),
             icon: const Icon(Icons.account_box_outlined),
-            label: S.current.account,
+            label: S.current.me,
           ),
         ]
       ),
@@ -478,7 +500,7 @@ class _HomeState extends State<Home> {
     case 1:
       return S.current.rank;
     case 2:
-      return S.current.account;
+      return S.current.me;
     default:
       return S.current.home;
     }

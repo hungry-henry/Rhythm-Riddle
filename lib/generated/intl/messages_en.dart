@@ -37,7 +37,9 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "account": MessageLookupByLibrary.simpleMessage("Account"),
+        "accountManage":
+            MessageLookupByLibrary.simpleMessage("Account Management"),
+        "appearance": MessageLookupByLibrary.simpleMessage("Appearance"),
         "back": MessageLookupByLibrary.simpleMessage("Back"),
         "backToHome": MessageLookupByLibrary.simpleMessage("Back to Home"),
         "bug": MessageLookupByLibrary.simpleMessage(
@@ -62,6 +64,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "correctAnswer":
             MessageLookupByLibrary.simpleMessage("Correct Answer: "),
         "custom": MessageLookupByLibrary.simpleMessage("Custom"),
+        "darkMode": MessageLookupByLibrary.simpleMessage("Dark Mode"),
         "details": MessageLookupByLibrary.simpleMessage("Answer Details"),
         "difficulty": MessageLookupByLibrary.simpleMessage("Difficulty"),
         "dlUpdate": MessageLookupByLibrary.simpleMessage("Update Now"),
@@ -85,10 +88,13 @@ class MessageLookup extends MessageLookupByLibrary {
             "Enter the genre of the playing music"),
         "enterMusic": MessageLookupByLibrary.simpleMessage(
             "Enter the name of the playing music"),
+        "followSystem": MessageLookupByLibrary.simpleMessage("Follow System"),
+        "gameSettings": MessageLookupByLibrary.simpleMessage("Game Settings"),
         "guest": MessageLookupByLibrary.simpleMessage("offline mode"),
         "hard": MessageLookupByLibrary.simpleMessage("Hard"),
         "hardInfo": MessageLookupByLibrary.simpleMessage(
             "Hard mode: 2 times mistake chances, fill in the blanks for Artist or Music title or Album"),
+        "history": MessageLookupByLibrary.simpleMessage("History"),
         "home": MessageLookupByLibrary.simpleMessage("Home🏠"),
         "hot": MessageLookupByLibrary.simpleMessage("Hot🔥"),
         "incorrect": MessageLookupByLibrary.simpleMessage("incorrect"),
@@ -96,16 +102,19 @@ class MessageLookup extends MessageLookupByLibrary {
             "Dload and Install by Browser"),
         "installPerm":
             MessageLookupByLibrary.simpleMessage("Install Packages Permission"),
+        "language": MessageLookupByLibrary.simpleMessage("Language"),
         "likes": MessageLookupByLibrary.simpleMessage("Likes"),
         "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
         "loggingIn": MessageLookupByLibrary.simpleMessage("Loggin In..."),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "loginExpired": MessageLookupByLibrary.simpleMessage(
             "login info expired, pls login again"),
+        "me": MessageLookupByLibrary.simpleMessage("Me"),
         "multiPlayer":
             MessageLookupByLibrary.simpleMessage("Multi Player (Coming Soon)"),
         "multiPlayerOptions":
             MessageLookupByLibrary.simpleMessage("Multi Player Options"),
+        "myPlaylists": MessageLookupByLibrary.simpleMessage("My Playlists"),
         "name": MessageLookupByLibrary.simpleMessage("Rhythm Riddle"),
         "next": MessageLookupByLibrary.simpleMessage("Next"),
         "noDes": MessageLookupByLibrary.simpleMessage("No Description"),
@@ -133,6 +142,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "retry": MessageLookupByLibrary.simpleMessage("Retry"),
         "search": MessageLookupByLibrary.simpleMessage(
             "Search playlist, song and artist"),
+        "setting": MessageLookupByLibrary.simpleMessage("Settings"),
         "singlePlayer": MessageLookupByLibrary.simpleMessage("Single Player"),
         "singlePlayerOptions":
             MessageLookupByLibrary.simpleMessage("Single Player Options"),

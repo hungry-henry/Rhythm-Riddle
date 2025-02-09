@@ -410,6 +410,96 @@ class S {
     );
   }
 
+  /// `Account Management`
+  String get accountManage {
+    return Intl.message(
+      'Account Management',
+      name: 'accountManage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `History`
+  String get history {
+    return Intl.message(
+      'History',
+      name: 'history',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Settings`
+  String get setting {
+    return Intl.message(
+      'Settings',
+      name: 'setting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My Playlists`
+  String get myPlaylists {
+    return Intl.message(
+      'My Playlists',
+      name: 'myPlaylists',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Appearance`
+  String get appearance {
+    return Intl.message(
+      'Appearance',
+      name: 'appearance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Language`
+  String get language {
+    return Intl.message(
+      'Language',
+      name: 'language',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dark Mode`
+  String get darkMode {
+    return Intl.message(
+      'Dark Mode',
+      name: 'darkMode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Follow System`
+  String get followSystem {
+    return Intl.message(
+      'Follow System',
+      name: 'followSystem',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Game Settings`
+  String get gameSettings {
+    return Intl.message(
+      'Game Settings',
+      name: 'gameSettings',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Home🏠`
   String get home {
     return Intl.message(
@@ -420,11 +510,11 @@ class S {
     );
   }
 
-  /// `Account`
-  String get account {
+  /// `Me`
+  String get me {
     return Intl.message(
-      'Account',
-      name: 'account',
+      'Me',
+      name: 'me',
       desc: '',
       args: [],
     );

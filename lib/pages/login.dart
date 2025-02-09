@@ -553,6 +553,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       child: ElevatedButton(
                         onPressed: (){
                           if(_loginText != S.current.loggingIn){
+                            FocusScopeNode currentFocus = FocusScope.of(context);
+                            /// 键盘是否回收
+                            if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+                              FocusManager.instance.primaryFocus!.unfocus();
+                            }
                             _login();
                           }
                         },
@@ -572,6 +577,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                           backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(166, 151, 151, 151)),
                         ),
                         onPressed: () async {
+                          FocusScopeNode currentFocus = FocusScope.of(context);
+                          if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+                            FocusManager.instance.primaryFocus!.unfocus();
+                          }
+                          
                           setState(() {
                             _showHeadphoneWidget = true;
                           });
@@ -783,7 +793,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Stack(
         children: [
           //main page

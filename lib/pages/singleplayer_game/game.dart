@@ -15,6 +15,7 @@ class SinglePlayerGame extends StatefulWidget {
 }
 
 class _SinglePlayerGameState extends State<SinglePlayerGame> {
+  /// VARIABLES
   //数据传入存储
   int _playlistId = 0;
   String _playlistTitle = '';
@@ -68,6 +69,8 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     _positionTextUnSplited.lastIndexOf(".")
   );
 
+
+  /// FUNCTIONS
   Future<void> _wrongTune() async {
     await _assistAudio.setAsset("assets/sounds/wrong.mp3");
     await _assistAudio.play();
@@ -863,7 +866,6 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
   @override
     void initState(){
-      super.initState();
       WidgetsFlutterBinding.ensureInitialized(); // 确保绑定已初始化
       Future.microtask(() {
         //获取传入参数
@@ -898,7 +900,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         }
       });
 
-      //状态更新
+      //audioplayer状态更新
       _audioPlayer.playbackEventStream.listen((event) {}, onError: (error) {
         logger.e(error);
       });
@@ -913,10 +915,11 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       _audioPlayer.processingStateStream.listen((processingState){
         if(mounted){setState(() => _processingState = processingState);}
       });
+      super.initState();
     }
 
   @override
-  void dispose() { //释放资源内存
+  void dispose(){
     _audioPlayer.dispose();
     _assistAudio.dispose();
     _durationSubscription?.cancel();

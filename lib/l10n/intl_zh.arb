@@ -20,9 +20,14 @@
     "dlUpdate": "立即下载", "releaseDate": "发布日期：{date}", "downloading": "正在下载{version}...",
     "wearHeadphone": "请佩戴耳机以获得最佳体验",
 
-    "home": "主页🏠", "account": "账户", "rank": "排行榜",
+    "home": "主页", "me": "我", "rank": "排行榜",
     "recm": "推荐", "hot": "热门🔥", "sort":"分类",
     "search": "搜索歌单、歌曲或歌手",
+
+    "accountManage": "账户管理", "history": "历史记录", "setting": "设置", "myPlaylists": "我的歌单",
+
+    "appearance": "外观", "language": "语言", "darkMode": "深色模式", "followSystem": "跟随系统", 
+    "gameSettings": "游戏设置",
 
     "songs": "歌曲", "played": "玩过", "likes": "赞",
     "bug": "游戏出现BUG了，请反馈给hungryhenry101@outlook.com",

@@ -33,6 +33,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.1"
+  build_cli_annotations:
+    dependency: transitive
+    description:
+      name: build_cli_annotations
+      sha256: b59d2769769efd6c9ff6d4c4cede0be115a566afc591705c2040b707534b1172
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.1.0"
   characters:
     dependency: transitive
     description:
@@ -179,6 +187,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_rust_bridge:
+    dependency: transitive
+    description:
+      name: flutter_rust_bridge
+      sha256: "0ad5079de35d317650fec59b26cb4d0c116ebc2ce703a29f9367513b8a91c287"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.5.0"
   flutter_secure_storage:
     dependency: "direct main"
     description:
@@ -333,6 +349,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.2.2"
+  language_picker:
+    dependency: "direct main"
+    description:
+      name: language_picker
+      sha256: cace0eab53b712e26f5d2cd834a050b6dd6ab56b2ba31b3000dbe5f89f33f5fd
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.4.5"
   leak_tracker:
     dependency: transitive
     description:
@@ -405,6 +429,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.0.1"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.0"
   package_info_plus:
     dependency: "direct main"
     description:
@@ -557,6 +589,22 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.8"
+  provider:
+    dependency: "direct main"
+    description:
+      name: provider
+      sha256: c8a055ee5ce3fd98d6fc872478b03823ffdb448699c6ebdbbc71d59b596fd48c
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "6.1.2"
+  recase:
+    dependency: transitive
+    description:
+      name: recase
+      sha256: e4eb4ec2dcdee52dcf99cb4ceabaffc631d7424ee55e56f280bc039737f89213
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.1.0"
   rxdart:
     dependency: "direct main"
     description:
@@ -605,6 +653,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.2.0"
+  settings_ui:
+    dependency: "direct main"
+    description:
+      name: settings_ui
+      sha256: d9838037cb554b24b4218b2d07666fbada3478882edefae375ee892b6c820ef3
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.2"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -666,6 +722,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  smtc_windows:
+    dependency: "direct main"
+    description:
+      name: smtc_windows
+      sha256: "80f7c10867da485ffdf87f842bf27e6763589933c18c11af5dc1cd1e158c3154"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.0"
   source_span:
     dependency: transitive
     description:
