@@ -650,6 +650,26 @@ class S {
     );
   }
 
+  /// `Creator`
+  String get creator {
+    return Intl.message(
+      'Creator',
+      name: 'creator',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Created at`
+  String get createTime {
+    return Intl.message(
+      'Created at',
+      name: 'createTime',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Contains {count} songs including {title} - {artist} and more`
   String contains(Object count, Object title, Object artist) {
     return Intl.message(
@@ -935,6 +955,26 @@ class S {
     return Intl.message(
       'Answer Details',
       name: 'details',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `points`
+  String get pts {
+    return Intl.message(
+      'points',
+      name: 'pts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `quizzes`
+  String get quizzes {
+    return Intl.message(
+      'quizzes',
+      name: 'quizzes',
       desc: '',
       args: [],
     );

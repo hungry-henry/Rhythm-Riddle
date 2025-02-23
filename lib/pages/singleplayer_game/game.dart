@@ -131,6 +131,9 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     setState(() {
       _countdown = 3; // 初始化倒计时
       _canShowQuiz = false;
+      _answerTime = _quizzes[(_currentQuiz+1).toString()]["answer_time"]; // 答题时间
+      _audioPlayingTime = _quizzes[(_currentQuiz+1).toString()]["music_playing_time"]; // 音频播放时间
+      _currentAnswerTime = _answerTime;
     });
 
     //提前加载音频
@@ -213,7 +216,6 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   //答题倒计时
   void _answerTimeCountdown(){
     if(!mounted) return;
-    _currentAnswerTime = _answerTime;
     Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_currentAnswerTime == 0 || _submittedOption != null) {
         timer.cancel();
@@ -297,7 +299,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           tip = quizInfo["artistForAlbum"];
         } else if(quizType == 7){
           tip = quizInfo["music"];
-          if(answer.contains(",")){
+          if(answer.contains(", ")){
             answerList = answer.split(", ");
             answerList.removeWhere((item) => item == '欧美' || item == '华语');
           }
@@ -549,7 +551,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                 Text(tip!, style: const TextStyle(letterSpacing: 2, fontSize: 18))
               ]else ...[
                 Text(S.current.correctAnswer),
-                Text(answer, style: const TextStyle(letterSpacing: 2, fontSize: 18)),
+                Text(answerList != null ? answerList.join(", ") : answer, style: const TextStyle(letterSpacing: 2, fontSize: 18)),
                 const SizedBox(height: 10),
                 Image.network(
                   quizType == 4 ? "http://hungryhenry.xyz/musiclab/album/${quizInfo['album_id']}.jpg"
@@ -605,9 +607,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                   _currentAnswerTime = _answerTime;
                 });
 
-                if(_audioPlayer.playing){
-                  _audioPlayer.pause();
-                }
+                //提示音
                 if(_submittedOption == "bruhtimeout"){
                   _wrongTune();
                 }
@@ -664,8 +664,15 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             ] else ... [
               //下一题
               ElevatedButton(
-                onPressed: () {
-                  _audioPlayer.stop();
+                onPressed: () async {
+                  if(_audioPlayer.playing){
+                    while(_audioPlayer.volume > 0.05){
+                      await _audioPlayer.setVolume(_audioPlayer.volume - 0.07);
+                      await Future.delayed(const Duration(milliseconds: 80));
+                    }
+                    await _audioPlayer.stop();
+                    _audioPlayer.setVolume(1.0);
+                  }
                   setState(() {
                     _submittedOption = null;
                     _selectedOption = null;
@@ -746,7 +753,11 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         Column(
           children: [
             _playlistId == 0 ? const Center(child: CircularProgressIndicator()) : 
-            Image.network("http://hungryhenry.xyz/musiclab/playlist/$_playlistId.jpg", width:MediaQuery.of(context).size.width * 0.3),
+            Image.network(
+              "http://hungryhenry.xyz/musiclab/playlist/$_playlistId.jpg", 
+              width:MediaQuery.of(context).size.width * 0.3, 
+              fit: BoxFit.cover
+            ),
             const SizedBox(height: 16),
             Text(_playlistTitle, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
@@ -879,25 +890,6 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
 
         //获取题目
         _getQuiz(_playlistId, _difficulty);
-
-        //难度对应时间
-        switch (_difficulty) {
-          case 0:
-            _audioPlayingTime = 6;
-            _answerTime = 15;
-            break;
-          case 1:
-            _audioPlayingTime = 5;
-            _answerTime = 10;
-            break;
-          case 2:
-            _audioPlayingTime = 3;
-            _answerTime = 7;
-            break;
-          default:
-            _audioPlayingTime = 0;
-            _answerTime = 0;
-        }
       });
 
       //audioplayer状态更新

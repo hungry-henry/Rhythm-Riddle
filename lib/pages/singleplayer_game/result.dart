@@ -30,11 +30,13 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
   //api返回数据
   Map? _responseData;
   int? _score;
+  int? _likes;
 
   //本地计算数据
   int _answerTime = 0;
   int? _quizCount;
-  int? _correctCount;
+  int _correctCount = 0;
+  bool _liked = false;
 
   //播放器
   final _audioPlayer = AudioPlayer();
@@ -71,7 +73,10 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
           'player_id': _uid,
           'password': _password,
           'playlist_id': _playlistId.toString(),
-          'result_map': _resultMap,
+          'score': _score,
+          'quiz_count': _quizCount,
+          'correct_count': _correctCount,
+          'answer_time': _answerTime,
           'difficulty': _difficulty
         })
       ).timeout(const Duration(seconds:7));
@@ -79,6 +84,8 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
         logger.e(response.statusCode);
         logger.e(response.body);
       }else{
+        _likes = int.parse(response.headers['likes'] ?? "0");
+        _liked = response.headers['liked'] == "1";
         logger.i("成功上传结果");
         logger.i(response.body);
       }
@@ -116,6 +123,128 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
     }
   }
 
+  Future<void> _like () async {
+    try{
+      if(_liked){
+        setState(() {
+          _liked = false;
+          _likes == null ? _likes = 0 : _likes = _likes! - 1;
+        });
+        final response = await http.post(
+          Uri.parse('http://hungryhenry.xyz/api/interact.php'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode({
+            'player_id': _uid,
+            'password': _password,
+            'playlist_id': _playlistId,
+            'action': 'unlike',
+          })
+        ).timeout(const Duration(seconds:12));
+        if(response.statusCode != 200){
+          setState(() {
+            _likes = _likes! + 1;
+            _liked = true;
+          });
+          logger.e(response.statusCode);
+          logger.e(response.body);
+        }else{
+          logger.i("成功取消点赞");
+          logger.d(response.body);
+        }
+      }else{
+        setState(() {
+          _liked = true;
+          _likes == null ? _likes = 1 : _likes = _likes! + 1;
+        });
+        final response = await http.post(
+          Uri.parse('http://hungryhenry.xyz/api/interact.php'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode({
+            'player_id': _uid,
+            'password': _password,
+            'playlist_id': _playlistId,
+            'action': 'like',
+          })
+        ).timeout(const Duration(seconds:12));
+        if(response.statusCode != 200){
+          setState(() {
+            _likes = _likes! - 1;
+            _liked = false;
+          });
+          logger.e(response.statusCode.toString() + response.body);
+        }else{
+          logger.i("成功点赞");
+          logger.d(response.body);
+        }
+      }
+    }catch(e){
+      setState(() {
+        _liked ? _liked = false : _liked = true;
+        _liked ? _likes = _likes! + 1 : _likes = _likes! - 1;
+      });
+      if(e is TimeoutException){
+        showDialog(context: context, builder:(context) {
+          return AlertDialog(
+            content: Text(S.current.connectError),
+            actions: [
+              TextButton(onPressed: () {
+                Navigator.of(context).pop();
+              }, child: Text(S.current.ok)),
+            ],
+          );
+        });
+      }else{
+        logger.e(e);
+        if(mounted){
+          showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Text(S.current.unknownError),
+              actions: [
+                TextButton(onPressed: () {Navigator.of(context).pop();}, 
+                child: Text(S.current.back))
+              ],
+            );
+          });
+        }
+      }
+    }
+  }
+
+  void _computeCorrectCount() {
+    for (var entry in _resultMap.entries) {
+      final item = entry.value;
+      final submitText = item['submitText']?.toString().toLowerCase() ?? '';
+      final answer = item['answer']?.toString().toLowerCase();
+      final answerList = (item['answerList'] as List<dynamic>?)?.map((e) => e.toString().toLowerCase()).toList() ?? [];
+
+      // 判断逻辑
+      bool isCorrect;
+      if (item['options'] != null) {
+        // 存在选项的情况：submitText 必须完全匹配 answer
+        isCorrect = submitText == answer?.toLowerCase();
+      } else {
+        if (answer != null) {
+          // 直接对比答案（不区分大小写）
+          isCorrect = submitText == answer;
+        } else {
+          // 对比答案列表（不区分大小写）
+          isCorrect = answerList.contains(submitText);
+        }
+      }
+
+      if (isCorrect){
+        _correctCount = _correctCount + 1;
+        _resultMap[entry.key]['correct'] = true;
+      }else{
+        _resultMap[entry.key]['correct'] = false;
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -136,9 +265,9 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
               _difficulty = args['difficulty'];
             });
             _resultMap.forEach((key, value) => _answerTime += (value["answerTime"] ?? 0) as int);
-            _correctCount = _resultMap.values.where((element) => element["answer"] == element["submitText"]).length;
             _quizCount = _resultMap.length;
-            _score = (_correctCount! / _quizCount! * 10).round();
+            _computeCorrectCount();
+            _score = (_correctCount / _quizCount! * 10).round();
 
             if(_uid != null && _password != null){
               _postResult(); //上传结果
@@ -203,7 +332,7 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                 width: MediaQuery.of(context).size.width > MediaQuery.of(context).size.height ?
                 MediaQuery.of(context).size.height * 0.45 : MediaQuery.of(context).size.width * 0.5,
               ) : const CircularProgressIndicator(),
-          
+              
               const SizedBox(height: 16),
               // 星星
               Row(
@@ -216,8 +345,59 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
               const SizedBox(height: 16),
               // 分数
               Text(
-                "${_score != null ? _score!.toStringAsFixed(1) : " - "} / 10",
+                "${_score != null ? _score!.toStringAsFixed(1) : " - "} / 10.0 ${S.current.pts}",
                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                "$_correctCount / $_quizCount ${S.current.quizzes}",
+                style: TextStyle(fontSize: 18, color: Colors.grey[800]),
+              ),
+
+              const SizedBox(height: 16),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // 点赞
+                    Column(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            _like();
+                          },
+                          icon: Icon(Icons.thumb_up, color: _liked ? Theme.of(context).primaryColor : Theme.of(context).primaryColorLight),
+                        ),
+                        Text(_likes != null ? _likes.toString() : '0'), // 点赞数量
+                      ],
+                    ),
+                    // 评论
+                    Column(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            // 评论逻辑
+                          },
+                          icon: Icon(Icons.comment, color: Theme.of(context).primaryColor)
+                        ),
+                        Text('5'), // 评论数量
+                      ],
+                    ),
+                    // 分享
+                    Column(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            // 分享逻辑
+                          },
+                          icon: Icon(Icons.share, color: Theme.of(context).primaryColor)
+                        ),
+                        Text('7'), // 分享数量
+                      ],
+                    ),
+                  ],
+                ),
               ),
           
               const SizedBox(height: 16),
@@ -226,6 +406,7 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
 
+              const SizedBox(height: 16),
               // 详细信息
               Wrap(
                 spacing: 16.0, // Horizontal spacing between cards
@@ -344,8 +525,7 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                                           }
                                         }
                                       }catch(e){
-                                        if(mounted) dispose();
-                                        if(e is TimeoutException){
+                                        if(e is TimeoutException && mounted){
                                           showDialog(context: context, builder: (context){
                                             return AlertDialog(
                                               content: Text(S.current.connectError),
@@ -356,17 +536,20 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                                             );
                                           });
                                         }else{
-                                          showDialog(context: context, builder: (context){
-                                            return AlertDialog(
-                                                content: Text(S.current.unknownError),
-                                                actions: [
-                                                  TextButton(onPressed: () { 
-                                                    Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
-                                                    Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
-                                                  }, child: Text(S.current.back)),
-                                                ],
-                                            );
-                                          });
+                                          logger.e(e);
+                                          if(mounted){
+                                            showDialog(context: context, builder: (context){
+                                              return AlertDialog(
+                                                  content: Text(S.current.unknownError),
+                                                  actions: [
+                                                    TextButton(onPressed: () { 
+                                                      Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
+                                                      Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
+                                                    }, child: Text(S.current.back)),
+                                                  ],
+                                              );
+                                            });
+                                          }
                                         }
                                       }
                                     }
@@ -399,12 +582,9 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                                 Text("用时：${item.value['answerTime']}s", textAlign: TextAlign.center)
                               ]else ...[
                                 ListTile(
-                                  trailing: item.value['answer'] != null ?
-                                      item.value['submitText'].toString().toLowerCase() == item.value['answer'].toString().toLowerCase()
-                                        ? const Icon(Icons.check, color: Colors.green) : const Icon(Icons.close, color: Colors.red)
-                                    : item.value["answerList"].any(
-                                      (answers) => item.value['submitText'].toString().toLowerCase() == answers.toString().toLowerCase()
-                                    ) ? const Icon(Icons.check, color: Colors.green) : const Icon(Icons.close, color: Colors.red),
+                                  trailing: _resultMap[item.key]['correct'] ? 
+                                  const Icon(Icons.check, color: Colors.green) : 
+                                  const Icon(Icons.close, color: Colors.red),
                                   title: Text("输入："+item.value['submitText']),
                                 ),
                                 ListTile(

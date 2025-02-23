@@ -30,6 +30,7 @@ class _SinglePlayerState extends State<SinglePlayer> {
               "http://hungryhenry.xyz/musiclab/playlist/$playlistId.jpg",
               width: 350,
               height: 350,
+              fit: BoxFit.cover,
             ),
             const SizedBox(height: 8),
             // Date and Username
@@ -75,7 +76,7 @@ class _SinglePlayerState extends State<SinglePlayer> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                GestureDetector(
+                GestureDetector( //简单
                   onTap: () {
                     setState(() {
                       selectedDifficulty = 0;
@@ -85,7 +86,7 @@ class _SinglePlayerState extends State<SinglePlayer> {
                     width: 80,
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
-                      color: selectedDifficulty == 0 ? Colors.blue : Colors.grey[300],
+                      color: selectedDifficulty == 0 ? Theme.of(context).primaryColor : Colors.grey[300],
                       border: Border.all(color: Colors.grey),
                       borderRadius: const BorderRadius.horizontal(left: Radius.circular(10)),
                     ),
@@ -102,14 +103,14 @@ class _SinglePlayerState extends State<SinglePlayer> {
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      selectedDifficulty = 1;
+                      selectedDifficulty = 1; //普通
                     });
                   },
                   child: Container(
                     width: 80,
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
-                      color: selectedDifficulty == 1 ? Colors.blue : Colors.grey[300],
+                      color: selectedDifficulty == 1 ? Theme.of(context).primaryColor : Colors.grey[300],
                       border: Border.all(color: Colors.grey),
                     ),
                     child: Center(
@@ -122,7 +123,7 @@ class _SinglePlayerState extends State<SinglePlayer> {
                     ),
                   ),
                 ),
-                GestureDetector(
+                GestureDetector( //困难
                   onTap: () {
                     setState(() {
                       selectedDifficulty = 2;
@@ -132,7 +133,7 @@ class _SinglePlayerState extends State<SinglePlayer> {
                     width: 80,
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
-                      color: selectedDifficulty == 2 ? Colors.blue : Colors.grey[300],
+                      color: selectedDifficulty == 2 ? Theme.of(context).primaryColor : Colors.grey[300],
                       border: Border.all(color: Colors.grey),
                     ),
                     child: Center(
@@ -145,7 +146,7 @@ class _SinglePlayerState extends State<SinglePlayer> {
                     ),
                   ),
                 ),
-                GestureDetector(
+                GestureDetector( //自定义
                   onTap: () {
                     setState(() {
                       selectedDifficulty = 3;
@@ -155,7 +156,7 @@ class _SinglePlayerState extends State<SinglePlayer> {
                     width: 80,
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
-                      color: selectedDifficulty == 3 ? Colors.blue : Colors.grey[300],
+                      color: selectedDifficulty == 3 ? Theme.of(context).primaryColor : Colors.grey[300],
                       border: Border.all(color: Colors.grey),
                       borderRadius: const BorderRadius.horizontal(right: Radius.circular(10)),
                     ),
@@ -253,7 +254,7 @@ class _SinglePlayerState extends State<SinglePlayer> {
                   width: 80,
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    color: selectedDifficulty == 0 ? Colors.blue : Colors.grey[300],
+                    color: selectedDifficulty == 0 ? Theme.of(context).primaryColor : Colors.grey[300],
                     border: Border.all(color: Colors.grey),
                     borderRadius: const BorderRadius.horizontal(left: Radius.circular(10)),
                   ),
@@ -277,7 +278,7 @@ class _SinglePlayerState extends State<SinglePlayer> {
                   width: 80,
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    color: selectedDifficulty == 1 ? Colors.blue : Colors.grey[300],
+                    color: selectedDifficulty == 1 ? Theme.of(context).primaryColor : Colors.grey[300],
                     border: Border.all(color: Colors.grey),
                   ),
                   child: Center(
@@ -300,7 +301,7 @@ class _SinglePlayerState extends State<SinglePlayer> {
                   width: 80,
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    color: selectedDifficulty == 2 ? Colors.blue : Colors.grey[300],
+                    color: selectedDifficulty == 2 ? Theme.of(context).primaryColor : Colors.grey[300],
                     border: Border.all(color: Colors.grey),
                   ),
                   child: Center(
@@ -323,7 +324,7 @@ class _SinglePlayerState extends State<SinglePlayer> {
                   width: 80,
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    color: //selectedDifficulty == 3 ? Colors.blue : 
+                    color: //selectedDifficulty == 3 ? Theme.of(context).primaryColor : 
                     Colors.grey[600],
                     border: Border.all(color: Colors.grey),
                     borderRadius: const BorderRadius.horizontal(right: Radius.circular(10)),

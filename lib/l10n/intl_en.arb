@@ -34,6 +34,7 @@
     "bug": "A bug appeared, pls report to hungryhenry101@outlook.com",
     "singlePlayer": "Single Player", "multiPlayer": "Multi Player (Coming Soon)",
     "singlePlayerOptions": "Single Player Options", "multiPlayerOptions": "Multi Player Options",
+    "creator": "Creator", "createTime": "Created at", 
     "contains": "Contains {count} songs including {title} - {artist} and more",
     "noDes": "No Description",
     "chooseDifficulty": "Choose Difficulty", "difficulty": "Difficulty",
@@ -50,5 +51,6 @@
     "enterAlbum": "Enter the album of the playing music", "enterGenre": "Enter the genre of the playing music", 
     "tip": "Tips: ", "correctAnswer": "Correct Answer: ", "correct": "Correct✔", "wrong": "Wrong❌",
 
-    "quizResult": "Result of {playlist}", "details": "Answer Details"
+    "quizResult": "Result of {playlist}", "details": "Answer Details",
+    "pts": "points", "quizzes": "quizzes"
 }

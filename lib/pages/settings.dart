@@ -48,7 +48,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
                 leading: const Icon(Icons.brightness_auto),
                 title: Text(S.current.followSystem),
-                activeSwitchColor: Theme.of(context).primaryColor,
+                activeSwitchColor: Theme.of(context).colorScheme.primary
               ),
 
               SettingsTile.switchTile(
@@ -63,7 +63,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 initialValue: _darkMode == 1,
                 leading: const Icon(Icons.dark_mode),
                 title: Text(S.current.darkMode),
-                activeSwitchColor: Theme.of(context).primaryColor,
+                activeSwitchColor: Theme.of(context).colorScheme.primary,
               ),
             ],
           ),
@@ -76,7 +76,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 initialValue: false, 
                 onToggle: (value) => print, 
                 title: Text("game setting 1"),
-                activeSwitchColor: Theme.of(context).primaryColor,
+                activeSwitchColor: Theme.of(context).colorScheme.primary
               )
             ],
           ),

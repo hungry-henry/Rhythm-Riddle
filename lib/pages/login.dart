@@ -18,7 +18,7 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:install_plugin/install_plugin.dart';
 import 'package:just_audio/just_audio.dart';
-import '../utils/download_notification.dart';
+import '../utils/update.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   Logger logger = Logger();
 
   String? _currentVersion;
-  String? _latestVesion;
+  String? _latestVersion;
   String? _changelog;
   String? _date;
   bool _force = false;
@@ -68,12 +68,13 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       });
       if(res.statusCode == 200){
         Map data = res.data;
-        _latestVesion = data['latest']['version'];
+        _latestVersion = data['latest']['version'];
 
         PackageInfo packageInfo = await PackageInfo.fromPlatform();
-        _currentVersion = packageInfo.version;
+        _currentVersion = packageInfo.version;  
 
-        if(_latestVesion != _currentVersion && mounted){
+        if(isUpdateAvailable(_currentVersion!, _latestVersion!)){
+          if(!mounted) return true;
           setState(() {
             _changelog = data['latest']['changlog'];
             _date = data['latest']['date'];
@@ -95,43 +96,22 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     }
   }
 
-  Future<bool> _checkPermission(Permission permission) async {
-    if (Platform.isAndroid) {
-      var status = await permission.status;
-      if (!status.isGranted) {
-        // 申请权限
-        await permission.request();
-        // 重新获取权限状态
-        var newStatus = await permission.status;
-        if (newStatus.isGranted) {
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        return true;
-      }
-    } else {
-      return true;
-    }
-  }
-
   Future<void> _downloadUpdate() async {
-    if(await _checkPermission(Permission.storage)){
+    if(await checkPermission(Permission.storage)){
       final Directory tempDir = await path_provider.getTemporaryDirectory();
       String? savePath;
       String url = "";
 
       if(Platform.isAndroid){
-        savePath = "${tempDir.path}/Rhythm-Riddle_$_latestVesion.apk";
+        savePath = "${tempDir.path}/Rhythm-Riddle_$_latestVersion.apk";
         url = "http://hungryhenry.xyz/rhythm_riddle/rhythm_riddle_android_latest.apk";
 
-        if(await _checkPermission(Permission.notification) == false){
+        if(await checkPermission(Permission.notification) == false){
           Fluttertoast.showToast(msg: S.current.permissionExplain);
         }
         await NotificationService.init();
       }else if(Platform.isWindows){
-        savePath = "${tempDir.path}/Rhythm-Riddle_$_latestVesion.exe";
+        savePath = "${tempDir.path}/Rhythm-Riddle_$_latestVersion.exe";
         url = "http://hungryhenry.xyz/rhythm_riddle/rhythm_riddle_windows_latest.exe";
       }else{
         if(!mounted) return;
@@ -175,13 +155,13 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               NotificationService.showProgressNotification(
                 id: 1, 
                 title: S.current.dlUpdate, 
-                body: "${S.current.downloading(_latestVesion!)} | ${_speed.toStringAsFixed(1)}mb/s", 
+                body: "${S.current.downloading(_latestVersion!)} | ${_speed.toStringAsFixed(1)}mb/s", 
                 progress: _progress
               );
             }
           );
           if(Platform.isAndroid){
-            if(await _checkPermission(Permission.requestInstallPackages) == false){
+            if(await checkPermission(Permission.requestInstallPackages) == false){
               logger.e("request install packages permission error");
               if(mounted){
                 setState(() {
@@ -193,7 +173,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     actions: [
                       TextButton(
                         onPressed: () async{
-                          if(await _checkPermission(Permission.requestInstallPackages) == false){
+                          if(await checkPermission(Permission.requestInstallPackages) == false){
                             Fluttertoast.showToast(msg: S.current.permissionError(S.current.installPerm));
                             Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
                           }
@@ -620,7 +600,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            S.current.downloading(_latestVesion!),
+            S.current.downloading(_latestVersion!),
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -678,7 +658,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 borderRadius: BorderRadius.circular(16.0), // 圆角样式
               ),
               title: Text(
-                S.current.update(_currentVersion!, _latestVesion!),
+                S.current.update(_currentVersion!, _latestVersion!),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 20.0,
@@ -733,7 +713,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          _loginText = S.current.downloading(_latestVesion!);
+                          _loginText = S.current.downloading(_latestVersion!);
                         });
                         // 执行更新逻辑
                         Navigator.of(context).pop();

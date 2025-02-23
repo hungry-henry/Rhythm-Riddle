@@ -213,6 +213,7 @@ class _HomeState extends State<Home> {
                                           },
                                           errorBuilder: (BuildContext context,
                                               Object exception, StackTrace? stackTrace) {
+                                                debugPrint(exception.toString());
                                             return const Icon(Icons.image,
                                                 color: Colors.grey);
                                           },

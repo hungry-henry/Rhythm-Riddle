@@ -105,6 +105,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
         }
       }
     }catch(e){
+      print(e);
       if(mounted){
         if(e is TimeoutException){
           await showDialog(context: context, builder: (context){
@@ -220,7 +221,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
               TextButton(
                 onPressed:null,
                 style:ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(Colors.grey[350]),
+                  backgroundColor: WidgetStateProperty.all(Theme.of(context).primaryColorLight),
                   padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 25, vertical: 10)),
                 ), 
                 child:Text(S.current.multiPlayer)
@@ -253,8 +254,8 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                     fit: BoxFit.cover,
                 ),
                 const SizedBox(height: 10),
-                Text("创作者: $createdBy", style: const TextStyle(fontSize: 16)),
-                Text("创作时间: $createTime", style: const TextStyle(fontSize: 16)),
+                Text("${S.current.creator}: $createdBy", style: const TextStyle(fontSize: 16)),
+                Text("${S.current.createTime}: $createTime", style: const TextStyle(fontSize: 16)),
               ],
             ),
           ),
@@ -321,7 +322,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                       TextButton(
                         onPressed:null,
                         style:ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(Colors.grey[350]),
+                          backgroundColor: WidgetStateProperty.all(Theme.of(context).primaryColorLight),
                           padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 25, vertical: 10)),
                         ),
                         child:Text(S.current.multiPlayer)
@@ -345,11 +346,11 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
         // 歌曲数量
         Column(
           children: [
-            Icon(Icons.music_note, color: Colors.blue),
-            SizedBox(height: 8),
+            const Icon(Icons.music_note, color: Colors.blue),
+            const SizedBox(height: 8),
             Text(
               musicCount.toString(),
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
             Text(S.current.songs),
           ],
@@ -357,8 +358,8 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
         // 游玩数量
         Column(
           children: [
-            Icon(Icons.sports_esports, color: Colors.green),
-            SizedBox(height: 8),
+            const Icon(Icons.sports_esports, color: Colors.green),
+            const SizedBox(height: 8),
             Text(
               played.toString(),
               style: const TextStyle(fontSize: 16),

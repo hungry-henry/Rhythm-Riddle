@@ -63,6 +63,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "correct": MessageLookupByLibrary.simpleMessage("Correct✔"),
         "correctAnswer":
             MessageLookupByLibrary.simpleMessage("Correct Answer: "),
+        "createTime": MessageLookupByLibrary.simpleMessage("Created at"),
+        "creator": MessageLookupByLibrary.simpleMessage("Creator"),
         "custom": MessageLookupByLibrary.simpleMessage("Custom"),
         "darkMode": MessageLookupByLibrary.simpleMessage("Dark Mode"),
         "details": MessageLookupByLibrary.simpleMessage("Answer Details"),
@@ -130,7 +132,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "permissionExplain": MessageLookupByLibrary.simpleMessage(
             "Pls grant notification permission to prevent the process from killing by system"),
         "played": MessageLookupByLibrary.simpleMessage("Played"),
+        "pts": MessageLookupByLibrary.simpleMessage("points"),
         "quizResult": m3,
+        "quizzes": MessageLookupByLibrary.simpleMessage("quizzes"),
         "rank": MessageLookupByLibrary.simpleMessage("Rank"),
         "recm": MessageLookupByLibrary.simpleMessage("Recommend"),
         "register": MessageLookupByLibrary.simpleMessage(

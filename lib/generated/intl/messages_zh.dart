@@ -54,6 +54,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "contains": m0,
         "correct": MessageLookupByLibrary.simpleMessage("正确✔"),
         "correctAnswer": MessageLookupByLibrary.simpleMessage("正确答案: "),
+        "createTime": MessageLookupByLibrary.simpleMessage("创建时间"),
+        "creator": MessageLookupByLibrary.simpleMessage("创建者"),
         "custom": MessageLookupByLibrary.simpleMessage("自定义"),
         "darkMode": MessageLookupByLibrary.simpleMessage("深色模式"),
         "details": MessageLookupByLibrary.simpleMessage("答题细节"),
@@ -108,7 +110,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "permissionExplain":
             MessageLookupByLibrary.simpleMessage("请授予通知权限，以防止软件更新时被系统结束进程"),
         "played": MessageLookupByLibrary.simpleMessage("玩过"),
+        "pts": MessageLookupByLibrary.simpleMessage("分"),
         "quizResult": m3,
+        "quizzes": MessageLookupByLibrary.simpleMessage("题"),
         "rank": MessageLookupByLibrary.simpleMessage("排行榜"),
         "recm": MessageLookupByLibrary.simpleMessage("推荐"),
         "register": MessageLookupByLibrary.simpleMessage("没有账号? 点此注册!"),

@@ -34,6 +34,7 @@
     "singlePlayer": "单人模式", "multiPlayer": "多人模式（敬请期待）",
     "singlePlayerOptions": "单人模式选项", "multiPlayerOptions": "多人模式选项",
     "contains": "包含 {title} - {artist} 等 {count} 首歌曲",
+    "creator": "创建者", "createTime": "创建时间", 
     "noDes": "暂无简介",
     "chooseDifficulty": "选择难度", "difficulty": "难度",
     "easy": "简单", "normal": "普通", "hard": "困难", "custom": "自定义",
@@ -49,5 +50,6 @@
     "enterAlbum": "填写当前播放的所属专辑", "enterGenre": "填写当前播放的所属流派", 
     "tip": "提示: ", "correctAnswer": "正确答案: ", "correct": "正确✔", "wrong": "错误❌",
 
-    "quizResult": "{playlist} 的答题结果", "details": "答题细节"
+    "quizResult": "{playlist} 的答题结果", "details": "答题细节",
+    "pts": "分", "quizzes": "题"
 }
