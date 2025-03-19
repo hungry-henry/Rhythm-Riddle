@@ -564,17 +564,17 @@ class _SinglePlayerGameResultState extends State<SinglePlayerGameResult> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8.0),
                                       border: Border.all(
-                                        color: (option["text"]) == item.value['answer']
+                                        color: (option) == item.value['answer']
                                             ? Colors.green : Colors.red,
                                         width: 1.5,
                                       ),
                                     ),
                                     child: ListTile(
-                                      leading: (option["text"]) == item.value['submitText']
-                                          ? option["text"] == item.value["answer"] 
+                                      leading: (option) == item.value['submitText']
+                                          ? option == item.value["answer"] 
                                           ? const Icon(Icons.check, color: Colors.green)
                                           : const Icon(Icons.close, color: Colors.red) : null,
-                                      title: Text((option["text"])),
+                                      title: Text((option)),
                                     ),
                                   )
                                 ],

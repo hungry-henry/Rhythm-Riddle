@@ -325,117 +325,112 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildAccount() {
-    if(_isLogin){
-      return SingleChildScrollView(
-        child: Center(
-          child:Container(
-            padding: const EdgeInsets.all(16.0),
-            width:700,
-            child:Column(
-              children: [
-                Center(
-                  child: CircleAvatar(
-                    radius: 70,
-                    backgroundImage: NetworkImage(
-                      "http://hungryhenry.xyz/blog/usr/uploads/avatar/$_uid.png",
-                    )             
+    return SingleChildScrollView(
+      child: Center(
+        child:Container(
+          padding: const EdgeInsets.all(16.0),
+          width:700,
+          child:Column(
+            children: [
+              Center(
+                child: _isLogin ? CircleAvatar(
+                  radius: 70,
+                  backgroundImage: NetworkImage(
+                    "http://hungryhenry.xyz/blog/usr/uploads/avatar/$_uid.png",
+                  )             
+                ) : ElevatedButton(
+                  child: const Text('登录'),
+                  onPressed: () => Navigator.of(context).pushNamed('/login')
+                ),
+              ),
+              const SizedBox(height: 20),
+              ListTileTheme(
+                data: const ListTileThemeData(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10.0))
                   ),
                 ),
-                const SizedBox(height: 20),
-                ListTileTheme(
-                  data: const ListTileThemeData(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0))
+                child: Column(
+                  children:[
+                    //account manage
+                    ListTile(
+                      leading: const Icon(Icons.person),
+                      enabled: _isLogin,
+                      title: Text(
+                        S.current.accountManage,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                      onTap: (){
+                        print("accountManage");
+                      },
                     ),
-                  ),
-                  child: Column(
-                    children:[
-                      //account manage
-                      ListTile(
-                        leading: const Icon(Icons.person),
-                        title: Text(
-                          S.current.accountManage,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        trailing: const Icon(Icons.arrow_forward_ios_rounded),
-                        onTap: (){
-                          print("accountManage");
-                        },
-                      ),
-                      const Divider(
-                        height: 1, // 高度为1，紧凑的效果
-                        thickness: 1,
-                        indent: 16,
-                        endIndent: 16,
-                      ),
+                    const Divider(
+                      height: 1, // 高度为1，紧凑的效果
+                      thickness: 1,
+                      indent: 16,
+                      endIndent: 16,
+                    ),
 
-                      //history
-                      ListTile(
-                        leading: const Icon(Icons.history),
-                        title: Text(
-                          S.current.history,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        trailing: const Icon(Icons.arrow_forward_ios_rounded),
-                        onTap: (){
-                          print("history");
-                        },
+                    //history
+                    ListTile(
+                      leading: const Icon(Icons.history),
+                      title: Text(
+                        S.current.history,
+                        style: const TextStyle(fontSize: 16),
                       ),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                      onTap: (){
+                        print("history");
+                      },
+                    ),
 
-                      //my playlists
-                      const Divider(
-                        height: 1,
-                        thickness: 1, 
-                        indent: 16,
-                        endIndent: 16,
+                    //my playlists
+                    const Divider(
+                      height: 1,
+                      thickness: 1, 
+                      indent: 16,
+                      endIndent: 16,
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.playlist_add_check),
+                      title: Text(
+                        S.current.localPlaylists,
+                        style: const TextStyle(fontSize: 16),
                       ),
-                      ListTile(
-                        leading: const Icon(Icons.playlist_add_check),
-                        title: Text(
-                          S.current.myPlaylists,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        trailing: const Icon(Icons.arrow_forward_ios_rounded), 
-                        onTap: (){
-                          print("my playlists");
-                        },
-                      ),
-                      
-                      const Divider(
-                        height: 1,
-                        thickness: 1, 
-                        indent: 16,
-                        endIndent: 16,
-                      ),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded), 
+                      onTap: (){
+                        Navigator.of(context).pushNamed('/localPlaylists');
+                      },
+                    ),
+                    
+                    const Divider(
+                      height: 1,
+                      thickness: 1, 
+                      indent: 16,
+                      endIndent: 16,
+                    ),
 
-                      //settings
-                      ListTile(
-                        leading: const Icon(Icons.settings),
-                        title: Text(
-                          S.current.setting,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        trailing: const Icon(Icons.arrow_forward_ios_rounded),
-                        onTap: (){
-                          Navigator.of(context).pushNamed('/settings');
-                        },
+                    //settings
+                    ListTile(
+                      leading: const Icon(Icons.settings),
+                      title: Text(
+                        S.current.setting,
+                        style: const TextStyle(fontSize: 16),
                       ),
-                    ]
-                  )
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                      onTap: (){
+                        Navigator.of(context).pushNamed('/settings');
+                      },
+                    ),
+                  ]
                 )
-              ],
-            )
+              )
+            ],
           )
-        ) 
-      );
-    }else{
-      return Center(
-        child: ElevatedButton(
-          child: const Text('登录'),
-          onPressed: () => Navigator.of(context).pushNamed('/login')
         )
-      );
-    }
+      ) 
+    );
   }
 
   @override

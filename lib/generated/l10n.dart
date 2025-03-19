@@ -200,10 +200,10 @@ class S {
     );
   }
 
-  /// `Lack of {permission} Permission, failed to update. Pls grant permission(s) manually`
+  /// `Lack of {permission}. Pls grant perm(s) manually`
   String permissionError(Object permission) {
     return Intl.message(
-      'Lack of $permission Permission, failed to update. Pls grant permission(s) manually',
+      'Lack of $permission. Pls grant perm(s) manually',
       name: 'permissionError',
       desc: '',
       args: [permission],
@@ -440,11 +440,11 @@ class S {
     );
   }
 
-  /// `My Playlists`
-  String get myPlaylists {
+  /// `Local Playlists`
+  String get localPlaylists {
     return Intl.message(
-      'My Playlists',
-      name: 'myPlaylists',
+      'Local Playlists',
+      name: 'localPlaylists',
       desc: '',
       args: [],
     );
@@ -595,6 +595,26 @@ class S {
     return Intl.message(
       'Likes',
       name: 'likes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Downloaded`
+  String get downloaded {
+    return Intl.message(
+      'Downloaded',
+      name: 'downloaded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download`
+  String get download {
+    return Intl.message(
+      'Download',
+      name: 'download',
       desc: '',
       args: [],
     );

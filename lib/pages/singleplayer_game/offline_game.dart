@@ -1,42 +1,42 @@
 import 'dart:async';
-import 'dart:convert';
-import '/generated/l10n.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
+import '../../generated/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+
+import '../../utils/get_quiz.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';
 
-class SinglePlayerGame extends StatefulWidget {
-  const SinglePlayerGame({super.key});
-
+class OfflineGame extends StatefulWidget {
   @override
-  State<SinglePlayerGame> createState() => _SinglePlayerGameState();
+  _OfflineGameState createState() => _OfflineGameState();
 }
 
-class _SinglePlayerGameState extends State<SinglePlayerGame> {
-  /// VARIABLES
-  //数据传入存储
-  int _playlistId = 0;
-  String _playlistTitle = '';
-  String? _description;
-  int _difficulty = 4;
+class _OfflineGameState extends State<OfflineGame> {
+  String? _getQuizError;
+  bool _initialized = false;
 
-  int _currentQuiz = -1; //题目计数器
+  int _playlistId = 0;
+  String _playlistTitle = "";
+  String? _description;
+  int _difficulty = -1;
+
+  int _currentQuiz = -1;
+  bool _canShowQuiz = false;
+  Map<String, dynamic> _quizzes = {};
+  Directory? _tempDir;
+  
   final Map _resultMap = {}; //结果存储
   final TextEditingController _controller = TextEditingController();
-
-  //音频&题目显示计时
-  int _countdown = 0; 
-  bool _canShowQuiz = false;
-
-  Map _quizzes = {}; //存储api获取的题目
-
+  
   String? _selectedOption; //选项
   String? _submittedOption; //提交的选项
 
   Logger logger = Logger(); //日志
 
+  int _countdown = 0;
   //答题时间
   int _answerTime = 0;
   int _currentAnswerTime = 0;
@@ -60,17 +60,15 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
   StreamSubscription? _positionSubscription;
   String get _durationTextUnSplited => _duration?.toString() ?? "";
   String get _positionTextUnSplited => _position?.toString() ?? "";
-  String get _durationText => _durationTextUnSplited.substring(
+  String get _durationText => _durationTextUnSplited != "" ? _durationTextUnSplited.substring(
     _durationTextUnSplited.indexOf(":")+1,
     _durationTextUnSplited.lastIndexOf(".")
-  );
-  String get _positionText => _positionTextUnSplited.substring(
+  ) : "";
+  String get _positionText => _positionTextUnSplited != "" ? _positionTextUnSplited.substring(
     _positionTextUnSplited.indexOf(":")+1,
     _positionTextUnSplited.lastIndexOf(".")
-  );
+  ) : "";
 
-
-  /// FUNCTIONS
   Future<void> _wrongTune() async {
     await _assistAudio.setAsset("assets/sounds/wrong.mp3");
     await _assistAudio.play();
@@ -87,8 +85,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     logger.i("preparing audio");
     try{
       int id = _quizzes[_played.toString()]['music_id'] ?? _quizzes[_played.toString()]['id'];
-      await _audioPlayer.setUrl("http://hungryhenry.xyz/musiclab/music/$id.mp3").timeout(const Duration(seconds: 15));
-      await _audioPlayer.seek(Duration(seconds: _quizzes[_played.toString()]['start_at'])); // 跳到 startAt
+      await _audioPlayer.setFilePath(_tempDir!.path + "/music/$id.mp3", initialPosition: Duration(seconds: _quizzes[_played.toString()]['start_at']));
       logger.i("seek finished ${_quizzes[_played.toString()]['start_at']} seconds");
     }catch(e){
       if(e is TimeoutException){
@@ -162,58 +159,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
       }
     });
   }
-
-
-  //获取题目
-  Future<void> _getQuiz(int playlistId, int difficulty) async {
-    String? responseBody;
-    try{
-      final response = await http.get(Uri.parse("http://hungryhenry.xyz/api/getQuiz.php?id=$playlistId&difficulty=$difficulty")).timeout(const Duration(seconds: 7));
-      if (!mounted) return;
-      responseBody = response.body;
-      if (response.statusCode == 200) {
-        setState(() {
-          _quizzes = jsonDecode(response.body);
-        });
-      } else {
-        print(response.body);
-      }
-    } catch (e) {
-      if(e is TimeoutException && mounted) {
-        showDialog(context: context, builder: (context){
-          return AlertDialog(
-            content: Text(S.current.connectError),
-            actions: [
-              TextButton(onPressed: () { 
-                Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
-                Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
-              }, child: Text(S.current.back)),
-              TextButton(onPressed: (){
-                Navigator.of(context).popAndPushNamed('/SinglePlayerGame', 
-                arguments: {playlistId, _playlistTitle, _description, difficulty});
-              }, child: Text(S.current.retry))
-            ],
-          );
-        });
-      }else{
-        logger.e("error: $e");
-        print(responseBody);
-        showDialog(context: context, builder: (context){
-          return AlertDialog(
-            content: Text(S.current.unknownError),
-            actions: [
-              TextButton(onPressed: () { 
-                Navigator.of(context).pushNamedAndRemoveUntil('/home', arguments: _playlistId, (route) => false);
-                Navigator.of(context).pushNamed('/PlaylistInfo', arguments: _playlistId);
-              }, child: Text(S.current.back))
-            ],
-          );
-        });
-      }
-    }
-  }
-
-  //答题倒计时
+    //答题倒计时
   void _answerTimeCountdown(){
     if(!mounted) return;
     Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -273,7 +219,6 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     return answer;
   }
 
-  //显示题目
   Widget _showQuiz(Map quizInfo, int difficulty){
     int quizType = quizInfo["quizType"]; //题目类型
     bool true4SelectFalse4Enter = quizType == 0 || quizType == 1 || quizType == 2 || quizType == 3;
@@ -288,7 +233,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     }else{
       if(quizInfo["blanks"] == null){
         if(quizType == 4) {
-          tip = quizInfo["artists"];
+          tip = quizInfo["artist"];
         } else if(quizType == 5) {
           tip = quizInfo["music"];
         } else if(quizType == 6){
@@ -314,33 +259,20 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     }
 
     String question = "";
-    List? infoShowAfterSubmit;
     String musicInfo = "";
 
     switch(quizType){
       case 0: //选择歌曲
         question = S.current.chooseMusic;
-        infoShowAfterSubmit = options
-          ?.where((item) => item.containsKey("artists"))
-          .map((item) => item["artists"] as String)
-          .toList();
         musicInfo = quizInfo["answer"] + " - " + quizInfo["artists"];
         break;
       case 1: //选择歌手
         question = S.current.chooseArtist; 
-        infoShowAfterSubmit = options
-          ?.where((item) => item.containsKey("id"))
-          .map((item) => item["id"])
-          .toList();
         musicInfo = quizInfo["music"] + " - " + quizInfo["answer"];
         break;
       case 2: //选择专辑
         question = S.current.chooseAlbum;
-        infoShowAfterSubmit = options
-          ?.where((item) => item.containsKey("id"))
-          .map((item) => item["id"])
-          .toList();
-          musicInfo = quizInfo["music"] + " - " + quizInfo["artists"];
+          musicInfo = quizInfo["music"] + " - " + quizInfo["artist"];
         break;
       case 3: //选择流派
         question = S.current.chooseGenre;
@@ -348,15 +280,15 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         break;
       case 4: //填写歌曲
         question = S.current.enterMusic;
-        musicInfo = quizInfo["answer"] + " - " + quizInfo["artists"];
+        musicInfo = quizInfo["answer"] + " - " + quizInfo["artist"];
         break;
       case 5: //填写歌手
         question = S.current.enterArtist;
-        musicInfo = quizInfo["music"] + " - " + quizInfo["artists"];
+        musicInfo = quizInfo["music"] + " - " + quizInfo["artist"];
         break;
       case 6: //填写专辑
         question = S.current.enterAlbum;
-        musicInfo = quizInfo["music"] + " - " + quizInfo["artists"];
+        musicInfo = quizInfo["music"] + " - " + quizInfo["artist"];
         break;
       case 7: //填写流派
         question = S.current.enterGenre;
@@ -371,7 +303,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
           : MediaQuery.of(context).size.width * 0.8,
       child: Column(
         children: [
-          Text("${_currentQuiz+1}/${_quizzes.length-1}"),
+          Text("${_currentQuiz+1}/${_quizzes.length}"),
           const SizedBox(height:10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -420,84 +352,21 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                       side: BorderSide(
                         color: _submittedOption == null
                             ? Colors.transparent
-                            : (options[index]['text']) == answer
+                            : (options[index]) == answer
                                 ? Colors.green
-                                : answerList!=null ? answerList.contains((options[index]['text'])) 
+                                : answerList!=null ? answerList.contains((options[index])) 
                                 ?Colors.green : Colors.red : Colors.red,
                         width: 1,
                       ),
                     ),
                     title: Text(
-                      (options[index]['text']) +
-                          (_submittedOption == null ||
-                                  infoShowAfterSubmit == null ||
-                                  quizType != 2
+                      (options[index]) +
+                          (_submittedOption == null || quizType != 2
                               ? "" // 不显示额外信息
                               : " - ${options[index]['artist_name']}"),
                     ),
-                    subtitle: _submittedOption == null || infoShowAfterSubmit == null
-                        ? null
-                        : quizType == 0
-                            ? Text(infoShowAfterSubmit[index])
-                            : quizType == 1
-                                ? Image.network(
-                                    "http://hungryhenry.xyz/musiclab/artist/${infoShowAfterSubmit[index].toString()}_logo.jpg",
-                                    width: 75,
-                                    height: 75,
-                                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                      if (loadingProgress == null) {
-                                        return child;
-                                      } else {
-                                        return SizedBox(
-                                          height:75,
-                                          width: 75,
-                                          child: Center(
-                                            child: CircularProgressIndicator(
-                                              value: loadingProgress.expectedTotalBytes != null ? 
-                                              loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1) : 1,
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                      if(infoShowAfterSubmit != null){
-                                        logger.e("${infoShowAfterSubmit[index].toString()}_logo.jpg");
-                                        logger.e(exception);
-                                      }else{
-                                        logger.e(exception);
-                                      }
-                                      return const Icon(Icons.image, color: Colors.grey);
-                                    }
-                                  )
-                                : quizType == 2
-                                    ? Image.network(
-                                        "http://hungryhenry.xyz/musiclab/album/${infoShowAfterSubmit[index].toString()}.jpg",
-                                        width: 75,
-                                        height: 75,
-                                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                          if (loadingProgress == null) {
-                                            return child;
-                                          } else {
-                                            return SizedBox(
-                                              height: 75,
-                                              width: 75,
-                                              child: Center(
-                                                child: CircularProgressIndicator(
-                                                  value: loadingProgress.expectedTotalBytes != null ? 
-                                                  loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1) : 1,
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                          return const Icon(Icons.image, color: Colors.grey);
-                                        }
-                                      )
-                                    : null,
                     leading: Radio<String>(
-                      value: options[index]['text'],
+                      value: options[index],
                       fillColor: WidgetStateProperty.all(_submittedOption == null ? Theme.of(context).colorScheme.secondary : Colors.grey),
                       overlayColor:WidgetStateProperty.all(_submittedOption == null ? Theme.of(context).colorScheme.onSurface.withOpacity(0.08) : Colors.transparent),
                       groupValue: _selectedOption,
@@ -549,29 +418,13 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                 Text(S.current.correctAnswer),
                 Text(answerList != null ? answerList.join(", ") : answer, style: const TextStyle(letterSpacing: 2, fontSize: 18)),
                 const SizedBox(height: 10),
-                Image.network(
-                  quizType == 4 ? "http://hungryhenry.xyz/musiclab/album/${quizInfo['album_id']}.jpg"
-                  : quizType == 5 ? "http://hungryhenry.xyz/musiclab/artist/${quizInfo['id']}_logo.jpg"
-                  : quizType == 6 ? "http://hungryhenry.xyz/musiclab/album/${quizInfo['id']}.jpg"
-                  : "http://hungryhenry.xyz/musiclab/album/${quizInfo['album_id']}.jpg",
+                Image.file(
+                  quizType == 4 ? File(_tempDir!.path + "/album/${quizInfo['album_id']}.jpg")
+                  : quizType == 5 ? File(_tempDir!.path + "/artist/${quizInfo['id']}_logo.jpg")
+                  : quizType == 6 ? File(_tempDir!.path + "/album/${quizInfo['id']}.jpg")
+                  : File(_tempDir!.path +  "/album/${quizInfo['album_id']}.jpg"),
                   width: 150,
                   height: 150,
-                  loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                    if (loadingProgress == null) {
-                      return child;
-                    } else {
-                      return SizedBox(
-                        height: 150,
-                        width: 150,
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null ? 
-                            loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1) : 1,
-                          ),
-                        ),
-                      );
-                    }
-                  },
                   errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
                     return const SizedBox(
                         height: 150,
@@ -641,7 +494,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
             Text(S.current.wrong, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red)),
             const SizedBox(height: 10),
 
-            if(_currentQuiz + 2 == _quizzes.length) ... [
+            if(_currentQuiz + 1 == _quizzes.length) ... [
               //结束
               ElevatedButton(
                 onPressed: (){
@@ -749,18 +602,14 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
         Column(
           children: [
             _playlistId == 0 ? const Center(child: CircularProgressIndicator()) : 
-            Image.network(
-              "http://hungryhenry.xyz/musiclab/playlist/$_playlistId.jpg", 
+            Image.file(
+              File(_tempDir!.path + "/cover.jpg"), 
               width:MediaQuery.of(context).size.width * 0.3, 
               fit: BoxFit.cover
             ),
             const SizedBox(height: 16),
             Text(_playlistTitle, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            if(_description != null) ... [
-              Text(_description ?? "No description", style: const TextStyle(fontSize: 18), softWrap: true),
-              const SizedBox(height: 14)
-            ],
             Text(
               "${S.current.difficulty}: ${_difficulty == 0 ? S.current.easy : _difficulty == 1 ?
                 S.current.normal : _difficulty == 2 ? S.current.hard
@@ -857,7 +706,7 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
                       ) : const SizedBox.shrink(),
                   ),
                   const SizedBox(height: 20),
-                  if(_countdown > 0)...[Image.network("http://hungryhenry.xyz/musiclab/playlist/$_playlistId.jpg", width: 150, height: 150)],
+                  if(_countdown > 0)...[Image.file(File(_tempDir!.path + "/cover.jpg"), width: 150, height: 150)],
                 ],
               ),
               if (_currentQuiz != -1 && _canShowQuiz && _quizzes[_currentQuiz.toString()] != null) ... [
@@ -870,41 +719,55 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     );
   }
 
+  Future<void> _init() async{
+    _tempDir = Directory((await getTemporaryDirectory()).path + "/rhythm_riddle");
+    logger.i(_tempDir!.path);
+    if(!_tempDir!.existsSync()){
+      _tempDir!.create();
+    }
+    //获取题目
+    _quizzes = await getQuiz(_playlistId, _difficulty, _tempDir!);
+    if(_quizzes["error"] != null){
+      logger.e(_quizzes["error"]);
+      _getQuizError = _quizzes["error"];
+    }
+    setState(() {
+      _initialized = true;
+    });
+    print(_quizzes);
+  }
+  
 
   @override
-    void initState(){
-      WidgetsFlutterBinding.ensureInitialized(); // 确保绑定已初始化
-      Future.microtask(() {
-        //获取传入参数
-        final Map args = ModalRoute.of(context)?.settings.arguments as Map;
-        setState(() {
-          _playlistId = args["id"];
-          _playlistTitle = args["title"];
-          _description = args["description"];
-          _difficulty = args["difficulty"];
-        });
+  void initState(){
+    WidgetsFlutterBinding.ensureInitialized(); // 确保绑定已初始化
+    Future.microtask(() {
+      //获取传入参数
+      final Map args = ModalRoute.of(context)?.settings.arguments as Map;
+      setState(() {
+        _playlistId = args["id"];
+        _difficulty = args["difficulty"];
+      });
+      _init();
+    });
 
-        //获取题目
-        _getQuiz(_playlistId, _difficulty);
-      });
+    //audioplayer状态更新
+    _audioPlayer.playbackEventStream.listen((event) {}, onError: (error) {
+      logger.e(error);
+    });
+    _durationSubscription = _audioPlayer.durationStream.listen((duration){
+      if(mounted){setState(() => _duration = duration);}
+    });
 
-      //audioplayer状态更新
-      _audioPlayer.playbackEventStream.listen((event) {}, onError: (error) {
-        logger.e(error);
-      });
-      _durationSubscription = _audioPlayer.durationStream.listen((duration){
-        if(mounted){setState(() => _duration = duration);}
-      });
+    _positionSubscription = _audioPlayer.positionStream.listen((position){
+      if(mounted){setState(() => _position = position);}
+    });
 
-      _positionSubscription = _audioPlayer.positionStream.listen((position){
-        if(mounted){setState(() => _position = position);}
-      });
-
-      _audioPlayer.processingStateStream.listen((processingState){
-        if(mounted){setState(() => _processingState = processingState);}
-      });
-      super.initState();
-    }
+    _audioPlayer.processingStateStream.listen((processingState){
+      if(mounted){setState(() => _processingState = processingState);}
+    });
+    super.initState();
+  }
 
   @override
   void dispose(){
@@ -915,17 +778,18 @@ class _SinglePlayerGameState extends State<SinglePlayerGame> {
     _controller.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
-    if (_quizzes.isNotEmpty && _currentQuiz == -1 && _countdown == 0 && mounted) {
+    if (_quizzes.isNotEmpty && _currentQuiz == -1 && _countdown == 0 && mounted && _getQuizError == null) {
       _startAudioCountdown();
     }
     return Scaffold(
       appBar: AppBar(
         title: Text("${S.current.singlePlayer}: $_playlistTitle"), 
       ),
-      body: Padding(
+      body: _getQuizError != null ? Center(child: Text("error❌: $_getQuizError!")) : 
+      !_initialized ? const Center(child: CircularProgressIndicator()) :
+      Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: MediaQuery.of(context).size.width > 800 ? _largeScreen() : _smallScreen(),

@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../generated/l10n.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-const storage = FlutterSecureStorage();
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class PlaylistInfo extends StatefulWidget {
   @override
@@ -16,14 +18,6 @@ class PlaylistInfo extends StatefulWidget {
 class _PlaylistInfoState extends State<PlaylistInfo> {
   int playlistId = 0;
   bool isLoading = true;
-
-  //用户登录信息
-  String? uid = '';
-  String? username = '';
-  String? mail = '';
-  String? date = '';
-  DateTime now = DateTime.now();
-  bool isLogin = false;
 
   String title = '';
   String createTime = '';
@@ -35,41 +29,108 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
   int played = 0;
   int musicCount = 0;
 
-  void _checkLogin() async {
-    uid = await storage.read(key: 'uid');
-    username = await storage.read(key: 'username');
-    mail = await storage.read(key: 'mail');
-    date = await storage.read(key: 'date');
-    if (uid != null && username != null && mail != null && now.difference(DateTime.parse(date!)).inDays < 7 && mounted) {
-      setState(() {
-        isLogin = true;
-      });
+  late String _documentsDirectory;
+
+  String downloadText = '';
+  int downloadProgress = 0;
+  CancelToken cancelToken = CancelToken();
+
+  Future<bool> _checkPermission() async {
+    if(Platform.isAndroid){
+      final status = await Permission.storage.status;
+      if(status.isGranted){
+        return true;
+      }else{
+        final permission = await Permission.storage.request();
+        if(permission.isGranted){
+          return true;
+        }else{
+          return false;
+        }
+      }
+    }else{
+      return true;
+    }
+  }
+
+  Future<void> _downloadPlaylist() async {
+    if(!await _checkPermission()){
+      Fluttertoast.showToast(msg: S.current.permissionError(S.current.storagePerm));
+      return;
+    }else{
+      Dio dio = Dio();
+      final String url = 'http://hungryhenry.xyz/musiclab/playlist/$playlistId.zip';
+      final String saveDir = _documentsDirectory + '/playlists/$playlistId.zip';
+      try{
+        await dio.download(
+          url, saveDir, cancelToken: cancelToken,
+          onReceiveProgress: (count, total) {
+            if(mounted){
+              setState(() {
+                downloadProgress = 100 * count ~/ total;
+              });
+            }
+          },
+        );
+        DateTime now = DateTime.now();
+        final String date = DateFormat('yyyy-MM-dd').format(now);
+        final File jsonFile = File(_documentsDirectory + '/local_playlists.json');
+        if(!jsonFile.existsSync()){
+          jsonFile.createSync();
+          jsonFile.writeAsStringSync('[]');
+        }
+        final List localPlaylists = json.decode(jsonFile.readAsStringSync());
+        localPlaylists.add({
+          "id": playlistId,
+          "title": title,
+          "date": date,
+          "count": musicCount,
+        });
+        jsonFile.writeAsStringSync(json.encode(localPlaylists));
+        setState(() {
+          downloadText = S.current.downloaded;
+        });
+      }catch(e){
+        if(e is TimeoutException){
+          await showDialog(context: context, builder: (context){
+            return AlertDialog(
+                content: Text(S.current.connectError),
+                actions: [
+                  TextButton(onPressed: () { Navigator.of(context).pop();}, child: Text("OK"))
+                ],
+            );
+          });
+        }else{
+          print(e);
+        }
+      }
     }
   }
 
   Future<void> _getFromApi() async {
+    final Dio dio = Dio();
     try{
-      final response = await http.post(
-        Uri.parse('http://hungryhenry.xyz/api/getPlaylistInfo.php'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, int>{
-          'id': playlistId
-        })
-      ).timeout(const Duration(seconds:7));
+      final response = await dio.post(
+        'http://hungryhenry.xyz/api/getPlaylistInfo.php',
+        data: {'id': playlistId},
+        options: Options(
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+        ),
+      ).timeout(const Duration(seconds: 7));
 
       if(response.statusCode == 200 && mounted){
         setState(() {
-          title = jsonDecode(response.body)['data']['playlist_title'];
-          createTime = jsonDecode(response.body)['data']['create_time'];
-          createdBy = jsonDecode(response.body)['data']['created_by'];
-          musicTitle = jsonDecode(response.body)['data']['music_title'];
-          artist = jsonDecode(response.body)['data']['artist'];
-          description = jsonDecode(response.body)['data']['description'];
-          likes = jsonDecode(response.body)['data']['likes'];
-          played = jsonDecode(response.body)['data']['played'];
-          musicCount = jsonDecode(response.body)['data']['music_count'];
+          title = response.data['data']['playlist_title'];
+          createTime = response.data['data']['create_time'];
+          createdBy = response.data['data']['created_by'];
+          musicTitle = response.data['data']['music_title'];
+          artist = response.data['data']['artist'];
+          description = response.data['data']['description'];
+          likes = response.data['data']['likes'];
+          played = response.data['data']['played'];
+          musicCount = response.data['data']['music_count'];
           isLoading = false;
         });
       }else if(response.statusCode == 404 && mounted){
@@ -87,7 +148,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
           isLoading = false;
         });
       }else{
-        print(response.body);
+        print(response.data);
         if(mounted){
           await showDialog(context: context, builder: (context){
             return AlertDialog(
@@ -138,11 +199,23 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
   @override
   void initState() {
     super.initState();
-    _checkLogin();
     Future.microtask(() {
       final int args = ModalRoute.of(context)?.settings.arguments as int;
       setState(() {
         playlistId = args;
+      });
+      getApplicationDocumentsDirectory().then((dir) {
+        _documentsDirectory = dir.path + '/rhythm_riddle';
+        final File path = File(_documentsDirectory + '/playlists/$playlistId.zip');
+        if(path.existsSync()){
+          setState(() {
+            downloadText = S.current.downloaded;
+          });
+        }else{
+          setState(() {
+            downloadText = S.current.download;
+          });
+        }
       });
       _getFromApi();
     });
@@ -379,6 +452,37 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
             Text(S.current.likes),
           ],
         ),
+        Column(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.download),
+              color: downloadText == S.current.downloaded ? Colors.orange : Colors.grey,
+              onPressed: () {
+                if(downloadText == S.current.download) {
+                  setState(() {
+                    downloadText = S.current.downloading("");
+                  });
+                  _downloadPlaylist();
+                }else if(downloadText == S.current.downloading("")){
+                  cancelToken.cancel();
+                  setState(() {
+                    downloadText = S.current.downloaded;
+                    downloadProgress = 0;
+                  });
+                }else if(downloadText == S.current.downloaded){
+                  Navigator.pushNamed(context, "/localPlaylists");
+                }
+              }
+            ),
+            const SizedBox(height: 8),
+            if(downloadProgress > 0) ...[
+              Text(
+              downloadProgress.toString() + "%",
+              style: const TextStyle(fontSize: 16),
+            )],
+            Text(downloadText)
+          ]
+        )
       ],
     );
   }

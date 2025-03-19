@@ -9,8 +9,8 @@
     "loginExpired": "登录已过期，请重新登录",
     "connectError": "无法连接至服务器，请稍后再试或使用本地歌单游玩",
     "versionCheckError": "版本检查失败，请稍后再试或联系hungryhenry101@outlook.com", 
-    "permissionError": "缺少{permission}权限，无法更新，请手动授予权限","restart": "授权后请重启软件",
-    "storagePerm": "文件读写", "ntfPerm": "通知权限", "installPerm": "安装应用权限",
+    "permissionError": "缺少{permission}，请手动授予权限","restart": "授权后请重启软件",
+    "storagePerm": "文件读写权限", "ntfPerm": "通知权限", "installPerm": "安装应用权限",
     "permissionExplain": "请授予通知权限，以防止软件更新时被系统结束进程",
     "installManually": "手动下载安装",
     "ok": "确定👌", "cancel": "取消", "relogin":"重新登录", "retry": "重试", 
@@ -24,12 +24,12 @@
     "recm": "推荐", "hot": "热门🔥", "sort":"分类",
     "search": "搜索歌单、歌曲或歌手",
 
-    "accountManage": "账户管理", "history": "历史记录", "setting": "设置", "myPlaylists": "我的歌单",
+    "accountManage": "账户管理", "history": "历史记录", "setting": "设置", "localPlaylists": "本地歌单",
 
     "appearance": "外观", "language": "语言", "darkMode": "深色模式", "followSystem": "跟随系统", 
     "gameSettings": "游戏设置",
 
-    "songs": "歌曲", "played": "玩过", "likes": "赞",
+    "songs": "歌曲", "played": "玩过", "likes": "赞", "downloaded": "已下载", "download": "下载",
     "bug": "游戏出现BUG了，请反馈给hungryhenry101@outlook.com",
     "singlePlayer": "单人模式", "multiPlayer": "多人模式（敬请期待）",
     "singlePlayerOptions": "单人模式选项", "multiPlayerOptions": "多人模式选项",

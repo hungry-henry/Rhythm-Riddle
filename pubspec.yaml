@@ -65,6 +65,8 @@ dependencies:
   language_picker: ^0.4.5
   smtc_windows: ^1.0.0
   provider: ^6.1.2
+  archive: ^4.0.4
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:
@@ -115,6 +117,7 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
   assets: 
     - assets/sounds/
+    - assets/offline_data.json
 
 flutter_intl:
   enabled: true

@@ -11,10 +11,12 @@ import 'pages/home.dart';
 import 'pages/search.dart';
 import 'pages/playlist_info.dart';
 import 'pages/settings.dart';
+import 'pages/local_playlists.dart';
 
 import 'pages/singleplayer_game/single_player.dart';
 import 'pages/singleplayer_game/game.dart';
 import 'pages/singleplayer_game/result.dart';
+import 'pages/singleplayer_game/offline_game.dart';
 
 import 'pages/multiplayer_game/multi_player.dart';
 
@@ -89,8 +91,10 @@ class _RhythmRiddleState extends State<RhythmRiddle> {
             '/SinglePlayer': (context) => SinglePlayer(),
             '/SinglePlayerGame': (context) => SinglePlayerGame(),
             '/SinglePlayerGameResult': (context) => SinglePlayerGameResult(),
+            '/OfflineGame': (context) => OfflineGame(),
             '/MultiPlayer': (context) => MultiPlayer(),
             '/settings': (context) => SettingsPage(),
+            '/localPlaylists': (context) => LocalPlaylistsPage(),
           },
         ),
       ),

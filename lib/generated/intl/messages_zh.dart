@@ -25,7 +25,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m1(version) => "正在下载${version}...";
 
-  static String m2(permission) => "缺少${permission}权限，无法更新，请手动授予权限";
+  static String m2(permission) => "缺少${permission}，请手动授予权限";
 
   static String m3(playlist) => "${playlist} 的答题结果";
 
@@ -61,7 +61,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "details": MessageLookupByLibrary.simpleMessage("答题细节"),
         "difficulty": MessageLookupByLibrary.simpleMessage("难度"),
         "dlUpdate": MessageLookupByLibrary.simpleMessage("立即下载"),
+        "download": MessageLookupByLibrary.simpleMessage("下载"),
         "downloadProgress": MessageLookupByLibrary.simpleMessage("下载进度："),
+        "downloaded": MessageLookupByLibrary.simpleMessage("已下载"),
         "downloading": m1,
         "easy": MessageLookupByLibrary.simpleMessage("简单"),
         "easyInfo":
@@ -89,13 +91,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "language": MessageLookupByLibrary.simpleMessage("语言"),
         "likes": MessageLookupByLibrary.simpleMessage("赞"),
         "loading": MessageLookupByLibrary.simpleMessage("加载中..."),
+        "localPlaylists": MessageLookupByLibrary.simpleMessage("本地歌单"),
         "loggingIn": MessageLookupByLibrary.simpleMessage("登录中..."),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
         "loginExpired": MessageLookupByLibrary.simpleMessage("登录已过期，请重新登录"),
         "me": MessageLookupByLibrary.simpleMessage("我"),
         "multiPlayer": MessageLookupByLibrary.simpleMessage("多人模式（敬请期待）"),
         "multiPlayerOptions": MessageLookupByLibrary.simpleMessage("多人模式选项"),
-        "myPlaylists": MessageLookupByLibrary.simpleMessage("我的歌单"),
         "name": MessageLookupByLibrary.simpleMessage("这歌我熟"),
         "next": MessageLookupByLibrary.simpleMessage("下一题"),
         "noDes": MessageLookupByLibrary.simpleMessage("暂无简介"),
@@ -127,7 +129,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "songs": MessageLookupByLibrary.simpleMessage("歌曲"),
         "sort": MessageLookupByLibrary.simpleMessage("分类"),
         "start": MessageLookupByLibrary.simpleMessage("开始游戏"),
-        "storagePerm": MessageLookupByLibrary.simpleMessage("文件读写"),
+        "storagePerm": MessageLookupByLibrary.simpleMessage("文件读写权限"),
         "submit": MessageLookupByLibrary.simpleMessage("提交"),
         "tip": MessageLookupByLibrary.simpleMessage("提示: "),
         "unknownError": MessageLookupByLibrary.simpleMessage(

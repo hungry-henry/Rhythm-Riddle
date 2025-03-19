@@ -26,7 +26,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m1(version) => "Downloading ${version}...";
 
   static String m2(permission) =>
-      "Lack of ${permission} Permission, failed to update. Pls grant permission(s) manually";
+      "Lack of ${permission}. Pls grant perm(s) manually";
 
   static String m3(playlist) => "Result of ${playlist}";
 
@@ -70,8 +70,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "details": MessageLookupByLibrary.simpleMessage("Answer Details"),
         "difficulty": MessageLookupByLibrary.simpleMessage("Difficulty"),
         "dlUpdate": MessageLookupByLibrary.simpleMessage("Update Now"),
+        "download": MessageLookupByLibrary.simpleMessage("Download"),
         "downloadProgress":
             MessageLookupByLibrary.simpleMessage("Download Progress: "),
+        "downloaded": MessageLookupByLibrary.simpleMessage("Downloaded"),
         "downloading": m1,
         "easy": MessageLookupByLibrary.simpleMessage("Easy"),
         "easyInfo": MessageLookupByLibrary.simpleMessage(
@@ -107,6 +109,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "language": MessageLookupByLibrary.simpleMessage("Language"),
         "likes": MessageLookupByLibrary.simpleMessage("Likes"),
         "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
+        "localPlaylists":
+            MessageLookupByLibrary.simpleMessage("Local Playlists"),
         "loggingIn": MessageLookupByLibrary.simpleMessage("Loggin In..."),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "loginExpired": MessageLookupByLibrary.simpleMessage(
@@ -116,7 +120,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Multi Player (Coming Soon)"),
         "multiPlayerOptions":
             MessageLookupByLibrary.simpleMessage("Multi Player Options"),
-        "myPlaylists": MessageLookupByLibrary.simpleMessage("My Playlists"),
         "name": MessageLookupByLibrary.simpleMessage("Rhythm Riddle"),
         "next": MessageLookupByLibrary.simpleMessage("Next"),
         "noDes": MessageLookupByLibrary.simpleMessage("No Description"),
