@@ -16,7 +16,7 @@ import 'package:dio/dio.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:install_plugin/install_plugin.dart';
+import 'package:android_package_installer/android_package_installer.dart';
 import 'package:just_audio/just_audio.dart';
 import '../utils/update.dart';
 
@@ -192,7 +192,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               }
             }else{
               //安装apk
-              if(await InstallPlugin.install(savePath) == false){
+              int? installCode = await AndroidPackageInstaller.installApk(apkFilePath: savePath);
+              if(installCode != 0){
                 logger.e("install apk error");
                 if(mounted){
                   showDialog(context: context, builder: (context){
@@ -289,9 +290,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   }
 
   Future<void> login(String username, String password, BuildContext context) async {
-    setState(() {
-      _loginText = S.current.loggingIn;
-    });
+    if(mounted){
+      setState(() {
+        _loginText = S.current.loggingIn;
+      });
+    }
     try{
       final response = await http.post(
         Uri.parse('http://hungryhenry.xyz/api/login.php'),
@@ -648,7 +651,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     super.initState();
     _audioPlayer.setAsset('assets/sounds/loginToHome.mp3');
     _checkUpdate().then((needUpdate) {
-      if(needUpdate){
+      if(needUpdate && mounted){
         showDialog(
           context: context,
           barrierDismissible: false, // 禁止点击对话框外部关闭

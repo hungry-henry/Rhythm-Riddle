@@ -206,19 +206,6 @@ class _OfflineGameState extends State<OfflineGame> {
     });
   }
 
-  //给答案挖空
-  String? replaceWithBlanks(String answer, List blanks) {
-    // 按位置插入空格
-    if(blanks.isEmpty) return null;
-    for (int i = 0; i < blanks.length; i++) {
-      int position = blanks[i]; // 转换为 0-based index
-      if (position >= 0 && position < answer.length) {
-        answer = answer.substring(0, position) + '_' + answer.substring(position + 1);
-      }
-    }
-    return answer;
-  }
-
   Widget _showQuiz(Map quizInfo, int difficulty){
     int quizType = quizInfo["quizType"]; //题目类型
     bool true4SelectFalse4Enter = quizType == 0 || quizType == 1 || quizType == 2 || quizType == 3;
@@ -231,31 +218,7 @@ class _OfflineGameState extends State<OfflineGame> {
     if(true4SelectFalse4Enter){
       options = quizInfo["options"];
     }else{
-      if(quizInfo["blanks"] == null){
-        if(quizType == 4) {
-          tip = quizInfo["artist"];
-        } else if(quizType == 5) {
-          tip = quizInfo["music"];
-        } else if(quizType == 6){
-          tip = quizInfo["artistForAlbum"];
-        } else if(quizType == 7){
-          tip = quizInfo["music"];
-          if(answer.contains(", ")){
-            answerList = answer.split(", ");
-            answerList.removeWhere((item) => item == '欧美' || item == '华语');
-          }
-        }else{
-          tip = "";
-        }
-      } else {
-          if(quizInfo["blanks"] is List){
-            tip = replaceWithBlanks(answer, quizInfo["blanks"]);
-          }else if(quizInfo["blanks"] is String){
-            tip = quizInfo["blanks"];
-          }else{
-            tip = "";
-          }
-      }
+      tip = quizInfo["tip"];
     }
 
     String question = "";
@@ -264,7 +227,7 @@ class _OfflineGameState extends State<OfflineGame> {
     switch(quizType){
       case 0: //选择歌曲
         question = S.current.chooseMusic;
-        musicInfo = quizInfo["answer"] + " - " + quizInfo["artists"];
+        musicInfo = quizInfo["answer"] + " - " + quizInfo["artist"];
         break;
       case 1: //选择歌手
         question = S.current.chooseArtist; 
@@ -272,7 +235,7 @@ class _OfflineGameState extends State<OfflineGame> {
         break;
       case 2: //选择专辑
         question = S.current.chooseAlbum;
-          musicInfo = quizInfo["music"] + " - " + quizInfo["artist"];
+          musicInfo = quizInfo["music"] + " - " + quizInfo["album_artist"];
         break;
       case 3: //选择流派
         question = S.current.chooseGenre;
@@ -284,11 +247,11 @@ class _OfflineGameState extends State<OfflineGame> {
         break;
       case 5: //填写歌手
         question = S.current.enterArtist;
-        musicInfo = quizInfo["music"] + " - " + quizInfo["artist"];
+        musicInfo = quizInfo["music"] + " - " + quizInfo["answer"];
         break;
       case 6: //填写专辑
         question = S.current.enterAlbum;
-        musicInfo = quizInfo["music"] + " - " + quizInfo["artist"];
+        musicInfo = quizInfo["answer"] + " - " + quizInfo["artist"];
         break;
       case 7: //填写流派
         question = S.current.enterGenre;
@@ -359,12 +322,7 @@ class _OfflineGameState extends State<OfflineGame> {
                         width: 1,
                       ),
                     ),
-                    title: Text(
-                      (options[index]) +
-                          (_submittedOption == null || quizType != 2
-                              ? "" // 不显示额外信息
-                              : " - ${options[index]['artist_name']}"),
-                    ),
+                    title: Text(options[index]),
                     leading: Radio<String>(
                       value: options[index],
                       fillColor: WidgetStateProperty.all(_submittedOption == null ? Theme.of(context).colorScheme.secondary : Colors.grey),
@@ -725,6 +683,7 @@ class _OfflineGameState extends State<OfflineGame> {
     if(!_tempDir!.existsSync()){
       _tempDir!.create();
     }
+    
     //获取题目
     _quizzes = await getQuiz(_playlistId, _difficulty, _tempDir!);
     if(_quizzes["error"] != null){
@@ -747,6 +706,7 @@ class _OfflineGameState extends State<OfflineGame> {
       setState(() {
         _playlistId = args["id"];
         _difficulty = args["difficulty"];
+        _playlistTitle = args["title"];
       });
       _init();
     });

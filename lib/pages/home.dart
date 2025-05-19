@@ -61,6 +61,9 @@ class _HomeState extends State<Home> {
       if (response.statusCode == 200 && mounted) {
         setState((){
           _playlists = jsonDecode(response.body)['data'];
+          if(_playlists.length > 5){
+            _playlists = _playlists.sublist(0, 5);
+          }
           _isLoading = false;
         });
       }else {
@@ -147,8 +150,7 @@ class _HomeState extends State<Home> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(S.current.recm,
-                                style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold)),
+                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                             const Text('更多 =>', style: TextStyle(color: Colors.blue)),
                           ],
                         ),
@@ -172,7 +174,8 @@ class _HomeState extends State<Home> {
                         ]else...[
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: List.generate(_playlists.length, (index) {
+                            children: List.generate(
+                              _playlists.length > 4 && (Platform.isAndroid || Platform.isIOS) ? 4 : _playlists.length, (index) {
                               return SizedBox(
                                 width: 80,
                                 height: 120,
